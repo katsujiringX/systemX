@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KatsujiRingX - プロフィール設定 - 活字化プラットフォーム">
+    <title>プロフィール設定 | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+
+    <style></style>
+</head>
+<body class="preload">
+    <div id="app">
+        <!-- ヘッダー部分 -->
+        <header id="header">
+            <div class="header-content">
+                <a href="index.html" class="logo" aria-label="KatsujiRingX ホームページ">
+                    <img src="img/katsujiRingX.png" alt="KatsujiRingX ロゴ" width="40" height="40">
+                    <span class="logo-text">KatsujiRingX</span>
+                </a>
+                
+                <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+                    <span class="sr-only">メニュー</span>
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <nav>
+                    <ul id="nav-menu" class="nav-menu">
+                        <li><a href="index.html"><i class="fas fa-home"></i> ホーム</a></li>
+                        <li><a href="main.html"><i class="fas fa-user-circle"></i> マイページ</a></li>
+                        <li><a href="editor.html"><i class="fas fa-edit"></i> 活字化エディター</a></li>
+                        <li><a href="documents.html"><i class="fas fa-file-alt"></i> 資料管理</a></li>
+                        <li><a href="games.html"><i class="fas fa-gamepad"></i> 学習ゲーム</a></li>
+                    </ul>
+                </nav>
+                
+                <div class="header-actions">
+                    <button id="search-toggle" class="btn-icon" aria-label="検索">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    
+                    <button id="theme-toggle" class="btn-icon" aria-label="テーマの切り替え">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    
+                    <button id="notifications-toggle" class="btn-icon" aria-label="通知">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    
+                    <div class="user-menu">
+                        <button id="user-menu-button" class="user-menu-button" aria-haspopup="true" aria-expanded="false">
+                            <div class="user-avatar">
+                                <span id="user-initial">U</span>
+                            </div>
+                            <span class="user-name" id="header-user-name">ユーザー</span>
+                            <i class="fas fa-chevron-down dropdown-arrow"></i>
+                        </button>
+                        
+                        <div id="user-dropdown" class="user-dropdown hidden">
+                            <div class="dropdown-user-info">
+                                <div class="dropdown-avatar">
+                                    <span id="dropdown-user-initial">U</span>
+                                </div>
+                                <div class="dropdown-user-details">
+                                    <div id="dropdown-user-name" class="dropdown-user-name">ユーザー</div>
+                                    <div id="dropdown-user-email" class="dropdown-user-email">user@example.com</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-links">
+                                <a href="profile.html" class="active">
+                                    <i class="fas fa-user"></i>プロフィール
+                                </a>
+                                <a href="projects.html">
+                                    <i class="fas fa-folder"></i>プロジェクト
+                                </a>
+                                <a href="settings.html">
+                                    <i class="fas fa-cog"></i>設定
+                                </a>
+                                <a href="help.html">
+                                    <i class="fas fa-question-circle"></i>ヘルプ
+                                </a>
+                            </div>
+                            <hr>
+                            <button id="logout-btn" class="dropdown-item">
+                                <i class="fas fa-sign-out-alt"></i>ログアウト
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 検索オーバーレイ -->
+            <div id="search-overlay" class="search-overlay hidden">
+                <div class="search-container">
+                    <form id="search-form" class="search-form">
+                        <input type="text" id="search-input" class="search-input" placeholder="検索...">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button type="button" id="search-close" class="search-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <!-- メインコンテンツ -->
+        <main id="main-content">
+            <div class="page-container">
+                <div class="page-header">
+                    <h1>プロフィール設定</h1>
+                    <p class="page-description">アカウント情報とプライバシー設定を管理します</p>
+                </div>
+                
+                <div class="profile-container">
+                    <div class="profile-sidebar">
+                        <div class="profile-avatar-container">
+                            <div class="profile-avatar">
+                                <img id="profile-avatar-img" src="img/default-avatar.png" alt="プロフィール画像">
+                                <div class="avatar-overlay">
+                                    <label for="avatar-upload" class="avatar-edit-btn">
+                                        <i class="fas fa-camera"></i>
+                                    </label>
+                                    <input type="file" id="avatar-upload" accept="image/*" class="hidden">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="user-status">
+                            <span class="status-indicator online"></span>
+                            <span class="status-text">オンライン</span>
+                        </div>
+                        
+                        <div class="profile-stats">
+                            <div class="stats-item">
+                                <span class="stats-label">登録日</span>
+                                <span class="stats-value" id="join-date">--</span>
+                            </div>
+                            <div class="stats-item">
+                                <span class="stats-label">プロジェクト数</span>
+                                <span class="stats-value" id="projects-count">0</span>
+                            </div>
+                            <div class="stats-item">
+                                <span class="stats-label">貢献ポイント</span>
+                                <span class="stats-value" id="contribution-points">0</span>
+                            </div>
+                            <div class="stats-item">
+                                <span class="stats-label">最終ログイン</span>
+                                <span class="stats-value" id="last-login">--</span>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-links">
+                            <a href="settings.html" class="btn btn-outline btn-block">
+                                <i class="fas fa-cog"></i> アカウント設定
+                            </a>
+                            <a href="projects.html" class="btn btn-outline btn-block">
+                                <i class="fas fa-folder"></i> プロジェクト管理
+                            </a>
+                            <a href="help.html" class="btn btn-outline btn-block">
+                                <i class="fas fa-question-circle"></i> ヘルプセンター
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="profile-content">
+                        <div class="profile-tabs">
+                            <button class="tab-item active" data-tab="basic-info">
+                                <i class="fas fa-user"></i> 基本情報
+                            </button>
+                            <button class="tab-item" data-tab="privacy">
+                                <i class="fas fa-lock"></i> 公開設定
+                            </button>
+                            <button class="tab-item" data-tab="activity">
+                                <i class="fas fa-chart-line"></i> アクティビティ
+                            </button>
+                        </div>
+                        
+                        <div class="tab-content" id="basic-info">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2>基本情報</h2>
+                                    <div class="card-actions">
+                                        <button class="btn-icon edit-card-toggle">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form id="profile-form">
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="display-name">表示名 <span class="required">*</span></label>
+                                                <input type="text" id="display-name" placeholder="表示名を入力" required>
+                                                <div class="form-helper">公開プロフィールに表示される名前です</div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="email">メールアドレス</label>
+                                                <input type="email" id="email" disabled>
+                                                <div class="form-helper">メールアドレスを変更するには<a href="settings.html">アカウント設定</a>で行えます</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="bio">自己紹介</label>
+                                            <textarea id="bio" rows="4" placeholder="自己紹介を入力（任意）"></textarea>
+                                            <div class="form-helper"><span id="bio-char-count">0</span>/300文字</div>
+                                        </div>
+                                        
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="specialization">専門分野（任意）</label>
+                                                <select id="specialization">
+                                                    <option value="">選択してください</option>
+                                                    <option value="history">歴史学</option>
+                                                    <option value="literature">文学</option>
+                                                    <option value="linguistics">言語学</option>
+                                                    <option value="archive">アーカイブ学</option>
+                                                    <option value="education">教育</option>
+                                                    <option value="other">その他</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="website">Webサイト（任意）</label>
+                                                <input type="url" id="website" placeholder="https://example.com">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label>興味のあるタグ</label>
+                                            <div class="tags-input-container" id="tags-container">
+                                                <div class="tags-list" id="tags-list"></div>
+                                                <input type="text" id="tags-input" placeholder="タグを入力して Enter">
+                                            </div>
+                                            <div class="form-helper">最大5つまで追加できます</div>
+                                        </div>
+                                        
+                                        <div class="form-actions">
+                                            <button type="button" class="btn btn-outline" id="cancel-profile">キャンセル</button>
+                                            <button type="submit" class="btn btn-primary">保存</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-content hidden" id="privacy">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2>公開設定</h2>
+                                    <div class="card-actions">
+                                        <button class="btn-icon edit-card-toggle">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <form id="privacy-form">
+                                        <div class="privacy-settings">
+                                            <div class="setting-item">
+                                                <div class="setting-info">
+                                                    <div class="setting-title">プロフィール公開</div>
+                                                    <div class="setting-description">プロフィールを公開すると、他のユーザーがあなたの活動を閲覧できるようになります。</div>
+                                                </div>
+                                                <div class="setting-control">
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="show-profile">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="setting-item">
+                                                <div class="setting-info">
+                                                    <div class="setting-title">プロジェクト公開</div>
+                                                    <div class="setting-description">他のユーザーにプロジェクトを表示します。ただし、プロジェクト個別の公開設定が優先されます。</div>
+                                                </div>
+                                                <div class="setting-control">
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="show-projects">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="setting-item">
+                                                <div class="setting-info">
+                                                    <div class="setting-title">活動履歴の公開</div>
+                                                    <div class="setting-description">あなたの活動履歴（貢献、コメントなど）を他のユーザーに公開します。</div>
+                                                </div>
+                                                <div class="setting-control">
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="show-activity">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="setting-item">
+                                                <div class="setting-info">
+                                                    <div class="setting-title">メールアドレスの公開</div>
+                                                    <div class="setting-description">あなたのメールアドレスを他のユーザーに公開します。</div>
+                                                </div>
+                                                <div class="setting-control">
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="show-email">
+                                                        <span class="slider round"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-actions">
+                                            <button type="button" class="btn btn-outline" id="cancel-privacy">キャンセル</button>
+                                            <button type="submit" class="btn btn-primary">保存</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="tab-content hidden" id="activity">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2>最近のアクティビティ</h2>
+                                    <div class="card-actions">
+                                        <select id="activity-filter" class="form-select">
+                                            <option value="all">すべて</option>
+                                            <option value="projects">プロジェクト</option>
+                                            <option value="contributions">貢献</option>
+                                            <option value="comments">コメント</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="timeline" id="activity-timeline">
+                                        <!-- アクティビティがロードされるまで表示されるローディングインジケータ -->
+                                        <div class="timeline-loading">
+                                            <div class="spinner-sm"></div>
+                                            <p>アクティビティを読み込み中...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <button id="load-more-activity" class="btn btn-outline btn-block">さらに読み込む</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- フッター -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-top">
+                    <div class="footer-section">
+                        <a href="index.html" class="footer-logo">
+                            <img src="img/katsujiRingX-footer.png" alt="KatsujiRingX ロゴ" width="40" height="40">
+                            <span class="logo-text">KatsujiRingX</span>
+                        </a>
+                        <p>次世代の活字化プラットフォーム。OCR技術を活用した日本語縦書き文書の活字化をサポートします。</p>
+                        <div class="social-links">
+                            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-section">
+                        <h3>現在の提供サービス</h3>
+                        <ul class="footer-links">
+                            <li><a href="editor.html">活字化エディター</a></li>
+                            <li><a href="documents.html">OCR文字認識</a></li>
+                            <li><a href="documents.html">資料管理</a></li>
+                            <li><a href="games.html">学習ゲーム</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>サポート</h3>
+                        <ul class="footer-links">
+                            <li><a href="help.html">ヘルプセンター</a></li>
+                            <li><a href="faq.html">よくある質問</a></li>
+                            <li><a href="contact.html">お問い合わせ</a></li>
+                            <li><a href="feedback.html">フィードバック</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>リソース</h3>
+                        <ul class="footer-links">
+                            <li><a href="blog.html">ブログ</a></li>
+                            <li><a href="tutorials.html">チュートリアル</a></li>
+                            <li><a href="api.html">API</a></li>
+                            <li><a href="community.html">コミュニティ</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="copyright">
+                        &copy; 2025 KatsujiRingX. All rights reserved.
+                    </div>
+                    <div class="footer-nav">
+                        <a href="privacy.html">プライバシーポリシー</a>
+                        <a href="terms.html">利用規約</a>
+                        <a href="accessibility.html">アクセシビリティ</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- マイクロインタラクションのためのUIフィードバック要素 -->
+        <div id="ui-feedback" class="ui-feedback"></div>
+
+        <!-- 確認モーダル -->
+        <div id="confirm-modal" class="modal hidden">
+            <div class="modal-backdrop"></div>
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3 id="modal-title">確認</h3>
+                    <button id="modal-close" class="modal-close"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p id="modal-message">変更を保存しますか？</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="modal-cancel" class="btn btn-outline">キャンセル</button>
+                    <button id="modal-confirm" class="btn btn-primary">確認</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification-container" class="notification-container"></div>
+    
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>読み込み中...</p>
+    </div>
+
+    <!-- JavaScript ファイル -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>
