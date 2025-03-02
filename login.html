@@ -657,7 +657,6 @@
                     <div class="auth-tab" id="register-tab">新規登録</div>
                 </div>
                 <div class="auth-forms">
-                    <!-- ログインフォーム -->
                     <div class="auth-form active" id="login-form">
                         <div class="social-login">
                             <div class="social-login-title">ソーシャルアカウントでログイン</div>
@@ -720,7 +719,7 @@
                             <label for="register-email">メールアドレス</label>
                             <div class="input-with-icon">
                                 <i class="fas fa-envelope"></i>
-                                <input type="email" id="register-email" placeholder="example@KatsujiRingX.jp">
+                                <input type="email" id="register-email" placeholder="example@KatsujiRingX.com">
                             </div>
                         </div>
                         <div class="form-group">
@@ -754,9 +753,7 @@
     </div>
 
     <script>
-        // Firebase Authentication Enhancement Script
-
-document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
     // タブ切り替え機能
     const loginTab = document.getElementById('login-tab');
     const registerTab = document.getElementById('register-tab');
@@ -926,8 +923,8 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     });
 
-    // Googleログイン
-    document.querySelectorAll('.social-login-btn')[0].addEventListener('click', function() {
+    // Google認証の共通処理
+    function handleGoogleAuth() {
         const googleProvider = new firebase.auth.GoogleAuthProvider();
         
         // スコープ追加（より多くのプロフィール情報を取得）
@@ -946,6 +943,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     showError(null, 'Googleログインエラー: ' + error.message);
                 }
             });
+    }
+
+    // 両方のフォームのGoogleボタンにイベントリスナーを追加
+    const googleLoginButtons = document.querySelectorAll('.social-login-btn');
+    googleLoginButtons.forEach(button => {
+        button.addEventListener('click', handleGoogleAuth);
     });
 
     // パスワードリセット
@@ -992,8 +995,6 @@ document.addEventListener('DOMContentLoaded', function() {
             alert(message);
         }
     }
-
-   
 
     // ログイン状態の監視
     auth.onAuthStateChanged(function(user) {
