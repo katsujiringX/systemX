@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KatsujiRingX | ログイン</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-auth-compat.js"></script>
+    <style>
+        :root {
+            --primary-color: #3a5fc1;
+            --primary-dark: #2a4aa9;
+            --primary-light: #eef2ff;
+            --primary-gradient: linear-gradient(135deg, #3a5fc1, #4f66db);
+            --secondary-color: #10b981;
+            --secondary-dark: #059669;
+            --secondary-light: #ecfdf5;
+            --accent-color: #ff6b4a;
+            --accent-dark: #ea4c38;
+            --accent-light: #fff1ee;
+            --background-color: #f9fafb;
+            --surface-color: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #9ca3af;
+            --border-color: #e5e7eb;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --success-color: #10b981;
+            --info-color: #3b82f6;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius-md: 0.375rem;
+            --radius-lg: 0.5rem;
+            --radius-xl: 0.75rem;
+            --radius-2xl: 1rem;
+            
+            --transition-fast: 150ms ease;
+            --transition-normal: 300ms ease;
+            --transition-slow: 500ms ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+        }
+
+        /* スクロールバーのカスタマイズ */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--background-color);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-tertiary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        .login-container {
+            display: flex;
+            width: 100%;
+            height: 100vh;
+        }
+
+        .login-sidebar {
+            width: 55%;
+            background: var(--primary-gradient);
+            color: white;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.1;
+        }
+
+        .sidebar-header {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-text {
+            background: linear-gradient(90deg, #ffffff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .sidebar-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+        }
+
+        .sidebar-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .sidebar-description {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.7;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-bottom: 3rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .feature-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .feature-text {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .sidebar-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .testimonial-content {
+            font-style: italic;
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-weight: 600;
+        }
+
+        .author-title {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .social-proof {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .social-proof-text {
+            margin-right: 1rem;
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+
+        .company-logos {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .company-logo {
+            height: 1.5rem;
+            opacity: 0.7;
+            filter: brightness(0) invert(1);
+        }
+
+        .login-main {
+            width: 45%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .auth-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .auth-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem 0;
+            text-align: center;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .auth-tab.active {
+            color: var(--primary-color);
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary-color);
+        }
+
+        .auth-forms {
+            position: relative;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .social-login {
+            margin-bottom: 2rem;
+        }
+
+        .social-login-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+
+        .social-login-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .social-login-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background-color: var(--surface-color);
+            color: var(--text-primary);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .social-login-btn:hover {
+            background-color: var(--background-color);
+        }
+
+        .social-login-btn i {
+            margin-right: 0.5rem;
+            font-size: 1.25rem;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-tertiary);
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+            font-size: 0.875rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-hint {
+            margin-top: 0.375rem;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+            color: var(--text-primary);
+            background-color: var(--surface-color);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-with-icon input {
+            padding-left: 2.5rem;
+        }
+
+        .input-with-icon i {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 0.5rem;
+            width: auto;
+        }
+
+        .checkbox-container label {
+            margin-bottom: 0;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 6px rgba(58, 95, 193, 0.25);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 8px rgba(58, 95, 193, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .btn-link {
+            background: none;
+            color: var(--primary-color);
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+
+        .form-footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .form-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .auth-bottom {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .auth-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .auth-links a {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-decoration: none;
+        }
+
+        .auth-links a:hover {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 1024px) {
+            .login-container {
+                flex-direction: column;
+            }
+
+            .login-sidebar {
+                width: 100%;
+                height: auto;
+                padding: 2rem;
+            }
+
+            .sidebar-content {
+                max-width: 100%;
+            }
+
+            .login-main {
+                width: 100%;
+                height: auto;
+            }
+
+            .auth-container {
+                max-width: 500px;
+                padding: 2rem 1rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .social-login-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-title {
+                font-size: 2rem;
+            }
+
+            .auth-links {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                    <span class="logo-text">KatsujiRingX</span>
+                </div>
+            </div>
+            <div class="sidebar-content">
+                <h1 class="sidebar-title">次世代の活字化プラットフォームへようこそ</h1>
+                <p class="sidebar-description">KatsujiRingXは、日本語の縦書き活字化をサポートする革新的なツールです。あなたの研究を加速させましょう。</p>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-align-right"></i>
+                        </div>
+                        <div class="feature-text">最先端の縦書きエディターでスムーズな活字化</div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="feature-text">OCR技術で高精度な文字認識</div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-cloud"></i>
+                        </div>
+                        <div class="feature-text">クラウド保存でどこからでもアクセス可能</div>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <div class="feature-text">ゲーミフィケーションで楽しく学習</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <div class="testimonial">
+                    <h2>⚠️Information⚠️</h2>
+                    <div class="testimonial-content">
+                       現在、すべての機能にエラーはありません。快適にご利用いただけます
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="login-main">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <h2 class="auth-title">アカウントにアクセス</h2>
+                    <p class="auth-subtitle">活字化の旅を続けるためにログインしてください</p>
+                </div>
+                <div class="auth-tabs">
+                    <div class="auth-tab active" id="login-tab">ログイン</div>
+                    <div class="auth-tab" id="register-tab">新規登録</div>
+                </div>
+                <div class="auth-forms">
+                    <!-- ログインフォーム -->
+                    <div class="auth-form active" id="login-form">
+                        <div class="social-login">
+                            <div class="social-login-title">ソーシャルアカウントでログイン</div>
+                            <div class="social-login-buttons">
+                                <button class="social-login-btn">
+                                    <i class="fab fa-google"></i>
+                                    Google
+                                </button>
+                            </div>
+                        </div>
+                        <div class="divider">
+                            <span>または</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-email">メールアドレス</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="login-email" placeholder="example@KatsujiRingX.jp">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">パスワード</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="login-password" placeholder="••••••••">
+                            </div>
+                            <div class="form-hint">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" id="remember-me">
+                                    <label for="remember-me">ログイン状態を保持</label>
+                                </div>
+                                <a href="#" class="btn-link">パスワードを忘れた？</a>
+                            </div>
+                        </div>
+                        <button id="login-button" class="btn btn-primary" style="width: 100%;">ログイン</button>
+                    </div>
+
+                    <!-- 登録フォーム -->
+                    <div class="auth-form" id="register-form">
+                        <div class="social-login">
+                            <div class="social-login-title">ソーシャルアカウントで登録</div>
+                            <div class="social-login-buttons">
+                                <button class="social-login-btn">
+                                    <i class="fab fa-google"></i>
+                                    Google
+                                </button>
+                            </div>
+                        </div>
+                        <div class="divider">
+                            <span>または</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-name">お名前</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-user"></i>
+                                <input type="text" id="register-name" placeholder="活字化 エックス">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">メールアドレス</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-envelope"></i>
+                                <input type="email" id="register-email" placeholder="example@KatsujiRingX.jp">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">パスワード</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-lock"></i>
+                                <input type="password" id="register-password" placeholder="••••••••">
+                            </div>
+                            <div class="form-hint">
+                                <span>8文字以上の英数字を含むパスワード</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="terms-agree">
+                                <label for="terms-agree"><a href="#" class="btn-link">利用規約</a>と<a href="#" class="btn-link">プライバシーポリシー</a>に同意します</label>
+                            </div>
+                        </div>
+                        <button id="register-button" class="btn btn-primary" style="width: 100%;">アカウント作成</button>
+                    </div>
+                </div>
+                <div class="auth-bottom">
+                    <div class="auth-links">
+                        <a href="#">ヘルプセンター</a>
+                        <a href="#">お問い合わせ</a>
+                        <a href="#">よくある質問</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Authentication Enhancement Script
+
+document.addEventListener('DOMContentLoaded', function() {
+    // タブ切り替え機能
+    const loginTab = document.getElementById('login-tab');
+    const registerTab = document.getElementById('register-tab');
+    const loginForm = document.getElementById('login-form');
+    const registerForm = document.getElementById('register-form');
+
+    loginTab.addEventListener('click', function() {
+        loginTab.classList.add('active');
+        registerTab.classList.remove('active');
+        loginForm.classList.add('active');
+        registerForm.classList.remove('active');
+    });
+
+    registerTab.addEventListener('click', function() {
+        registerTab.classList.add('active');
+        loginTab.classList.remove('active');
+        registerForm.classList.add('active');
+        loginForm.classList.remove('active');
+    });
+
+    // Firebase初期化
+    const firebaseConfig = {
+        apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+        authDomain: "katsujiringx.firebaseapp.com",
+        projectId: "katsujiringx",
+        storageBucket: "katsujiringx.firebasestorage.app",
+        messagingSenderId: "831784731743",
+        appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+        measurementId: "G-LPCRE3WYZR"
+    };
+    
+    // Firebaseの初期化
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // バリデーション関数
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    function validatePassword(password) {
+        // パスワード要件: 最低8文字、大文字、小文字、数字を含む
+        const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        return strongPasswordRegex.test(password);
+    }
+
+    // ログインボタンイベントリスナー
+    document.getElementById('login-button').addEventListener('click', function() {
+        const emailInput = document.getElementById('login-email');
+        const passwordInput = document.getElementById('login-password');
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        // バリデーションチェック
+        if (!email) {
+            showError(emailInput, 'メールアドレスを入力してください');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            showError(emailInput, '有効なメールアドレスを入力してください');
+            return;
+        }
+
+        if (!password) {
+            showError(passwordInput, 'パスワードを入力してください');
+            return;
+        }
+
+        // ログイン処理
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // メインページにリダイレクト
+                window.location.href = 'mainpage.html';
+            })
+            .catch((error) => {
+                // エラーハンドリング
+                switch(error.code) {
+                    case 'auth/wrong-password':
+                        showError(passwordInput, 'パスワードが間違っています');
+                        break;
+                    case 'auth/user-not-found':
+                        showError(emailInput, 'このメールアドレスは登録されていません');
+                        break;
+                    case 'auth/too-many-requests':
+                        showError(null, 'ログイン試行回数が多すぎます。しばらく待ってから再試行してください');
+                        break;
+                    default:
+                        showError(null, 'ログインに失敗しました: ' + error.message);
+                }
+            });
+    });
+
+    // 新規登録ボタンイベントリスナー
+    document.getElementById('register-button').addEventListener('click', function() {
+        const nameInput = document.getElementById('register-name');
+        const emailInput = document.getElementById('register-email');
+        const passwordInput = document.getElementById('register-password');
+        const termsCheckbox = document.getElementById('terms-agree');
+
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        // バリデーションチェック
+        if (!name) {
+            showError(nameInput, 'お名前を入力してください');
+            return;
+        }
+
+        if (!email) {
+            showError(emailInput, 'メールアドレスを入力してください');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            showError(emailInput, '有効なメールアドレスを入力してください');
+            return;
+        }
+
+        if (!password) {
+            showError(passwordInput, 'パスワードを入力してください');
+            return;
+        }
+
+        if (!validatePassword(password)) {
+            showError(passwordInput, 'パスワードは最低8文字で、大文字、小文字、数字を含む必要があります');
+            return;
+        }
+
+        if (!termsCheckbox.checked) {
+            alert('利用規約とプライバシーポリシーに同意してください');
+            return;
+        }
+
+        // ユーザー作成処理
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // ユーザープロファイル更新
+                return userCredential.user.updateProfile({
+                    displayName: name
+                });
+            })
+            .then(() => {
+                // メール確認の送信
+                auth.currentUser.sendEmailVerification();
+                
+                // メインページにリダイレクト
+                window.location.href = 'mainpage.html';
+            })
+            .catch((error) => {
+                // エラーハンドリング
+                switch(error.code) {
+                    case 'auth/email-already-in-use':
+                        showError(emailInput, 'このメールアドレスは既に使用されています');
+                        break;
+                    case 'auth/invalid-email':
+                        showError(emailInput, '無効なメールアドレス形式です');
+                        break;
+                    case 'auth/weak-password':
+                        showError(passwordInput, 'パスワードが弱すぎます');
+                        break;
+                    default:
+                        showError(null, '登録エラー: ' + error.message);
+                }
+            });
+    });
+
+    // Googleログイン
+    document.querySelectorAll('.social-login-btn')[0].addEventListener('click', function() {
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        
+        // スコープ追加（より多くのプロフィール情報を取得）
+        googleProvider.addScope('profile');
+        googleProvider.addScope('email');
+
+        auth.signInWithPopup(googleProvider)
+            .then((result) => {
+                window.location.href = 'mainpage.html';
+            })
+            .catch((error) => {
+                // エラーハンドリング
+                if (error.code === 'auth/account-exists-with-different-credential') {
+                    showError(null, '既に別の方法で登録されているメールアドレスです');
+                } else {
+                    showError(null, 'Googleログインエラー: ' + error.message);
+                }
+            });
+    });
+
+    // パスワードリセット
+    document.querySelector('.btn-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+
+        if (!email) {
+            alert('パスワードをリセットするには、メールアドレスを入力してください');
+            return;
+        }
+
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                alert('パスワードリセット用のメールを送信しました。メールボックスをご確認ください。※受信BOXにメッセージが来ない場合は「迷惑メール」をご確認ください。');
+            })
+            .catch((error) => {
+                if (error.code === 'auth/user-not-found') {
+                    alert('このメールアドレスは登録されていません');
+                } else {
+                    alert('パスワードリセットエラー: ' + error.message);
+                }
+            });
+    });
+
+    // エラー表示ヘルパー関数
+    function showError(inputElement, message) {
+        // すべての既存のエラーメッセージを削除
+        const existingErrors = document.querySelectorAll('.error-message');
+        existingErrors.forEach(el => el.remove());
+
+        if (inputElement) {
+            // 入力フィールドの横にエラーメッセージを追加
+            const errorSpan = document.createElement('span');
+            errorSpan.classList.add('error-message');
+            errorSpan.style.color = 'var(--error-color)';
+            errorSpan.style.fontSize = '0.875rem';
+            errorSpan.style.marginTop = '0.5rem';
+            errorSpan.textContent = message;
+            
+            inputElement.parentNode.insertBefore(errorSpan, inputElement.nextSibling);
+        } else {
+            // 全体的なエラーメッセージ
+            alert(message);
+        }
+    }
+
+   
+
+    // ログイン状態の監視
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            // ユーザーがログインしている場合
+            console.log('ログイン中のユーザー:', user.email);
+            // オプション: プロフィール情報の更新やその他の初期化処理
+        } else {
+            // ログアウト状態
+            console.log('ユーザーはログアウトしています');
+        }
+    });
+});
+
+// スタイルの追加 (CSSに追加)
+const styles = `
+.error-message {
+    color: var(--error-color);
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    display: block;
+}
+`;
+const styleSheet = document.createElement("style");
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
+    </script>
+</body>
+</html>

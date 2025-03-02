@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KatsujiRingX - 日本語古文書のデジタル化・活字化プラットフォーム">
+    <title>マイページ | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" defer></script>
+    
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-app-compat.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-auth-compat.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-firestore-compat.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-storage-compat.js" defer></script>
+    
+    <!-- Theme switcher & Accessibility -->
+    <script src="js/theme.js" defer></script>
+    
+    <!-- App JS -->
+    <script src="js/config.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script src="js/dashboard.js" defer></script>
+</head>
+<body class="preload">
+    <a href="#main-content" class="skip-link">メインコンテンツにスキップ</a>
+    
+    <header id="header">
+        <div class="header-content">
+            <a href="index.html" class="logo" aria-label="KatsujiRingX ホームページ">
+                <img src="img/katsujiRingX.png" alt="" width="40" height="40">
+                <span class="logo-text">KatsujiRingX</span>
+            </a>
+            
+            <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
+                <span class="sr-only">メニュー</span>
+                <i class="fas fa-bars" aria-hidden="true"></i>
+            </button>
+            
+            <nav>
+                <ul id="nav-menu" class="nav-menu">
+                    <li><a href="index.html">ホーム</a></li>
+                    <li><a href="main.html" class="active" aria-current="page">マイページ</a></li>
+                    <li><a href="editor.html">活字化エディター</a></li>
+                    <li><a href="documents.html">資料管理</a></li>
+                    <li><a href="games.html">学習ゲーム</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="テーマの切り替え">
+                    <i class="fas fa-moon" aria-hidden="true"></i>
+                </button>
+                
+                <div class="user-menu">
+                    <button id="user-menu-button" class="user-menu-button" aria-haspopup="true" aria-expanded="false">
+                        <div class="user-avatar" aria-hidden="true">
+                            <span id="user-initial">U</span>
+                        </div>
+                        <span class="user-name" id="header-user-name">ユーザー</span>
+                        <i class="fas fa-chevron-down dropdown-arrow" aria-hidden="true"></i>
+                    </button>
+                    
+                    <div id="user-dropdown" class="user-dropdown">
+                        <a href="profile.html">
+                            <i class="fas fa-user" aria-hidden="true"></i>プロフィール
+                        </a>
+                        <a href="settings.html">
+                            <i class="fas fa-cog" aria-hidden="true"></i>設定
+                        </a>
+                        <a href="help.html">
+                            <i class="fas fa-question-circle" aria-hidden="true"></i>ヘルプ
+                        </a>
+                        <hr>
+                        <button id="logout-btn" class="dropdown-item">
+                            <i class="fas fa-sign-out-alt" aria-hidden="true"></i>ログアウト
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content">
+        <div class="dashboard">
+            <!-- Welcome Section -->
+            <section class="welcome-section" aria-labelledby="welcome-heading">
+                <div class="container">
+                    <div class="welcome-content">
+                        <h1 id="welcome-heading">ようこそ <span id="welcome-user-name">ユーザー</span> さん</h1>
+                        <p>KatsujiRingXへログインしました。あなたの活字化作業をサポートします。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Section -->
+            <section class="dashboard-stats" aria-labelledby="stats-heading">
+                <div class="container">
+                    <h2 id="stats-heading" class="sr-only">活動統計</h2>
+                    <div class="stats-grid">
+                        <div class="stats-card">
+                            <div class="stats-icon" aria-hidden="true">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3>活字化プロジェクト</h3>
+                                <p class="stats-number" id="projects-count">0</p>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-icon" aria-hidden="true">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3>活字化時間</h3>
+                                <p class="stats-number" id="total-hours">0時間</p>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-icon" aria-hidden="true">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3>達成度</h3>
+                                <p class="stats-number" id="completion-rate">0%</p>
+                            </div>
+                        </div>
+                        <div class="stats-card">
+                            <div class="stats-icon" aria-hidden="true">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="stats-info">
+                                <h3>獲得ポイント</h3>
+                                <p class="stats-number" id="earned-points">0pt</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activities -->
+            <section class="recent-activities" aria-labelledby="activities-heading">
+                <div class="container">
+                    <div class="container-header">
+                        <h2 id="activities-heading">最近の活動</h2>
+                        <a href="activities.html" class="btn btn-link">すべて見る <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="activity-list" id="recent-activities-list" role="list">
+                        <div class="loading-skeleton">
+                            <div class="activity-item skeleton">
+                                <div class="activity-icon skeleton-circle"></div>
+                                <div class="activity-content">
+                                    <div class="activity-header skeleton-text"></div>
+                                    <div class="activity-description skeleton-text"></div>
+                                </div>
+                                <div class="activity-time skeleton-text"></div>
+                            </div>
+                            <!-- More skeletons are in CSS -->
+                        </div>
+                        <div id="activities-empty-state" class="empty-state hidden">
+                            <div class="empty-icon" aria-hidden="true">
+                                <i class="fas fa-history"></i>
+                            </div>
+                            <h3>アクティビティがありません</h3>
+                            <p>活字化エディターやゲームを利用して活動を始めましょう</p>
+                            <div class="empty-actions">
+                                <a href="editor.html" class="btn btn-primary">エディターを開く</a>
+                                <a href="games.html" class="btn btn-outline">ゲームをプレイ</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard Columns -->
+            <div class="dashboard-columns">
+                <!-- Projects Column -->
+                <section class="dashboard-column" aria-labelledby="projects-heading">
+                    <div class="container">
+                        <div class="container-header">
+                            <h2 id="projects-heading">進行中のプロジェクト</h2>
+                            <a href="projects.html" class="btn btn-link">すべて見る <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                        </div>
+                        <div class="project-list" id="current-projects-list" role="list">
+                            <div class="loading-skeleton">
+                                <div class="project-item skeleton">
+                                    <div class="project-title skeleton-text"></div>
+                                    <div class="project-progress skeleton-bar"></div>
+                                    <div class="project-meta skeleton-text"></div>
+                                </div>
+                                <!-- More skeletons are in CSS -->
+                            </div>
+                        </div>
+                        <div class="empty-state hidden" id="empty-projects">
+                            <div class="empty-icon" aria-hidden="true">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h3>プロジェクトがありません</h3>
+                            <p>新しい活字化プロジェクトを作成しましょう</p>
+                            <div class="empty-actions">
+                                <a href="editor.html" class="btn btn-primary">
+                                    <i class="fas fa-plus" aria-hidden="true"></i> 新規プロジェクト
+                                </a>
+                                <a href="documents.html" class="btn btn-outline">資料からインポート</a>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Learning Progress Column -->
+                <section class="dashboard-column" aria-labelledby="learning-heading">
+                    <div class="container">
+                        <div class="container-header">
+                            <h2 id="learning-heading">学習の進捗</h2>
+                            <a href="learning.html" class="btn btn-link">詳細を見る <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                        </div>
+                        <div class="learning-stats">
+                            <div class="learning-progress">
+                                <div class="circular-progress" id="overall-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-value">0%</div>
+                                </div>
+                                <p>総合達成度</p>
+                            </div>
+                            <div class="skill-progress">
+                                <div class="skill-item">
+                                    <div class="skill-info">
+                                        <span>崩し字</span>
+                                        <span id="kuzushiji-level">レベル 0</span>
+                                    </div>
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress" id="kuzushiji-progress" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-info">
+                                        <span>変体仮名</span>
+                                        <span id="hentaigana-level">レベル 0</span>
+                                    </div>
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress" id="hentaigana-progress" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                                <div class="skill-item">
+                                    <div class="skill-info">
+                                        <span>古文書</span>
+                                        <span id="komonjo-level">レベル 0</span>
+                                    </div>
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                        <div class="progress" id="komonjo-progress" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="daily-challenge">
+                            <h3>今日のチャレンジ</h3>
+                            <div class="challenge-content">
+                                <div class="challenge-icon" aria-hidden="true">
+                                    <i class="fas fa-gamepad"></i>
+                                </div>
+                                <div class="challenge-info">
+                                    <h4 id="challenge-title">崩し字クイズ</h4>
+                                    <p id="challenge-description">10問の崩し字問題に挑戦しましょう</p>
+                                </div>
+                            </div>
+                            <a href="games.html" class="btn btn-secondary btn-block">
+                                挑戦する <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Activity Chart -->
+            <section class="dashboard-activity" aria-labelledby="chart-heading">
+                <div class="container">
+                    <div class="container-header">
+                        <h2 id="chart-heading">活字化活動の分析</h2>
+                        <div class="chart-period" role="tablist">
+                            <button class="btn btn-small btn-outline active" data-period="week" role="tab" aria-selected="true" aria-controls="activity-chart">週間</button>
+                            <button class="btn btn-small btn-outline" data-period="month" role="tab" aria-selected="false" aria-controls="activity-chart">月間</button>
+                            <button class="btn btn-small btn-outline" data-period="year" role="tab" aria-selected="false" aria-controls="activity-chart">年間</button>
+                        </div>
+                    </div>
+                    <div class="chart-container" aria-live="polite">
+                        <canvas id="activity-chart"></canvas>
+                        <div id="chart-loading" class="chart-loading">
+                            <div class="spinner"></div>
+                            <p>データを読み込み中...</p>
+                        </div>
+                        <div id="chart-no-data" class="chart-no-data hidden">
+                            <div class="empty-icon" aria-hidden="true">
+                                <i class="fas fa-chart-area"></i>
+                            </div>
+                            <p>この期間のデータがありません</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Community Section -->
+            <section class="dashboard-community" aria-labelledby="community-heading">
+                <div class="container">
+                    <div class="container-header">
+                        <h2 id="community-heading">コミュニティ</h2>
+                        <a href="community.html" class="btn btn-link">コミュニティページへ <i class="fas fa-arrow-right" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="community-stats">
+                        <div class="community-stat">
+                            <div class="stat-icon" aria-hidden="true">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-value" id="community-members">0</div>
+                            <div class="stat-label">メンバー</div>
+                        </div>
+                        <div class="community-stat">
+                            <div class="stat-icon" aria-hidden="true">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="stat-value" id="community-projects">0</div>
+                            <div class="stat-label">プロジェクト</div>
+                        </div>
+                        <div class="community-stat">
+                            <div class="stat-icon" aria-hidden="true">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="stat-value" id="community-documents">0</div>
+                            <div class="stat-label">共有資料</div>
+                        </div>
+                    </div>
+                    <div class="community-feed">
+                        <h3>最新の共有プロジェクト</h3>
+                        <div class="community-projects" id="community-feed" role="list">
+                            <div class="loading-skeleton">
+                                <div class="community-project skeleton">
+                                    <div class="project-preview skeleton-image"></div>
+                                    <div class="project-info">
+                                        <div class="project-title skeleton-text"></div>
+                                        <div class="project-author skeleton-text"></div>
+                                    </div>
+                                </div>
+                                <!-- More skeletons are in CSS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <a href="index.html" class="footer-logo">
+                        <span class="logo-text">KatsujiRingX</span>
+                    </a>
+                    <p>次世代の活字化プラットフォーム。OCR技術を活用した日本語縦書き文書の活字化をサポートします。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>現在の提供サービス</h3>
+                    <ul class="footer-links">
+                        <li><a href="editor.html">活字化エディター</a></li>
+                        <li><a href="documents.html">OCR文字認識</a></li>
+                        <li><a href="documents.html">資料管理</a></li>
+                        <li><a href="games.html">学習ゲーム</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>サポート</h3>
+                    <ul class="footer-links">
+                        <li><a href="help.html">ヘルプセンター</a></li>
+                        <li><a href="faq.html">よくある質問</a></li>
+                        <li><a href="contact.html">お問い合わせ</a></li>
+                        <li><a href="feedback.html">フィードバック</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>リソース</h3>
+                    <ul class="footer-links">
+                        <li><a href="blog.html">ブログ</a></li>
+                        <li><a href="tutorials.html">チュートリアル</a></li>
+                        <li><a href="api.html">API</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">
+                    &copy; 2025 KatsujiRingX. All rights reserved.
+                </div>
+                <div class="footer-nav">
+                    <a href="privacy.html">プライバシーポリシー</a>
+                    <a href="terms.html">利用規約</a>
+                    <a href="accessibility.html">アクセシビリティ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification System -->
+    <div id="notification-container" class="notification-container" aria-live="polite"></div>
+    
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay hidden">
+        <div class="spinner"></div>
+        <p>読み込み中...</p>
+    </div>
+</body>
+</html>
