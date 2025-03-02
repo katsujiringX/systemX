@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-auth-compat.js"></script>
     <style>
         :root {
-            --primary-color: #3a5fc1;
+            --primary-color: #1042f5;
             --primary-dark: #2a4aa9;
             --primary-light: #eef2ff;
             --primary-gradient: linear-gradient(135deg, #3a5fc1, #4f66db);
@@ -133,17 +133,30 @@
         }
 
         .logo-text {
-            background: linear-gradient(90deg, #ffffff, #f0f0f0);
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 700;
         }
 
-        .sidebar-content {
-            position: relative;
-            z-index: 1;
-            max-width: 500px;
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: var(--max-content-width);
+            margin: 0 auto;
         }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
 
         .sidebar-title {
             font-size: 2.5rem;
@@ -589,10 +602,10 @@
     <div class="login-container">
         <div class="login-sidebar">
             <div class="sidebar-header">
-                <div class="logo">
+                <a href="index.html" class="logo" data-page="home">
                     <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
                     <span class="logo-text">KatsujiRingX</span>
-                </div>
+                </a>
             </div>
             <div class="sidebar-content">
                 <h1 class="sidebar-title">次世代の活字化プラットフォームへようこそ</h1>
@@ -628,7 +641,7 @@
                 <div class="testimonial">
                     <h2>⚠️Information⚠️</h2>
                     <div class="testimonial-content">
-                       現在、すべての機能にエラーはありません。快適にご利用いただけます
+                       現在、すべての機能にエラーが発生中。(ログイン機能のみアクセス可能)
                     </div>
                 </div>
             </div>
@@ -637,7 +650,7 @@
             <div class="auth-container">
                 <div class="auth-header">
                     <h2 class="auth-title">アカウントにアクセス</h2>
-                    <p class="auth-subtitle">活字化の旅を続けるためにログインしてください</p>
+                    <p class="auth-subtitle">参加するためにログインしてください</p>
                 </div>
                 <div class="auth-tabs">
                     <div class="auth-tab active" id="login-tab">ログイン</div>
