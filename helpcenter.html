@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ヘルプセンター | KatsujiRingX</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS styles from previous implementation */
+        :root {
+            --primary-color: #3a5fc1;
+            --primary-light: #eef2ff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #9ca3af;
+            --background-color: #f9fafb;
+            --surface-color: #ffffff;
+            --border-color: #e5e7eb;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 2rem;
+            --radius-md: 0.375rem;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* 全体のスタイル（以前のCSSを全て含める） */
+        header {
+            background-color: var(--surface-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 0.75rem;
+            border-radius: 4px;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(
+                90deg, 
+                red, 
+                orange, 
+                yellow, 
+                green, 
+                blue, 
+                indigo, 
+                violet
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow-text 5s linear infinite;
+        }
+
+        @keyframes rainbow-text {
+            0% {
+                background-position: 0% 50%;
+            }
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        /* フッタースタイル */
+        footer {
+            background-color: var(--surface-color);
+            color: var(--text-secondary);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 -1px 3px rgba(0,0,0,0.1);
+            margin-top: 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* レスポンシブデザイン */
+        @media (max-width: 768px) {
+            .header-content, .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .footer-links {
+                margin-top: 1rem;
+            }
+        }
+
+        /* ヘルプセンターのスタイル */
+        .help-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .help-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background-color: var(--primary-light);
+            border-radius: var(--radius-md);
+        }
+
+        .help-hero h1 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .help-hero p {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            font-size: 1.1rem;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            font-size: 1rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-tertiary);
+        }
+
+        /* FAQセクションのスタイル */
+        .faq-section {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--surface-color);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.25rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .faq-question:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .faq-question i {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease, padding 0.6s ease;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 1.5rem 1.5rem;
+            max-height: 500px;
+        }
+
+        .faq-answer p, .faq-answer ul, .faq-answer ol {
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer ul, .faq-answer ol {
+            padding-left: 1.5rem;
+        }
+
+        /* サポートチケットのスタイル */
+        .support-ticket {
+            background-color: var(--surface-color);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .login-required {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .support-ticket h2 {
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .support-ticket-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .support-ticket-form select,
+        .support-ticket-form input,
+        .support-ticket-form textarea {
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+        }
+
+        .support-ticket-form textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* モーダルスタイル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: var(--surface-color);
+            margin: 10% auto;
+            padding: 2rem;
+            max-width: 500px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* ボタンスタイル */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2a4ba8;
+        }
+
+        /* ナビゲーションスタイル */
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+
+        nav ul li a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--primary-color);
+        }
+
+        /* レスポンシブスタイル */
+        @media (max-width: 768px) {
+            .help-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .modal-content {
+                margin: 20% auto;
+                width: 90%;
+            }
+            
+            .help-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span class="logo-text">KatsujiRingX</span>
+            </a>
+            <nav>
+                <ul>
+                    <li><a href="index.html">ホーム</a></li>
+                    <li><a href="contact.html">お問い合わせ</a></li>
+                    <li><a href="#" id="login-nav">ログイン</a></li>
+                    <li><a href="#" id="logout-nav" style="display:none;">ログアウト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="help-container">
+        <section class="help-hero">
+            <h1>KatsujiRingXヘルプセンター</h1>
+            <p>使い方、トラブルシューティング、サポート情報をご案内します。</p>
+            
+            <div class="search-container">
+                <input type="text" id="help-search" class="search-input" placeholder="ヘルプを検索（例：文字認識、アカウント）">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>KatsujiRingXの基本的な使い方を教えてください</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>KatsujiRingXは、以下の手順で簡単に利用できます：</p>
+                    <ol>
+                        <li>アカウントを作成</li>
+                        <li>文書をアップロード</li>
+                        <li>OCR (光学文字認識) を実行</li>
+                        <li>認識された文字を編集</li>
+                        <li>必要に応じて保存・エクスポート</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <span>対応可能な文書の種類は？</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="faq-answer">
+                    <p>KatsujiRingXは以下の文書に対応しています：</p>
+                    <ul>
+                        <li>手書き文書</li>
+                        <li>古文書</li>
+                        <li>印刷された文書</li>
+                        <li>歴史的資料</li>
+                        <li>学術論文</li>
+                        <li>ノート類</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="support-ticket" id="support-ticket-section">
+            <div id="login-required" class="login-required">
+                <h2>サポートチケットを作成</h2>
+                <p>サポートチケットの作成およびチケット履歴の確認には、ログインが必要です。</p>
+                <button id="login-btn" class="btn btn-primary">ログイン</button>
+            </div>
+
+            <div id="ticket-form-container" style="display:none;">
+                <h2>新規サポートチケット</h2>
+                <form id="support-ticket-form" class="support-ticket-form">
+                    <select id="ticket-category" required>
+                        <option value="">カテゴリを選択</option>
+                        <option value="technical">技術的な問題</option>
+                        <option value="billing">課金に関する質問</option>
+                        <option value="feature">機能リクエスト</option>
+                        <option value="other">その他</option>
+                    </select>
+                    <input type="text" id="ticket-subject" placeholder="件名" required>
+                    <textarea id="ticket-description" placeholder="詳細な説明をご記入ください" required></textarea>
+                    <button type="submit" class="btn btn-primary">チケットを送信</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>ログイン</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">メールアドレス</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">パスワード</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary">ログイン</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="copyright">
+                &copy; 2025 KatsujiRingX. All rights reserved.
+            </div>
+            <div class="footer-links">
+                <a href="privacypolicy.html">プライバシーポリシー</a>
+                <a href="useinguser.html">利用規約</a>
+                <a href="contact.html">お問い合わせ</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const firestore = firebase.firestore();
+
+        // FAQ Functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.closest('.faq-item');
+                faqItem.classList.toggle('active');
+            });
+        });
+
+        // Search Functionality
+        const searchInput = document.getElementById('help-search');
+        const knowledgeBaseData = [
+            {
+                title: '文字認識の精度を上げるには',
+                content: '高品質な画像をアップロードし、文字がはっきりと読める状態であることを確認してください。',
+                tags: ['OCR', '文字認識', '画像品質']
+            },
+            {
+                title: 'アカウントのパスワードをリセットする方法',
+                content: 'ログイン画面の「パスワードを忘れた方」リンクから、メールアドレスを入力してパスワードをリセットできます。',
+                tags: ['アカウント', 'パスワード', 'リセット']
+            },
+            {
+                title: '縦書き文書の編集方法',
+                content: '活字化エディタ内で、テキストを選択し、編集ツールを使用して文字の配置や書式を調整できます。',
+                tags: ['編集', '縦書き', 'エディタ']
+            }
+        ];
+
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            // Search FAQ
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
+
+            // Search Knowledge Base (console log for demonstration)
+            const knowledgeResults = knowledgeBaseData.filter(item => 
+                item.title.toLowerCase().includes(searchTerm) || 
+                item.content.toLowerCase().includes(searchTerm) || 
+                item.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+            );
+
+            console.log('Knowledge Base Results:', knowledgeResults);
+        });
+
+        // Login Modal Functionality
+        const loginModal = document.getElementById('login-modal');
+        const loginBtn = document.getElementById('login-btn');
+        const loginNavBtn = document.getElementById('login-nav');
+        const logoutNavBtn = document.getElementById('logout-nav');
+        const closeModal = document.querySelector('.close-modal');
+
+        function openLoginModal() {
+            loginModal.style.display = 'block';
+        }
+
+        loginBtn.addEventListener('click', openLoginModal);
+        loginNavBtn.addEventListener('click', openLoginModal);
+
+        closeModal.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target == loginModal) {
+                loginModal.style.display = 'none';
+            }
+        });
+
+        // Login Form Submission
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Login successful
+                    loginModal.style.display = 'none';
+                    loginForm.reset();
+                })
+                .catch((error) => {
+                    alert('ログインに失敗しました: ' + error.message);
+                });
+        });
+
+        // Logout Functionality
+        logoutNavBtn.addEventListener('click', () => {
+            auth.signOut().then(() => {
+                // Sign-out successful.
+                alert('ログアウトしました');
+            }).catch((error) => {
+                console.error('Logout error', error);
+            });
+        });
+
+        // Support Ticket Submission
+        const supportTicketForm = document.getElementById('support-ticket-form');
+        supportTicketForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = auth.currentUser;
+            if (!user) {
+                alert('チケットを送信するにはログインが必要です。');
+                return;
+            }
+
+            const ticketData = {
+                userId: user.uid,
+                userName: user.displayName || user.email,
+                category: document.getElementById('ticket-category').value,
+                subject: document.getElementById('ticket-subject').value,
+                description: document.getElementById('ticket-description').value,
+                status: 'open',
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            firestore.collection('support-tickets').add(ticketData)
+                .then((docRef) => {
+                    alert('チケットが正常に送信されました。サポートチームより追って連絡いたします。');
+                    supportTicketForm.reset();
+                })
+                .catch((error) => {
+                    console.error('Error adding ticket: ', error);
+                    alert('チケットの送信中にエラーが発生しました。再度お試しください。');
+                });
+        });
+
+        // Authentication State Observer
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                document.getElementById('login-required').style.display = 'none';
+                document.getElementById('ticket-form-container').style.display = 'block';
+                
+                // Update navigation
+                document.getElementById('login-nav').style.display = 'none';
+                document.getElementById('logout-nav').style.display = 'inline-block';
+
+                // Optional: Pre-fill user information if available
+                if (user.displayName) {
+                    // If you have a display name field in your ticket form
+                    const userNameField = document.getElementById('ticket-user-name');
+                    if (userNameField) {
+                        userNameField.value = user.displayName;
+                    }
+                }
+            } else {
+                // No user is signed in
+                document.getElementById('login-required').style.display = 'block';
+                document.getElementById('ticket-form-container').style.display = 'none';
+                
+                // Update navigation
+                document.getElementById('login-nav').style.display = 'inline-block';
+                document.getElementById('logout-nav').style.display = 'none';
+            }
+        });
+
+        // Error Handling Global Listener
+        window.addEventListener('error', (event) => {
+            console.error('Uncaught error:', event.error);
+            alert('予期せぬエラーが発生しました。管理者に連絡してください。');
+        });
+
+        // Performance and Analytics (Optional placeholder)
+        const performanceMetrics = {
+            pageLoadTime: performance.now(),
+            trackPageView: function() {
+                // In a real-world scenario, you'd integrate with a proper analytics service
+                console.log('Page viewed at:', new Date().toISOString());
+            }
+        };
+        performanceMetrics.trackPageView();
+
+    </script>
+</body>
+</html>

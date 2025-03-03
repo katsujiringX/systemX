@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KatsujiRingX - フィードバックフォーム</title>
+    <style>
+   :root {
+    --primary-color: #2c3e50;
+    --secondary-color: #1a252f;
+    --accent-color: #e74c3c;
+    --light-gray: #ecf0f1;
+    --medium-gray: #bdc3c7;
+    --dark-gray: #7f8c8d;
+    --text-color: #2c3e50;
+    --success-color: #27ae60;
+    --error-color: #c0392b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-gray);
+    margin: 0;
+    padding: 0;
+}
+
+/* レインボーヘッダー */
+.header {
+    color: white;
+    padding: 25px 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: linear-gradient(to right, 
+        #FF0000, 
+        #FF7F00, 
+        #FFFF00, 
+        #00FF00, 
+        #0000FF, 
+        #4B0082, 
+        #9400D3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+}
+
+.logo span {
+    background: linear-gradient(to right, 
+        #9400D3,
+        #4B0082, 
+        #0000FF, 
+        #00FF00, 
+        #FFFF00, 
+        #FF7F00, 
+        #FF0000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.container {
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 0 20px;
+}
+
+h1 {
+    color: var(--secondary-color);
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 300;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+h1 span {
+    font-weight: 600;
+    background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subheading {
+    text-align: center;
+    color: var(--dark-gray);
+    margin-bottom: 40px;
+    font-weight: 400;
+    font-size: 1.1rem;
+}
+
+.feedback-form {
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    margin-bottom: 30px;
+    border-top: 5px solid var(--accent-color);
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+    color: var(--secondary-color);
+    letter-spacing: 0.5px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid var(--medium-gray);
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: rgba(236, 240, 241, 0.5);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+    background-color: white;
+}
+
+textarea {
+    height: 180px;
+    resize: vertical;
+}
+
+.rating-container {
+    margin-bottom: 15px;
+}
+
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating > input {
+    display: none;
+}
+
+.rating > label {
+    position: relative;
+    width: 1.1em;
+    font-size: 38px;
+    color: #ddd;
+    cursor: pointer;
+    margin-right: 8px;
+    transition: color 0.2s ease;
+}
+
+.rating > label::before {
+    content: "\2605";
+    position: absolute;
+    opacity: 1;
+}
+
+.rating > label:hover:before,
+.rating > label:hover ~ label:before {
+    color: var(--accent-color) !important;
+    transform: scale(1.2);
+}
+
+.rating > input:checked ~ label:before {
+    color: var(--accent-color);
+}
+
+.feedback-btn {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 16px 28px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.feedback-btn:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
+}
+
+.feedback-btn:active {
+    transform: translateY(0);
+}
+
+.feedback-btn:disabled {
+    background-color: var(--medium-gray);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-icon {
+    margin-right: 10px;
+}
+
+.success-message, .error-message {
+    margin-top: 25px;
+    padding: 18px;
+    border-radius: 8px;
+    text-align: center;
+    display: none;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.success-message {
+    background-color: rgba(39, 174, 96, 0.1);
+    color: var(--success-color);
+    border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.error-message {
+    background-color: rgba(192, 57, 43, 0.1);
+    color: var(--error-color);
+    border: 1px solid rgba(192, 57, 43, 0.2);
+}
+
+.footer {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: center;
+    padding: 25px;
+    font-size: 14px;
+    margin-top: 60px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.required-mark {
+    color: var(--error-color);
+    margin-left: 3px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .feedback-form {
+        padding: 30px 20px;
+    }
+    
+    h1 {
+        font-size: 2rem;
+    }
+}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">Katsuji<span>RingX</span></div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <h1>お客様の<span>ご意見</span>をお聞かせください</h1>
+        <p class="subheading">KatsujiRingXをより良いサービスにするために、皆様のフィードバックを活かしています。</p>
+        
+        <div class="feedback-form">
+            <form id="feedbackForm">
+                <div class="form-group">
+                    <label for="name">お名前<span class="required-mark">*</span></label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">メールアドレス<span class="required-mark">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">カテゴリ<span class="required-mark">*</span></label>
+                    <select id="category" name="category" required>
+                        <option value="">選択してください</option>
+                        <option value="KatsujiRingX全般について">KatsujiRingX全般について</option>
+                        <option value="バグのご報告">バグのご報告</option>
+                        <option value="サービスについて">サービスについて</option>
+                        <option value="アカウントについて">アカウントについて</option>
+                        <option value="その他サイトについて">その他サイトについて</option>
+                        <option value="その他">その他</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>満足度評価<span class="required-mark">*</span></label>
+                    <div class="rating-container">
+                        <div class="rating">
+                            <input type="radio" id="star5" name="rating" value="5" required/>
+                            <label for="star5" title="最高">★</label>
+                            <input type="radio" id="star4" name="rating" value="4" />
+                            <label for="star4" title="良い">★</label>
+                            <input type="radio" id="star3" name="rating" value="3" />
+                            <label for="star3" title="普通">★</label>
+                            <input type="radio" id="star2" name="rating" value="2" />
+                            <label for="star2" title="悪い">★</label>
+                            <input type="radio" id="star1" name="rating" value="1" />
+                            <label for="star1" title="最悪">★</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">フィードバック内容<span class="required-mark">*</span></label>
+                    <textarea id="message" name="message" placeholder="ご意見・ご要望などをご自由にお書きください" required></textarea>
+                </div>
+                
+                <button type="submit" id="submitButton" class="feedback-btn">
+                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    送信する
+                </button>
+            </form>
+            
+            <div class="success-message" id="successMessage">
+                フィードバックを送信しました。貴重なご意見をありがとうございます。
+            </div>
+            
+            <div class="error-message" id="errorMessage">
+                エラーが発生しました。後でもう一度お試しください。
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>&copy; 2025 KatsujiRingX. All rights reserved.</p>
+    </footer>
+
+    <!-- Firebase SDK の読み込み -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-firestore-compat.min.js"></script>
+
+    <script>
+        // Firebaseの設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+                authDomain: "katsujiringx.firebaseapp.com",
+                projectId: "katsujiringx",
+                storageBucket: "katsujiringx.firebasestorage.app",
+                messagingSenderId: "831784731743",
+                appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+                measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        firebase.initializeApp(firebaseConfig);
+        
+        // Firestoreの参照を取得
+        const db = firebase.firestore();
+        
+        // フォームの送信イベントを処理
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitButton = document.getElementById('submitButton');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M16 12l-4 4-4-4M12 8v7"></path></svg> 送信中...';
+            
+            // フォームからデータを取得
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const category = document.getElementById('category').value;
+            const rating = document.querySelector('input[name="rating"]:checked').value;
+            const message = document.getElementById('message').value;
+            
+            // タイムスタンプの取得
+            const timestamp = new Date();
+            
+            // Firestoreにデータを保存
+            db.collection('feedback').add({
+                name: name,
+                email: email,
+                category: category,
+                rating: parseInt(rating),
+                message: message,
+                createdAt: timestamp,
+                status: 'new' // 新規フィードバックのステータス
+            })
+            .then(() => {
+                // 成功メッセージの表示
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+                
+                // フォームをリセット
+                document.getElementById('feedbackForm').reset();
+                
+                // ボタンを元に戻す
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> 送信する';
+                
+                // 3秒後に成功メッセージを非表示にする
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 3000);
+            })
+            .catch((error) => {
+                // エラーメッセージの表示
+                document.getElementById('errorMessage').style.display = 'block';
+                document.getElementById('successMessage').style.display = 'none';
+                document.getElementById('errorMessage').textContent = 'エラーが発生しました: ' + error.message;
+                
+                // ボタンを元に戻す
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg> 送信する';
+                
+                console.error('データの保存中にエラーが発生しました:', error);
+            });
+        });
+    </script>
+</body>
+</html>

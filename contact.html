@@ -1,0 +1,269 @@
+<style>
+    /* Previous styles remain the same */
+    
+    /* Enhanced Header Styles */
+    header {
+        background-color: var(--surface-color);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .logo img {
+        height: 40px;
+        margin-right: 0.75rem;
+        border-radius: 4px;
+    }
+
+    .logo-text {
+        font-size: 1.25rem;
+        font-weight: 700;
+        background: linear-gradient(
+            90deg, 
+            red, 
+            orange, 
+            yellow, 
+            green, 
+            blue, 
+            indigo, 
+            violet
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+        animation: rainbow-text 5s linear infinite;
+    }
+
+    @keyframes rainbow-text {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 200% 50%;
+        }
+    }
+
+    nav ul {
+        display: flex;
+        list-style: none;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    nav ul li a {
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-weight: 500;
+        position: relative;
+        transition: color 0.3s ease;
+    }
+
+    nav ul li a:hover {
+        color: var(--primary-color);
+    }
+
+    nav ul li a::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary-color);
+        transition: width 0.3s ease;
+    }
+
+    nav ul li a:hover::after {
+        width: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .header-content {
+            flex-direction: column;
+            padding: 1rem;
+        }
+
+        nav ul {
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style><!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>お問い合わせ | KatsujiRingX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    :root {
+        --primary-color: #3a5fc1;
+        --text-primary: #1f2937;
+        --text-secondary: #4b5563;
+        --background-color: #f9fafb;
+        --surface-color: #ffffff;
+        --border-color: #e5e7eb;
+        --spacing-sm: 0.5rem;
+        --spacing-md: 1rem;
+        --spacing-lg: 2rem;
+        --radius-md: 0.375rem;
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Noto Sans JP', sans-serif;
+    }
+
+    body {
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        line-height: 1.6;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--spacing-lg);
+    }
+
+    .contact-header {
+        text-align: center;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .contact-header h1 {
+        color: var(--primary-color);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .contact-methods {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .contact-card {
+        background-color: var(--surface-color);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-md);
+        padding: var(--spacing-lg);
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .contact-icon {
+        font-size: 3rem;
+        color: var(--primary-color);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .contact-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .contact-details {
+        color: var(--text-secondary);
+    }
+
+    .contact-description {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto var(--spacing-lg);
+        color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+        .contact-methods {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <a href="index.html" class="logo">
+            <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+            <span class="logo-text">KatsujiRingX</span>
+        </a>
+        <nav>
+            <ul id="nav-menu">
+                <li><a href="index.html">ホーム</a></li>
+                <li><a href="login.html" id="login">ログイン</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <div class="contact-header">
+        <h1>お問い合わせ</h1>
+        <p class="contact-description">
+            <ul>KatsujiRingXに関するご質問、お問い合わせは以下の連絡先までお願いいたします。</ul>
+            🙇‍♂️KatsujiRingX・その他関連サイトに関する詳細や技術的なサポートについて、迅速に対応いたします。🙇‍♂️
+        </p>
+    </div>
+
+    <div class="contact-methods">
+        <div class="contact-card">
+            <div class="contact-icon">
+                <i class="fas fa-envelope"></i>
+            </div>
+            <h2 class="contact-title">メールサポート</h2>
+            <p class="contact-details">
+                support@katsujiringx.com<br>
+                24時間受付(※３日以内の回答)
+            </p>
+        </div>
+
+        <div class="contact-card">
+            <div class="contact-icon">
+                <i class="fas fa-phone"></i>
+            </div>
+            <h2 class="contact-title">電話サポート</h2>
+            <p class="contact-details">
+                準備中<br>
+                平日 10:00〜17:00
+            </p>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <!-- Reuse the footer from the main page -->
+    <div class="footer-content">
+        <!-- (Same footer content as the main page) -->
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>よくある質問 | KatsujiRingX</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3a5fc1;
+            --primary-dark: #2a4aa9;
+            --primary-light: #eef2ff;
+            --background-color: #f9fafb;
+            --surface-color: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #9ca3af;
+            --border-color: #e5e7eb;
+            
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius-lg: 0.5rem;
+            
+            --transition-fast: 150ms ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .faq-header {
+            background: linear-gradient(135deg, #2c5282, #3182ce);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .faq-item {
+            background-color: var(--surface-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-fast);
+        }
+
+        .faq-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .faq-answer {
+            padding: 1.5rem;
+            display: none;
+            background-color: var(--surface-color);
+            color: var(--text-secondary);
+        }
+
+        .faq-icon {
+            transition: transform var(--transition-fast);
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="faq-header">
+        <h1>よくある質問 (FAQ)</h1>
+        <p>KatsujiRingXのサービスについて</p>
+    </div>
+
+    <div class="container">
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>KatsujiRingXの主なサービスは何ですか？</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <p>KatsujiRingXは、日本語の縦書き文書を効率的に活字化するためのプラットフォームです。OCR（光学文字認識）技術を活用し、
+                    手書きや古文書の文字を高精度で認識・変換します。活字化エディター、文字認識、学習ゲーム、進捗管理などの機能を提供しています。</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>どのような資料に対応していますか？</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <p>KatsujiRingXは、古文書、手書き文書、歴史的資料、など、様々な日本語の縦書き文書に対応しています。画像形式（JPEG、PNG、PDF）を
+                    アップロードいただくことで、文字認識と活字化が可能です。</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>文字認識の精度はどのくらいですか？</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <p>このサービスは、2025年4月1日に開発されたものです。現在は発展途上のため文字認識は不正確な可能性があります。</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                <span>料金プランはどのようになっていますか？</span>
+                <i class="fas fa-chevron-down faq-icon"></i>
+            </div>
+            <div class="faq-answer">
+                <p>KatsujiRingXは、無料プランのみです。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.closest('.faq-item');
+                faqItem.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>
