@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f9fafb">
+    <title>マイページ | KatsujiRingX</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+<style>
+    /* 基本変数とリセット */
+:root {
+    --primary-color: #3a5fc1;
+    --primary-dark: #2a4aa9;
+    --primary-light: #eef2ff;
+    --secondary-color: #10b981;
+    --secondary-dark: #059669;
+    --secondary-light: #ecfdf5;
+    --accent-color: #ff6b4a;
+    --accent-dark: #ea4c38;
+    --accent-light: #fff1ee;
+    --info-color: #3b82f6;
+    --info-light: #eff6ff;
+    --warning-color: #f59e0b;
+    --warning-light: #fef3c7;
+    --success-color: #10b981;
+    --success-light: #ecfdf5;
+    --error-color: #ef4444;
+    --error-light: #fee2e2;
+    
+    --background-color: #f9fafb;
+    --surface-color: #ffffff;
+    --hero-bg: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+    --text-primary: #1f2937;
+    --text-secondary: #4b5563;
+    --text-tertiary: #9ca3af;
+    --border-color: #e5e7eb;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    --radius-sm: 0.25rem;
+    --radius-md: 0.375rem;
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    
+    --header-height: 4rem;
+    --footer-height: 5rem;
+    --max-content-width: 1440px;
+    
+    --transition-fast: 150ms ease;
+    --transition-normal: 300ms ease;
+    --transition-slow: 500ms ease;
+}
+
+/* ダークテーマのカラー変数 */
+[data-theme="dark"] {
+    --primary-color: #6d8bf8;
+    --primary-dark: #5a75d9;
+    --primary-light: #2a3144;
+    --secondary-color: #10d597;
+    --secondary-dark: #0fb380;
+    --secondary-light: #152f2a;
+    --accent-color: #ff6b4a;
+    --accent-dark: #ea4c38;
+    --accent-light: #3a2824;
+    --info-color: #5e9ced;
+    --info-light: #1e293b;
+    --warning-color: #ffbe0b;
+    --warning-light: #3a3423;
+    --success-color: #10d597;
+    --success-light: #152f2a;
+    --error-color: #ff6b6b;
+    --error-light: #3a2824;
+    
+    --background-color: #121212;
+    --surface-color: #1e1e1e;
+    --hero-bg: linear-gradient(135deg, #1e1e5a 0%, #252550 100%);
+    --text-primary: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --text-tertiary: #6e6e6e;
+    --border-color: #333333;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* スクロールバーのカスタマイズ */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background-color);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--text-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* ローディングオーバーレイ */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(3px);
+    transition: opacity var(--transition-normal);
+}
+
+[data-theme="dark"] .loading-overlay {
+    background-color: rgba(18, 18, 18, 0.9);
+}
+
+.loading-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loading-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid var(--background-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+.loading-spinner-sm {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--background-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 0.5rem;
+}
+
+.notification-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    color: var(--text-tertiary);
+}
+
+.notification-loading p {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ヘッダー */
+header {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-md);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all var(--transition-normal);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+.logo-text {
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.logo img {
+    height: 2.5rem;
+    margin-right: 0.75rem;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+}
+
+nav ul li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color var(--transition-fast);
+    cursor: pointer;
+}
+
+nav ul li a:hover {
+    color: var(--primary-color);
+}
+
+nav ul li a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+    transition: width var(--transition-fast);
+}
+
+nav ul li a:hover::after,
+nav ul li a.active::after {
+    width: 100%;
+}
+
+/* ユーザーメニュー */
+.user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background-color: var(--primary-light);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-right: 0.75rem;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-name {
+    font-weight: 500;
+    margin-right: 0.5rem;
+}
+
+.dropdown-arrow {
+    transition: transform var(--transition-fast);
+}
+
+.user-menu:hover .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: var(--surface-color);
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius-md);
+    width: 200px;
+    padding: 0.5rem 0;
+    display: none;
+    z-index: 101;
+    margin-top: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.user-menu:hover .user-dropdown {
+    display: block;
+}
+
+.user-dropdown a {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+}
+
+.user-dropdown a:hover {
+    background-color: var(--primary-light);
+}
+
+.user-dropdown a i {
+    margin-right: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.user-dropdown hr {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 0.5rem 0;
+}
+
+/* 通知システム */
+.notification-system {
+    position: relative;
+    margin-right: 1rem;
+}
+
+.notification-bell {
+    position: relative;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: -10px;
+    width: 320px;
+    background-color: var(--surface-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    z-index: 1000;
+    overflow: hidden;
+    display: none;
+    margin-top: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.notification-dropdown.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.notification-header h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.notification-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.notification-body {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    display: flex;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color var(--transition-fast);
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    background-color: var(--background-color);
+}
+
+.notification-item.unread {
+    background-color: var(--primary-light);
+}
+
+.notification-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.notification-message {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.notification-time {
+    color: var(--text-tertiary);
+    font-size: 0.75rem;
+}
+
+.notification-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* メイン */
+main {
+    flex: 1;
+    padding: 0;
+    margin: 0 auto;
+    width: 100%;
+    max-width: var(--max-content-width);
+}
+
+/* ヒーローセクション */
+.hero-section {
+    background: var(--hero-bg);
+    padding: 3rem 2rem;
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    background: var(--primary-light);
+    border-radius: 50%;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: -30px;
+    width: 150px;
+    height: 150px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 2rem;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.welcome-message {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.user-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface-color);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    box-shadow: var(--shadow-md);
+    min-width: 200px;
+}
+
+.stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.stat-icon.primary {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.stat-icon.warning {
+    background-color: var(--warning-light);
+    color: var(--warning-color);
+}
+
+.stat-icon.accent {
+    background-color: var(--accent-light);
+    color: var(--accent-color);
+}
+
+.stat-details h4 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.stat-details p {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* セクションタイトル */
+.section-title {
+    margin: 0 2rem 1.5rem 2rem;
+}
+
+.section-title h2 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.section-title p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+/* メニューグリッド */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin: 0 2rem 2rem 2rem;
+}
+
+.menu-card {
+    background-color: var(--surface-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all var(--transition-normal);
+    overflow: hidden;
+    position: relative;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.menu-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.25rem;
+    font-size: 1.75rem;
+    flex-shrink: 0;
+}
+
+.menu-icon.primary {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.menu-icon.secondary {
+    background-color: var(--secondary-light);
+    color: var(--secondary-color);
+}
+
+.menu-icon.accent {
+    background-color: var(--accent-light);
+    color: var(--accent-color);
+}
+
+.menu-icon.warning {
+    background-color: var(--warning-light);
+    color: var(--warning-color);
+}
+
+.menu-icon.info {
+    background-color: var(--info-light);
+    color: var(--info-color);
+}
+
+.menu-icon.success {
+    background-color: var(--success-light);
+    color: var(--success-color);
+}
+
+.menu-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-content h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+.menu-content p {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    margin: 0 0 1.5rem 0;
+    flex: 1;
+}
+
+.btn-text {
+    display: flex;
+    align-items: center;
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.btn-text i {
+    margin-left: 0.5rem;
+    transition: transform var(--transition-fast);
+}
+
+.menu-card:hover .btn-text i {
+    transform: translateX(4px);
+}
+
+/* 2カラムレイアウト */
+.two-column-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 0 2rem 2rem 2rem;
+}
+
+.section-card {
+    background-color: var(--surface-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    height: 100%;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+/* 活動リスト */
+.activity-list {
+    list-style: none;
+}
+
+.activity-item {
+    display: flex;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.activity-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-title {
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.activity-time {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-top: 0.25rem;
+}
+
+/* ミッションリスト */
+.mission-list {
+    list-style: none;
+}
+
+.mission-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mission-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.mission-title {
+    display: flex;
+    align-items: center;
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+}
+
+.mission-title i {
+    margin-right: 0.75rem;
+    color: var(--warning-color);
+}
+
+.mission-description {
+    color: var(--text-secondary);
+    font-size: 0.9375rem;
+    margin: 0 0 0.75rem 0;
+}
+
+.mission-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+}
+
+.mission-progress .btn {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+}
+
+/* プレースホルダー用のシマー効果 */
+.activity-item-placeholder,
+.mission-item-placeholder {
+    height: 4rem;
+    margin-bottom: 1rem;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    position: relative;
+}
+
+.activity-item-placeholder:last-child,
+.mission-item-placeholder:last-child {
+    margin-bottom: 0;
+}
+
+.shimmer {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        var(--background-color) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        var(--background-color) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* ボタン */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.625rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 0.9375rem;
+}
+
+.btn i {
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-dark);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+.btn-accent:hover {
+    background-color: var(--accent-dark);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background-color: var(--primary-light);
+}
+
+.btn-link {
+    background: none;
+    color: var(--primary-color);
+    padding: 0.25rem 0.5rem;
+    box-shadow: none;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+    background: none;
+}
+
+.btn-small {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon i {
+    margin-right: 0;
+}
+
+.w-100 {
+    width: 100%;
+}
+
+/* テーマ切替ボタン */
+.theme-switcher {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 99;
+}
+
+.theme-switcher button {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-lg);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    transition: all var(--transition-normal);
+}
+
+.theme-switcher button:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-xl);
+}
+
+/* ダークモード時のアイコン変更 */
+#theme-icon-dark {
+    display: none;
+}
+
+[data-theme="dark"] #theme-icon-light {
+    display: none;
+}
+
+[data-theme="dark"] #theme-icon-dark {
+    display: inline-block;
+}
+
+/* 汎用スタイル */
+.stat-primary {
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+}
+
+.stat-secondary {
+    background-color: var(--secondary-light);
+    color: var(--secondary-color);
+}
+
+.stat-accent {
+    background-color: var(--accent-light);
+    color: var(--accent-color);
+}
+
+.stat-warning {
+    background-color: var(--warning-light);
+    color: var(--warning-color);
+}
+
+.stat-success {
+    background-color: var(--success-light);
+    color: var(--success-color);
+}
+
+.stat-info {
+    background-color: var(--info-light);
+    color: var(--info-color);
+}
+
+/* 空の状態表示 */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    color: var(--text-tertiary);
+}
+
+.empty-state i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.6;
+}
+
+.empty-state p {
+    margin-bottom: 1rem;
+}
+
+/* フッター */
+footer {
+    background-color: var(--surface-color);
+    color: var(--text-secondary);
+    padding: 3rem 2rem;
+    box-shadow: 0 -1px 0 var(--border-color);
+    margin-top: 3rem;
+}
+
+.footer-content {
+    max-width: var(--max-content-width);
+    margin: 0 auto;
+}
+
+.footer-top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: block;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.footer-section h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    cursor: pointer;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.copyright {
+    font-size: 0.875rem;
+}
+
+.footer-nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.footer-nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color var(--transition-fast);
+}
+
+.footer-nav a:hover {
+    color: var(--primary-color);
+}
+
+/* アニメーション */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 1200px) {
+    .menu-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .two-column-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-section {
+        padding: 2rem 1.5rem;
+    }
+    
+    .user-stats {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .stat-item {
+        min-width: auto;
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-content {
+        flex-wrap: wrap;
+    }
+
+    nav {
+        width: 100%;
+        margin: 1rem 0;
+        order: 3;
+    }
+
+    nav ul {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+    
+    .welcome-message {
+        font-size: 1rem;
+    }
+    
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-title,
+    .menu-grid,
+    .two-column-layout {
+        margin-left: 1rem;
+        margin-right: 1rem;
+    }
+    
+    .hero-section::before,
+    .hero-section::after {
+        display: none;
+    }
+    
+    .theme-switcher {
+        bottom: 1rem;
+        right: 1rem;
+    }
+    
+    .footer-section {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 0 1rem;
+    }
+    
+    .user-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stat-item {
+        width: 100%;
+    }
+    
+    .notification-dropdown {
+        width: 280px;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+</style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span class="logo-text">KatsujiRingX</span>
+            </a>
+            <nav>
+                <ul id="nav-menu">
+                    <li><a href="#" class="active">マイページ</a></li>
+                </ul>
+            </nav>
+            <div class="user-menu">
+                <div class="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <span class="user-name" id="header-user-name">ユーザー名</span>
+                <i class="fas fa-chevron-down dropdown-arrow"></i>
+                <div class="user-dropdown">
+                    <a href="profile.html">
+                        <i class="fas fa-user"></i>プロフィール
+                    </a>
+                    <a href="settings.html">
+                        <i class="fas fa-cog"></i>設定
+                    </a>
+                    <a href="notifications.html">
+                        <i class="fas fa-bell"></i>通知
+                    </a>
+                    <hr>
+                    <a href="#" id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>ログアウト
+                    </a>
+                </div>
+            </div>
+            
+            <!-- 通知システム -->
+            <div class="notification-system">
+                <div class="notification-bell">
+                    <button class="btn btn-icon notification-toggle" id="notification-toggle">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notification-count">0</span>
+                    </button>
+                    <div class="notification-dropdown" id="notification-dropdown">
+                        <div class="notification-header">
+                            <h3>通知</h3>
+                            <div class="notification-controls">
+                                <button class="btn btn-small btn-link" id="mark-all-read">すべて既読</button>
+                                <button class="btn btn-small btn-link" id="notification-settings">設定</button>
+                            </div>
+                        </div>
+                        <div class="notification-body" id="notification-list">
+                            <!-- 通知リストがここに動的に追加されます -->
+                            <div class="notification-loading">
+                                <div class="loading-spinner-sm"></div>
+                                <p>読み込み中...</p>
+                            </div>
+                        </div>
+                        <div class="notification-footer">
+                            <a href="notifications.html" class="btn btn-outline btn-small w-100">すべての通知を見る</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero-section">
+            <div class="hero-content">
+                <h1>こんにちは、<span id="user-name">ユーザー</span>さん</h1>
+                <p class="welcome-message">KatsujiRingXへようこそ。今日も活字化活動を始めましょう。</p>
+            </div>
+            <div class="user-stats">
+                <div class="stat-item">
+                    <div class="stat-icon primary">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h4>活字化文書</h4>
+                        <p id="document-count">0</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon warning">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h4>達成ミッション</h4>
+                        <p id="mission-count">0/10</p>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon accent">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-details">
+                        <h4>経験値</h4>
+                        <p id="point-count">0</p>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">
+            <h2>機能メニュー</h2>
+            <p>必要な機能にすぐにアクセスできます</p>
+        </div>
+        
+        <div class="menu-grid">
+            <a href="editor.html" class="menu-card">
+                <div class="menu-icon primary">
+                    <i class="fas fa-edit"></i>
+                </div>
+                <div class="menu-content">
+                    <h2>活字化エディタ</h2>
+                    <p>文書の活字化作業を行います。OCR機能を使って効率的に文字起こしができます。</p>
+                    <span class="btn-text">エディタを開く <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+            
+            <a href="documents.html" class="menu-card">
+                <div class="menu-icon secondary">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="menu-content">
+                    <h2>資料管理</h2>
+                    <p>アップロードした資料の管理や整理を行います。効率的に資料を検索できます。</p>
+                    <span class="btn-text">資料を管理 <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+            
+            <a href="projects.html" class="menu-card">
+                <div class="menu-icon accent">
+                    <i class="fas fa-project-diagram"></i>
+                </div>
+                <div class="menu-content">
+                    <h2>プロジェクト</h2>
+                    <p>活字化プロジェクトの作成・管理を行います。チームでの共同作業もサポートします。</p>
+                    <span class="btn-text">プロジェクト管理 <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+            
+            <a href="games.html" class="menu-card">
+                <div class="menu-icon warning">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="menu-content">
+                    <h2>ゲーム・ミッション</h2>
+                    <p>崩し字の読解スキルを楽しく向上させるゲームやチャレンジに挑戦できます。</p>
+                    <span class="btn-text">ゲームで学ぶ <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+            
+            <a href="history.html" class="menu-card">
+                <div class="menu-icon info">
+                    <i class="fas fa-history"></i>
+                </div>
+                <div class="menu-content">
+                    <h2>活動履歴</h2>
+                    <p>過去の活動記録や進捗状況を確認できます。あなたの成長が見えます。</p>
+                    <span class="btn-text">履歴を見る <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+            
+            <a href="community.html" class="menu-card">
+                <div class="menu-icon success">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="menu-content">
+                    <h2>コミュニティ</h2>
+                    <p>他のユーザーとの交流や共同プロジェクトを行えます。知識を共有しましょう。</p>
+                    <span class="btn-text">交流する <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+
+            <a href="blog.html" class="menu-card">
+                <div class="menu-icon success">
+                    <i class="fas fa-pen"></i>
+                </div>
+                <div class="menu-content">
+                    <h2>ブログ</h2>
+                    <p>最新情報、活用事例、使い方のヒントを発信しています</p>
+                    <span class="btn-text">見る <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="two-column-layout">
+            <div class="column">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>最近の活動</h2>
+                        <a href="history.html" class="btn btn-link">すべて表示</a>
+                    </div>
+                    <ul class="activity-list" id="activity-list">
+                        <!-- 活動リストがここに動的に追加されます -->
+                        <li class="activity-item-placeholder">
+                            <div class="shimmer"></div>
+                        </li>
+                        <li class="activity-item-placeholder">
+                            <div class="shimmer"></div>
+                        </li>
+                        <li class="activity-item-placeholder">
+                            <div class="shimmer"></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="column">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h2>本日のミッション</h2>
+                        <a href="missions.html" class="btn btn-link">すべて表示</a>
+                    </div>
+                    <ul class="mission-list" id="mission-list">
+                        <!-- ミッションリストがここに動的に追加されます -->
+                        <li class="mission-item-placeholder">
+                            <div class="shimmer"></div>
+                        </li>
+                        <li class="mission-item-placeholder">
+                            <div class="shimmer"></div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- テーマ切替ボタン -->
+        <div class="theme-switcher">
+            <button class="btn btn-icon" id="theme-toggle" title="テーマ切り替え">
+                <i class="fas fa-sun" id="theme-icon-light"></i>
+                <i class="fas fa-moon" id="theme-icon-dark"></i>
+            </button>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-top">
+                <div class="footer-section">
+                    <a href="index.html" class="footer-logo">
+                        <span class="logo-text">KatsujiRingX</span>
+                    </a>
+                    <p>次世代の活字化プラットフォーム。OCR技術を活用した日本語縦書き文書の活字化をサポートします。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>現在の提供サービス</h3>
+                    <ul class="footer-links">
+                        <li><a>活字化エディター</a></li>
+                        <li><a>OCR文字認識</a></li>
+                        <li><a>資料管理</a></li>
+                        <li><a>学習ゲーム</a></li>
+                        <li><a>みんなの活字化広場(2025年6月サポート終了)</a></li>
+                        <li><a>デジタルアーカイブ(2025年8月運用予定)</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>サポート</h3>
+                    <ul class="footer-links">
+                        <li><a href="helpcenter.html">ヘルプセンター</a></li>
+                        <li><a href="faqpage.html">よくある質問</a></li>
+                        <li><a href="contact.html">お問い合わせ</a></li>
+                        <li><a href="feedback.html">フィードバック</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>リソース</h3>
+                    <ul class="footer-links">
+                        <li><a href="blog.html">ブログ（定期更新中！！）</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">
+                    &copy; 2025 KatsujiRingX. All rights reserved.
+                </div>
+                <div class="footer-nav">
+                    <a href="privacypolicy.html">プライバシーポリシー</a>
+                    <a href="useinguser.html">利用規約</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
