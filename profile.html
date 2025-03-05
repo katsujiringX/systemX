@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="KatsujiRingX - プロフィール設定 - 活字化プラットフォーム">
-    <title>プロフィール設定 | KatsujiRingX</title>
+    <meta name="theme-color" content="#4338ca">
+    <title>プロフィール編集 | KatsujiRingX</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,452 +14,1431 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDKs -->
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin var(--transition-normal);
+        }
+        
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
+        
+        /* カード */
+        .card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        
+        [data-theme="dark"] .card {
+            background-color: #1e293b;
+        }
+        
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* フォーム */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.625rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.1);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* プロフィール部分 */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-avatar {
+            width: 6rem;
+            height: 6rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-right: 1.5rem;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .avatar-upload {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+            cursor: pointer;
+        }
+        
+        .profile-avatar:hover .avatar-upload {
+            opacity: 1;
+        }
+        
+        .avatar-upload i {
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .profile-info {
+            flex: 1;
+        }
+        
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .profile-email {
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* アラート */
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .alert-success {
+            background-color: var(--success-light);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+        
+        .alert-danger {
+            background-color: var(--danger-light);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+        
+        /* ボタン */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.625rem 1.25rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            box-shadow: var(--shadow);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+        
+        /* ユーティリティクラス */
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 1rem; }
+        .mt-4 { margin-top: 1.5rem; }
+        .mt-5 { margin-top: 3rem; }
+        
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .mb-5 { margin-bottom: 3rem; }
+        
+        .ml-1 { margin-left: 0.25rem; }
+        .ml-2 { margin-left: 0.5rem; }
+        .ml-3 { margin-left: 1rem; }
+        .ml-4 { margin-left: 1.5rem; }
+        .ml-5 { margin-left: 3rem; }
+        
+        .mr-1 { margin-right: 0.25rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .mr-3 { margin-right: 1rem; }
+        .mr-4 { margin-right: 1.5rem; }
+        .mr-5 { margin-right: 3rem; }
+        
+        .d-flex { display: flex; }
+        .flex-column { flex-direction: column; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .text-center { text-align: center; }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-avatar {
+                margin-right: 0;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-
-    <style></style>
-</head>
-<body class="preload">
-    <div id="app">
-        <!-- ヘッダー部分 -->
-        <header id="header">
-            <div class="header-content">
-                <a href="index.html" class="logo" aria-label="KatsujiRingX ホームページ">
-                    <img src="img/katsujiRingX.png" alt="KatsujiRingX ロゴ" width="40" height="40">
-                    <span class="logo-text">KatsujiRingX</span>
-                </a>
-                
-                <button id="menu-toggle" class="menu-toggle" aria-expanded="false" aria-controls="nav-menu">
-                    <span class="sr-only">メニュー</span>
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <nav>
-                    <ul id="nav-menu" class="nav-menu">
-                        <li><a href="index.html"><i class="fas fa-home"></i> ホーム</a></li>
-                        <li><a href="main.html"><i class="fas fa-user-circle"></i> マイページ</a></li>
-                        <li><a href="editor.html"><i class="fas fa-edit"></i> 活字化エディター</a></li>
-                        <li><a href="documents.html"><i class="fas fa-file-alt"></i> 資料管理</a></li>
-                        <li><a href="games.html"><i class="fas fa-gamepad"></i> 学習ゲーム</a></li>
-                    </ul>
-                </nav>
-                
-                <div class="header-actions">
-                    <button id="search-toggle" class="btn-icon" aria-label="検索">
-                        <i class="fas fa-search"></i>
-                    </button>
-                    
-                    <button id="theme-toggle" class="btn-icon" aria-label="テーマの切り替え">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    
-                    <button id="notifications-toggle" class="btn-icon" aria-label="通知">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge" id="notification-count">0</span>
-                    </button>
-                    
-                    <div class="user-menu">
-                        <button id="user-menu-button" class="user-menu-button" aria-haspopup="true" aria-expanded="false">
-                            <div class="user-avatar">
-                                <span id="user-initial">U</span>
-                            </div>
-                            <span class="user-name" id="header-user-name">ユーザー</span>
-                            <i class="fas fa-chevron-down dropdown-arrow"></i>
-                        </button>
-                        
-                        <div id="user-dropdown" class="user-dropdown hidden">
-                            <div class="dropdown-user-info">
-                                <div class="dropdown-avatar">
-                                    <span id="dropdown-user-initial">U</span>
-                                </div>
-                                <div class="dropdown-user-details">
-                                    <div id="dropdown-user-name" class="dropdown-user-name">ユーザー</div>
-                                    <div id="dropdown-user-email" class="dropdown-user-email">user@example.com</div>
-                                </div>
-                            </div>
-                            <div class="dropdown-links">
-                                <a href="profile.html" class="active">
-                                    <i class="fas fa-user"></i>プロフィール
-                                </a>
-                                <a href="projects.html">
-                                    <i class="fas fa-folder"></i>プロジェクト
-                                </a>
-                                <a href="settings.html">
-                                    <i class="fas fa-cog"></i>設定
-                                </a>
-                                <a href="help.html">
-                                    <i class="fas fa-question-circle"></i>ヘルプ
-                                </a>
-                            </div>
-                            <hr>
-                            <button id="logout-btn" class="dropdown-item">
-                                <i class="fas fa-sign-out-alt"></i>ログアウト
-                            </button>
-                        </div>
-                    </div>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="editor.html" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="projects.html" class="menu-item">
+                <i class="fas fa-project-diagram"></i> プロジェクト
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item active">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i> 設定
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
                 </div>
             </div>
             
-            <!-- 検索オーバーレイ -->
-            <div id="search-overlay" class="search-overlay hidden">
-                <div class="search-container">
-                    <form id="search-form" class="search-form">
-                        <input type="text" id="search-input" class="search-input" placeholder="検索...">
-                        <button type="submit" class="search-btn">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        <button type="button" id="search-close" class="search-close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </form>
-                </div>
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html".html>ダッシュボード</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>プロフィール編集</span>
             </div>
-        </header>
-
-        <!-- メインコンテンツ -->
-        <main id="main-content">
-            <div class="page-container">
-                <div class="page-header">
-                    <h1>プロフィール設定</h1>
-                    <p class="page-description">アカウント情報とプライバシー設定を管理します</p>
+            <h1 class="page-title">プロフィール編集</h1>
+        </div>
+        
+        <!-- アラートメッセージ -->
+        <div id="alert-success" class="alert alert-success">
+            プロフィールを更新しました。
+        </div>
+        <div id="alert-error" class="alert alert-danger">
+            エラーが発生しました。
+        </div>
+        
+        <!-- プロフィールカード -->
+        <div class="card">
+            <div class="card-header">
+                <h3>基本情報</h3>
+            </div>
+            <div class="card-body">
+                <div class="profile-header">
+                    <div class="profile-avatar" id="profile-avatar">
+                        <span id="profile-initial">U</span>
+                        <label class="avatar-upload" for="avatar-input">
+                            <i class="fas fa-camera"></i>
+                            <input type="file" id="avatar-input" style="display: none;" accept="image/*">
+                        </label>
+                    </div>
+                    <div class="profile-info">
+                        <h2 class="profile-name" id="profile-name">ユーザー名</h2>
+                        <p class="profile-email" id="profile-email">user@example.com</p>
+                        <div class="d-flex mt-2">
+                            <button type="button" class="btn btn-sm btn-outline mr-2" onclick="deleteAvatar()">
+                                <i class="fas fa-trash-alt"></i> 画像を削除
+                            </button>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="profile-container">
-                    <div class="profile-sidebar">
-                        <div class="profile-avatar-container">
-                            <div class="profile-avatar">
-                                <img id="profile-avatar-img" src="img/default-avatar.png" alt="プロフィール画像">
-                                <div class="avatar-overlay">
-                                    <label for="avatar-upload" class="avatar-edit-btn">
-                                        <i class="fas fa-camera"></i>
-                                    </label>
-                                    <input type="file" id="avatar-upload" accept="image/*" class="hidden">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="user-status">
-                            <span class="status-indicator online"></span>
-                            <span class="status-text">オンライン</span>
-                        </div>
-                        
-                        <div class="profile-stats">
-                            <div class="stats-item">
-                                <span class="stats-label">登録日</span>
-                                <span class="stats-value" id="join-date">--</span>
-                            </div>
-                            <div class="stats-item">
-                                <span class="stats-label">プロジェクト数</span>
-                                <span class="stats-value" id="projects-count">0</span>
-                            </div>
-                            <div class="stats-item">
-                                <span class="stats-label">貢献ポイント</span>
-                                <span class="stats-value" id="contribution-points">0</span>
-                            </div>
-                            <div class="stats-item">
-                                <span class="stats-label">最終ログイン</span>
-                                <span class="stats-value" id="last-login">--</span>
-                            </div>
-                        </div>
-                        
-                        <div class="profile-links">
-                            <a href="settings.html" class="btn btn-outline btn-block">
-                                <i class="fas fa-cog"></i> アカウント設定
-                            </a>
-                            <a href="projects.html" class="btn btn-outline btn-block">
-                                <i class="fas fa-folder"></i> プロジェクト管理
-                            </a>
-                            <a href="help.html" class="btn btn-outline btn-block">
-                                <i class="fas fa-question-circle"></i> ヘルプセンター
-                            </a>
-                        </div>
+                <form id="profile-form">
+                    <div class="form-group">
+                        <label for="display-name" class="form-label">ユーザー名</label>
+                        <input type="text" id="display-name" class="form-control" placeholder="ユーザー名を入力">
+                        <div class="form-text">他のユーザーに表示される名前です</div>
                     </div>
                     
-                    <div class="profile-content">
-                        <div class="profile-tabs">
-                            <button class="tab-item active" data-tab="basic-info">
-                                <i class="fas fa-user"></i> 基本情報
-                            </button>
-                            <button class="tab-item" data-tab="privacy">
-                                <i class="fas fa-lock"></i> 公開設定
-                            </button>
-                            <button class="tab-item" data-tab="activity">
-                                <i class="fas fa-chart-line"></i> アクティビティ
-                            </button>
-                        </div>
-                        
-                        <div class="tab-content" id="basic-info">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h2>基本情報</h2>
-                                    <div class="card-actions">
-                                        <button class="btn-icon edit-card-toggle">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <form id="profile-form">
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="display-name">表示名 <span class="required">*</span></label>
-                                                <input type="text" id="display-name" placeholder="表示名を入力" required>
-                                                <div class="form-helper">公開プロフィールに表示される名前です</div>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label for="email">メールアドレス</label>
-                                                <input type="email" id="email" disabled>
-                                                <div class="form-helper">メールアドレスを変更するには<a href="settings.html">アカウント設定</a>で行えます</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="bio">自己紹介</label>
-                                            <textarea id="bio" rows="4" placeholder="自己紹介を入力（任意）"></textarea>
-                                            <div class="form-helper"><span id="bio-char-count">0</span>/300文字</div>
-                                        </div>
-                                        
-                                        <div class="form-row">
-                                            <div class="form-group">
-                                                <label for="specialization">専門分野（任意）</label>
-                                                <select id="specialization">
-                                                    <option value="">選択してください</option>
-                                                    <option value="history">歴史学</option>
-                                                    <option value="literature">文学</option>
-                                                    <option value="linguistics">言語学</option>
-                                                    <option value="archive">アーカイブ学</option>
-                                                    <option value="education">教育</option>
-                                                    <option value="other">その他</option>
-                                                </select>
-                                            </div>
-                                            
-                                            <div class="form-group">
-                                                <label for="website">Webサイト（任意）</label>
-                                                <input type="url" id="website" placeholder="https://example.com">
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label>興味のあるタグ</label>
-                                            <div class="tags-input-container" id="tags-container">
-                                                <div class="tags-list" id="tags-list"></div>
-                                                <input type="text" id="tags-input" placeholder="タグを入力して Enter">
-                                            </div>
-                                            <div class="form-helper">最大5つまで追加できます</div>
-                                        </div>
-                                        
-                                        <div class="form-actions">
-                                            <button type="button" class="btn btn-outline" id="cancel-profile">キャンセル</button>
-                                            <button type="submit" class="btn btn-primary">保存</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="tab-content hidden" id="privacy">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h2>公開設定</h2>
-                                    <div class="card-actions">
-                                        <button class="btn-icon edit-card-toggle">
-                                            <i class="fas fa-pen"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <form id="privacy-form">
-                                        <div class="privacy-settings">
-                                            <div class="setting-item">
-                                                <div class="setting-info">
-                                                    <div class="setting-title">プロフィール公開</div>
-                                                    <div class="setting-description">プロフィールを公開すると、他のユーザーがあなたの活動を閲覧できるようになります。</div>
-                                                </div>
-                                                <div class="setting-control">
-                                                    <label class="switch">
-                                                        <input type="checkbox" id="show-profile">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="setting-item">
-                                                <div class="setting-info">
-                                                    <div class="setting-title">プロジェクト公開</div>
-                                                    <div class="setting-description">他のユーザーにプロジェクトを表示します。ただし、プロジェクト個別の公開設定が優先されます。</div>
-                                                </div>
-                                                <div class="setting-control">
-                                                    <label class="switch">
-                                                        <input type="checkbox" id="show-projects">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="setting-item">
-                                                <div class="setting-info">
-                                                    <div class="setting-title">活動履歴の公開</div>
-                                                    <div class="setting-description">あなたの活動履歴（貢献、コメントなど）を他のユーザーに公開します。</div>
-                                                </div>
-                                                <div class="setting-control">
-                                                    <label class="switch">
-                                                        <input type="checkbox" id="show-activity">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="setting-item">
-                                                <div class="setting-info">
-                                                    <div class="setting-title">メールアドレスの公開</div>
-                                                    <div class="setting-description">あなたのメールアドレスを他のユーザーに公開します。</div>
-                                                </div>
-                                                <div class="setting-control">
-                                                    <label class="switch">
-                                                        <input type="checkbox" id="show-email">
-                                                        <span class="slider round"></span>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="form-actions">
-                                            <button type="button" class="btn btn-outline" id="cancel-privacy">キャンセル</button>
-                                            <button type="submit" class="btn btn-primary">保存</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="tab-content hidden" id="activity">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h2>最近のアクティビティ</h2>
-                                    <div class="card-actions">
-                                        <select id="activity-filter" class="form-select">
-                                            <option value="all">すべて</option>
-                                            <option value="projects">プロジェクト</option>
-                                            <option value="contributions">貢献</option>
-                                            <option value="comments">コメント</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="timeline" id="activity-timeline">
-                                        <!-- アクティビティがロードされるまで表示されるローディングインジケータ -->
-                                        <div class="timeline-loading">
-                                            <div class="spinner-sm"></div>
-                                            <p>アクティビティを読み込み中...</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-footer">
-                                    <button id="load-more-activity" class="btn btn-outline btn-block">さらに読み込む</button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label for="bio" class="form-label">自己紹介</label>
+                        <textarea id="bio" class="form-control" placeholder="自己紹介を入力（任意）"></textarea>
+                        <div class="form-text">あなたについて簡単に紹介してください（300文字以内）</div>
                     </div>
-                </div>
+                    
+                    <div class="form-group">
+                        <label for="specialty" class="form-label">専門分野</label>
+                        <input type="text" id="specialty" class="form-control" placeholder="専門分野を入力（任意）">
+                        <div class="form-text">専門分野があれば入力してください</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location" class="form-label">居住地</label>
+                        <input type="text" id="location" class="form-control" placeholder="居住地を入力（任意）">
+                        <div class="form-text">都道府県など、居住地の情報を入力できます</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="website" class="form-label">ウェブサイト</label>
+                        <input type="url" id="website" class="form-control" placeholder="https://example.com">
+                        <div class="form-text">あなたのウェブサイトやブログのURLを入力できます(Instagram・X・FaceBookなど可)</div>
+                    </div>
+                    
+                    <div class="d-flex justify-between mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 変更を保存
+                        </button>
+                    </div>
+                </form>
             </div>
-        </main>
-
-        <!-- フッター -->
-        <footer>
-            <div class="footer-content">
-                <div class="footer-top">
-                    <div class="footer-section">
-                        <a href="index.html" class="footer-logo">
-                            <img src="img/katsujiRingX-footer.png" alt="KatsujiRingX ロゴ" width="40" height="40">
-                            <span class="logo-text">KatsujiRingX</span>
-                        </a>
-                        <p>次世代の活字化プラットフォーム。OCR技術を活用した日本語縦書き文書の活字化をサポートします。</p>
-                        <div class="social-links">
-                            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                            <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                        </div>
-                    </div>
-                    <div class="footer-section">
-                        <h3>現在の提供サービス</h3>
-                        <ul class="footer-links">
-                            <li><a href="editor.html">活字化エディター</a></li>
-                            <li><a href="documents.html">OCR文字認識</a></li>
-                            <li><a href="documents.html">資料管理</a></li>
-                            <li><a href="games.html">学習ゲーム</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
-                        <h3>サポート</h3>
-                        <ul class="footer-links">
-                            <li><a href="help.html">ヘルプセンター</a></li>
-                            <li><a href="faq.html">よくある質問</a></li>
-                            <li><a href="contact.html">お問い合わせ</a></li>
-                            <li><a href="feedback.html">フィードバック</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-section">
-                        <h3>リソース</h3>
-                        <ul class="footer-links">
-                            <li><a href="blog.html">ブログ</a></li>
-                            <li><a href="tutorials.html">チュートリアル</a></li>
-                            <li><a href="api.html">API</a></li>
-                            <li><a href="community.html">コミュニティ</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <div class="copyright">
-                        &copy; 2025 KatsujiRingX. All rights reserved.
-                    </div>
-                    <div class="footer-nav">
-                        <a href="privacy.html">プライバシーポリシー</a>
-                        <a href="terms.html">利用規約</a>
-                        <a href="accessibility.html">アクセシビリティ</a>
-                    </div>
-                </div>
+        </div>
+        
+        <!-- アカウント設定カード -->
+        <div class="card">
+            <div class="card-header">
+                <h3>アカウント設定</h3>
             </div>
-        </footer>
-
-        <!-- マイクロインタラクションのためのUIフィードバック要素 -->
-        <div id="ui-feedback" class="ui-feedback"></div>
-
-        <!-- 確認モーダル -->
-        <div id="confirm-modal" class="modal hidden">
-            <div class="modal-backdrop"></div>
-            <div class="modal-container">
-                <div class="modal-header">
-                    <h3 id="modal-title">確認</h3>
-                    <button id="modal-close" class="modal-close"><i class="fas fa-times"></i></button>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="email" class="form-label">メールアドレス</label>
+                    <input type="email" id="email" class="form-control" disabled>
+                    <div class="form-text">メールアドレスの変更は設定画面から行えます</div>
                 </div>
-                <div class="modal-body">
-                    <p id="modal-message">変更を保存しますか？</p>
-                </div>
-                <div class="modal-footer">
-                    <button id="modal-cancel" class="btn btn-outline">キャンセル</button>
-                    <button id="modal-confirm" class="btn btn-primary">確認</button>
+                
+                <div class="d-flex justify-between mt-4">
+                    <a href="settings.html" class="btn btn-outline">
+                        <i class="fas fa-cog"></i> 詳細設定
+                    </a>
+                    <button type="button" class="btn btn-danger" onclick="showDeleteConfirm()">
+                        <i class="fas fa-trash-alt"></i> アカウント削除
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Notification System -->
-    <div id="notification-container" class="notification-container"></div>
-    
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay hidden">
-        <div class="spinner"></div>
-        <p>読み込み中...</p>
-    </div>
+    <!-- JavaScripts -->
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
 
-    <!-- JavaScript ファイル -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/profile.js"></script>
+        // Firebase初期化
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // 日本語ロケールの設定
+        auth.languageCode = 'ja';
+
+        // DOM要素の参照
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const userInitial = document.getElementById('user-initial');
+        const userAvatar = document.getElementById('user-avatar');
+        const profileInitial = document.getElementById('profile-initial');
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        const displayNameInput = document.getElementById('display-name');
+        const bioInput = document.getElementById('bio');
+        const specialtyInput = document.getElementById('specialty');
+        const locationInput = document.getElementById('location');
+        const websiteInput = document.getElementById('website');
+        const emailInput = document.getElementById('email');
+        const avatarInput = document.getElementById('avatar-input');
+        const profileForm = document.getElementById('profile-form');
+        const alertSuccess = document.getElementById('alert-success');
+        const alertError = document.getElementById('alert-error');
+        const logoutBtn = document.getElementById('logout-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // ユーザーがログインしている場合
+                console.log("ログイン中:", user.uid);
+                
+                // 初期表示名の即時反映（暫定表示）
+                const initialDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                if (sidebarUserName) {
+                    sidebarUserName.textContent = initialDisplayName;
+                }
+                
+                // 初期メールアドレス表示
+                if (profileEmail) {
+                    profileEmail.textContent = user.email;
+                }
+                
+                if (emailInput) {
+                    emailInput.value = user.email;
+                }
+                
+                // ユーザーデータを取得してフォームに設定
+                fetchUserData(user.uid);
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ユーザーデータの取得
+        async function fetchUserData(userId) {
+            try {
+                // 現在のユーザーが認証されているか確認
+                const user = auth.currentUser;
+                if (!user) {
+                    throw new Error("認証されていません。再ログインしてください。");
+                }
+                
+                // 最初に Auth からの情報だけでUIを更新
+                const authDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                if (sidebarUserName) {
+                    sidebarUserName.textContent = authDisplayName;
+                }
+                
+                if (profileName) {
+                    profileName.textContent = authDisplayName;
+                }
+                
+                if (profileEmail) {
+                    profileEmail.textContent = user.email;
+                }
+                
+                if (emailInput) {
+                    emailInput.value = user.email;
+                }
+                
+                // フォームに初期値を設定
+                if (displayNameInput) {
+                    displayNameInput.value = authDisplayName;
+                }
+                
+                // イニシャル表示
+                const initial = authDisplayName.charAt(0).toUpperCase();
+                if (userInitial) {
+                    userInitial.textContent = initial;
+                }
+                
+                if (profileInitial) {
+                    profileInitial.textContent = initial;
+                }
+                
+                // Auth のプロフィール画像があれば表示
+                if (user.photoURL) {
+                    setAvatarImage(user.photoURL);
+                }
+                
+                // Firestoreからデータを取得してみる（エラー時は Auth データのみで続行）
+                try {
+                    const userDoc = await db.collection('users').doc(userId).get();
+                    
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        
+                        // ユーザー名を表示
+                        const displayName = userData.displayName || authDisplayName;
+                        if (sidebarUserName) {
+                            sidebarUserName.textContent = displayName;
+                        }
+                        
+                        if (profileName) {
+                            profileName.textContent = displayName;
+                        }
+                        
+                        // フォームに値を設定
+                        if (displayNameInput) {
+                            displayNameInput.value = userData.displayName || authDisplayName;
+                        }
+                        
+                        if (bioInput) {
+                            bioInput.value = userData.bio || '';
+                        }
+                        
+                        if (specialtyInput) {
+                            specialtyInput.value = userData.specialty || '';
+                        }
+                        
+                        if (locationInput) {
+                            locationInput.value = userData.location || '';
+                        }
+                        
+                        if (websiteInput) {
+                            websiteInput.value = userData.website || '';
+                        }
+                        
+                        // ユーザーアバター設定
+                        const initialFromDB = (userData.displayName || authDisplayName).charAt(0).toUpperCase();
+                        if (userInitial) {
+                            userInitial.textContent = initialFromDB;
+                        }
+                        
+                        if (profileInitial) {
+                            profileInitial.textContent = initialFromDB;
+                        }
+                        
+                        // プロフィール画像の表示
+                        if (userData.profileImageUrl) {
+                            setAvatarImage(userData.profileImageUrl);
+                        }
+                        
+                    } else {
+                        console.log("ユーザーデータが見つかりません。新規作成します。");
+                        // ユーザーデータがない場合は新規作成
+                        await createUserProfile(auth.currentUser);
+                    }
+                } catch (firestoreError) {
+                    console.error("Firestore データ取得エラー:", firestoreError);
+                    console.log("Auth データのみを使用して続行します");
+                    
+                    // セキュリティルールエラーの場合、新規作成を試みる
+                    if (firestoreError.code === 'permission-denied') {
+                        try {
+                            console.log("ユーザープロファイルの作成を試みます");
+                            await createUserProfile(auth.currentUser);
+                        } catch (createError) {
+                            console.error("プロファイル作成エラー:", createError);
+                            // 作成エラーも無視して続行
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("ユーザーデータ取得エラー:", error);
+                // エラー表示
+                showAlert(false, "ユーザーデータの取得中にエラーが発生しました");
+                
+                // 認証エラーの場合はログインページへ
+                if (error.message.includes("認証")) {
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
+            }
+        }
+
+        // 新規ユーザープロファイルの作成
+        async function createUserProfile(user) {
+            try {
+                if (!user) throw new Error("ユーザーが認証されていません");
+                
+                // ユーザー名を Authentication から取得
+                // displayName が null の場合は、メールアドレスの @ より前の部分を使用
+                let displayName = user.displayName;
+                if (!displayName && user.email) {
+                    displayName = user.email.split('@')[0];
+                } else if (!displayName) {
+                    displayName = '新規ユーザー';
+                }
+                
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: displayName,
+                    profileImageUrl: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    documentCount: 0,
+                    points: 0,
+                    communityPosts: 0,
+                    level: 1
+                };
+                
+                try {
+                    // Firestoreにユーザープロファイルを保存
+                    await db.collection('users').doc(user.uid).set(userData);
+                    console.log("ユーザープロファイル作成完了");
+                    
+                    // 画面を更新
+                    return true;
+                } catch (firestoreError) {
+                    console.error("Firestore ユーザープロファイル作成エラー:", firestoreError);
+                    
+                    // パーミッション拒否の場合はルールの問題
+                    if (firestoreError.code === 'permission-denied') {
+                        console.log("Firestore セキュリティルールによりアクセスが拒否されました。");
+                    }
+                    
+                    // エラーを上位に伝播
+                    throw firestoreError;
+                }
+            } catch (error) {
+                console.error("ユーザープロファイル作成エラー:", error);
+                showAlert(false, "プロファイルの作成中にエラーが発生しました。基本機能のみ有効です。");
+                return false;
+            }
+        }
+
+        // アバター画像をセット
+        function setAvatarImage(imageUrl) {
+            // サイドバーのアバター
+            if (userAvatar) {
+                const avatarImg = document.createElement('img');
+                avatarImg.src = imageUrl;
+                avatarImg.alt = "ユーザーアバター";
+                userAvatar.innerHTML = '';
+                userAvatar.appendChild(avatarImg);
+            }
+            
+            // プロフィールページのアバター
+            if (profileAvatar) {
+                const profileImg = document.createElement('img');
+                profileImg.src = imageUrl;
+                profileImg.alt = "プロフィール画像";
+                
+                // イニシャル表示を非表示
+                if (profileInitial) {
+                    profileInitial.style.display = 'none';
+                }
+                
+                // 既存の画像があれば置き換え
+                const existingImg = profileAvatar.querySelector('img');
+                if (existingImg) {
+                    existingImg.src = imageUrl;
+                } else {
+                    profileAvatar.prepend(profileImg);
+                }
+            }
+        }
+
+        // プロフィール画像のアップロード
+        if (avatarInput) {
+            avatarInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                // ファイルサイズチェック (5MB以下)
+                if (file.size > 5 * 1024 * 1024) {
+                    showAlert(false, "画像サイズは5MB以下にしてください");
+                    return;
+                }
+                
+                // ファイル形式チェック
+                const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    showAlert(false, "JPG、PNG、GIF形式の画像を選択してください");
+                    return;
+                }
+                
+                try {
+                    const user = auth.currentUser;
+                    if (!user) throw new Error("ユーザーがログインしていません");
+                    
+                    // Storageにアップロード
+                    const storageRef = storage.ref();
+                    const fileRef = storageRef.child(`profile-images/${user.uid}/${Date.now()}_${file.name}`);
+                    
+                    // アップロード開始
+                    showAlert(true, "画像をアップロード中...");
+                    
+                    const snapshot = await fileRef.put(file);
+                    const downloadUrl = await snapshot.ref.getDownloadURL();
+                    
+                    // プロフィール画像URLを更新
+                    await db.collection('users').doc(user.uid).update({
+                        profileImageUrl: downloadUrl,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // 画像を表示
+                    setAvatarImage(downloadUrl);
+                    
+                    showAlert(true, "プロフィール画像を更新しました");
+                } catch (error) {
+                    console.error("画像アップロードエラー:", error);
+                    showAlert(false, "画像のアップロード中にエラーが発生しました");
+                }
+            });
+        }
+
+        // プロフィール画像の削除
+        async function deleteAvatar() {
+            try {
+                const user = auth.currentUser;
+                if (!user) throw new Error("ユーザーがログインしていません");
+                
+                // 確認ダイアログ
+                if (!confirm("プロフィール画像を削除してもよろしいですか？")) {
+                    return;
+                }
+                
+                // Firestoreの画像URL情報を削除（削除フィールドを使わず、空文字で更新）
+                await db.collection('users').doc(user.uid).update({
+                    profileImageUrl: "",
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // UIを更新
+                if (profileInitial) {
+                    profileInitial.style.display = 'flex';
+                }
+                
+                // 画像要素を削除
+                if (profileAvatar) {
+                    const img = profileAvatar.querySelector('img');
+                    if (img) {
+                        img.remove();
+                    }
+                }
+                
+                if (userAvatar) {
+                    userAvatar.innerHTML = '';
+                    userAvatar.appendChild(userInitial);
+                }
+                
+                showAlert(true, "プロフィール画像を削除しました");
+            } catch (error) {
+                console.error("画像削除エラー:", error);
+                showAlert(false, "画像の削除中にエラーが発生しました");
+            }
+        }
+
+        // プロフィールフォーム送信処理
+        if (profileForm) {
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                try {
+                    const user = auth.currentUser;
+                    if (!user) throw new Error("ユーザーがログインしていません");
+                    
+                    // 入力値を取得
+                    const displayName = displayNameInput.value.trim();
+                    const bio = bioInput.value.trim();
+                    const specialty = specialtyInput.value.trim();
+                    const location = locationInput.value.trim();
+                    const website = websiteInput.value.trim();
+                    
+                    // バリデーション
+                    if (!displayName) {
+                        showAlert(false, "ユーザー名を入力してください");
+                        displayNameInput.focus();
+                        return;
+                    }
+                    
+                    if (bio.length > 300) {
+                        showAlert(false, "自己紹介は300文字以内で入力してください");
+                        bioInput.focus();
+                        return;
+                    }
+                    
+                    // 更新データ
+                    // undefined値は除外して、存在する値のみ更新
+                    const updates = {};
+                    
+                    if (displayName !== undefined) updates.displayName = displayName;
+                    if (bio !== undefined) updates.bio = bio;
+                    if (specialty !== undefined) updates.specialty = specialty;
+                    if (location !== undefined) updates.location = location;
+                    if (website !== undefined) updates.website = website;
+                    
+                    // タイムスタンプは必ず追加
+                    updates.updatedAt = firebase.firestore.FieldValue.serverTimestamp();
+                    
+                    // まず Auth プロフィールを更新
+                    try {
+                        await user.updateProfile({
+                            displayName: displayName
+                        });
+                        console.log("Auth displayName 更新成功");
+                    } catch (authError) {
+                        console.error("Auth displayName 更新エラー:", authError);
+                    }
+                    
+                    // Firestore も更新を試みる
+                    try {
+                        await db.collection('users').doc(user.uid).update(updates);
+                        console.log("Firestore プロフィール更新成功");
+                    } catch (firestoreError) {
+                        console.error("Firestore 更新エラー:", firestoreError);
+                        
+                        // セキュリティルールエラーの場合は、新規作成を試みる
+                        if (firestoreError.code === 'permission-denied') {
+                            console.log("セキュリティルールにより更新が拒否されました。ドキュメント作成を試みます。");
+                            try {
+                                // 完全なプロファイルを作成する
+                                const fullProfile = {
+                                    uid: user.uid,
+                                    email: user.email,
+                                    ...updates
+                                };
+                                await db.collection('users').doc(user.uid).set(fullProfile);
+                                console.log("プロファイル作成成功");
+                            } catch (setError) {
+                                console.error("プロファイル作成エラー:", setError);
+                                // 作成も失敗した場合は、ローカルUIのみ更新して続行
+                            }
+                        }
+                    }
+                    
+                    // UI更新（Firestoreの結果に関わらず表示を更新）
+                    profileName.textContent = displayName;
+                    sidebarUserName.textContent = displayName;
+                    
+                    // イニシャル更新
+                    const initial = displayName.charAt(0).toUpperCase();
+                    if (userInitial) {
+                        userInitial.textContent = initial;
+                    }
+                    
+                    if (profileInitial) {
+                        profileInitial.textContent = initial;
+                    }
+                    
+                    showAlert(true, "プロフィールを更新しました");
+                } catch (error) {
+                    console.error("プロフィール更新エラー:", error);
+                    showAlert(false, "プロフィールの更新中にエラーが発生しました");
+                }
+            });
+        }
+
+        // フォームリセット
+        function resetForm() {
+            if (confirm("入力内容をリセットしますか？")) {
+                const user = auth.currentUser;
+                if (user) {
+                    fetchUserData(user.uid);
+                }
+            }
+        }
+
+        // アカウント削除確認
+        function showDeleteConfirm() {
+            if (confirm("アカウントを削除すると、すべてのデータが完全に削除され、復元できなくなります。本当に削除しますか？")) {
+                if (confirm("最終確認: アカウントを削除します。この操作は取り消せません。")) {
+                    deleteAccount();
+                }
+            }
+        }
+
+        // アカウント削除処理
+        async function deleteAccount() {
+            try {
+                const user = auth.currentUser;
+                if (!user) throw new Error("ユーザーがログインしていません");
+                
+                // Firestoreのユーザーデータを削除
+                await db.collection('users').doc(user.uid).delete();
+                
+                // Firebaseユーザーアカウントを削除
+                await user.delete();
+                
+                // ログインページにリダイレクト
+                alert("アカウントが削除されました。ご利用ありがとうございました。");
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("アカウント削除エラー:", error);
+                
+                if (error.code === 'auth/requires-recent-login') {
+                    alert("セキュリティのため、再ログインが必要です。一度ログアウトしてから再度お試しください。");
+                } else {
+                    showAlert(false, "アカウントの削除中にエラーが発生しました");
+                }
+            }
+        }
+
+        // アラート表示
+        function showAlert(isSuccess, message) {
+            const alert = isSuccess ? alertSuccess : alertError;
+            if (!alert) return;
+            
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            // 5秒後に非表示
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                // ローカルストレージのクリア
+                localStorage.removeItem('user_settings');
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("ログアウトエラー:", error);
+                showAlert(false, "ログアウト中にエラーが発生しました");
+                
+                // どうしてもログアウトできない場合は強制的にページを移動
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1000);
+            }
+        }
+
+        // テーマ切替
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (newTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        // サイドバー切替（モバイル用）
+        function toggleSidebar() {
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+
+        // イベントリスナー
+        document.addEventListener('DOMContentLoaded', () => {
+            // テーマ初期化
+            initTheme();
+            
+            // ログアウトボタン
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // テーマ切替ボタン
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // サイドバー切替ボタン
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

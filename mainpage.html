@@ -3,1578 +3,1571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#f9fafb">
-    <title>マイページ | KatsujiRingX</title>
+    <meta name="theme-color" content="#4338ca">
+    <title>ダッシュボード | KatsujiRingX</title>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin var(--transition-normal);
+        }
+        
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
+        
+        /* ダッシュボードカード */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .stat-card {
+            background-color: #1e293b;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .stat-primary {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .stat-secondary {
+            background-color: var(--secondary-light);
+            color: var(--secondary);
+        }
+        
+        .stat-success {
+            background-color: var(--success-light);
+            color: var(--success);
+        }
+        
+        .stat-warning {
+            background-color: var(--warning-light);
+            color: var(--warning);
+        }
+        
+        .stat-danger {
+            background-color: var(--danger-light);
+            color: var(--danger);
+        }
+        
+        .stat-info {
+            background-color: var(--info-light);
+            color: var(--info);
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        /* カードセクション */
+        .card-section {
+            margin-bottom: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .card {
+            background-color: #1e293b;
+        }
+        
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* グリッドレイアウト */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        
+        /* アクティビティリスト */
+        .activity-list {
+            list-style: none;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .activity-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-time {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+        
+        /* お知らせリスト */
+        .notice-list {
+            list-style: none;
+        }
+        
+        .notice-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .notice-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .notice-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .notice-title i {
+            margin-right: 0.5rem;
+            color: var(--primary);
+        }
+        
+        .notice-content {
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+        }
+        
+        .notice-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        /* クイックアクセスボタン */
+        .quick-access {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .quick-card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 1.25rem;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .quick-card {
+            background-color: #1e293b;
+        }
+        
+        .quick-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+        
+        .quick-icon {
+            width: 3rem;
+            height: 3rem;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .quick-content {
+            flex: 1;
+        }
+        
+        .quick-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .quick-desc {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        
+        .quick-action {
+            color: var(--primary);
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .quick-action i {
+            margin-left: 0.25rem;
+            transition: transform var(--transition-normal);
+        }
+        
+        .quick-card:hover .quick-action i {
+            transform: translateX(3px);
+        }
+        
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* ローディングスピナー */
+        .loading-spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ボタンスタイル */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            border-radius: 50%;
+        }
+        
+        .btn-icon i {
+            margin-right: 0;
+        }
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+        
+        /* ユーティリティクラス */
+        .text-primary { color: var(--primary); }
+        .text-secondary { color: var(--secondary); }
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-danger { color: var(--danger); }
+        .text-info { color: var(--info); }
+        
+        .bg-primary { background-color: var(--primary); color: white; }
+        .bg-secondary { background-color: var(--secondary); color: white; }
+        .bg-success { background-color: var(--success); color: white; }
+        .bg-warning { background-color: var(--warning); color: white; }
+        .bg-danger { background-color: var(--danger); color: white; }
+        .bg-info { background-color: var(--info); color: white; }
+        
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 1rem; }
+        .mt-4 { margin-top: 1.5rem; }
+        .mt-5 { margin-top: 3rem; }
+        
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .mb-5 { margin-bottom: 3rem; }
+        
+        .ml-1 { margin-left: 0.25rem; }
+        .ml-2 { margin-left: 0.5rem; }
+        .ml-3 { margin-left: 1rem; }
+        .ml-4 { margin-left: 1.5rem; }
+        .ml-5 { margin-left: 3rem; }
+        
+        .mr-1 { margin-right: 0.25rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .mr-3 { margin-right: 1rem; }
+        .mr-4 { margin-right: 1.5rem; }
+        .mr-5 { margin-right: 3rem; }
+        
+        .p-1 { padding: 0.25rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 1rem; }
+        .p-4 { padding: 1.5rem; }
+        .p-5 { padding: 3rem; }
+        
+        .w-100 { width: 100%; }
+        .h-100 { height: 100%; }
+        
+        .d-flex { display: flex; }
+        .flex-column { flex-direction: column; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .flex-1 { flex: 1; }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid, .quick-access {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-<style>
-    /* 基本変数とリセット */
-:root {
-    --primary-color: #3a5fc1;
-    --primary-dark: #2a4aa9;
-    --primary-light: #eef2ff;
-    --secondary-color: #10b981;
-    --secondary-dark: #059669;
-    --secondary-light: #ecfdf5;
-    --accent-color: #ff6b4a;
-    --accent-dark: #ea4c38;
-    --accent-light: #fff1ee;
-    --info-color: #3b82f6;
-    --info-light: #eff6ff;
-    --warning-color: #f59e0b;
-    --warning-light: #fef3c7;
-    --success-color: #10b981;
-    --success-light: #ecfdf5;
-    --error-color: #ef4444;
-    --error-light: #fee2e2;
     
-    --background-color: #f9fafb;
-    --surface-color: #ffffff;
-    --hero-bg: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
-    --text-primary: #1f2937;
-    --text-secondary: #4b5563;
-    --text-tertiary: #9ca3af;
-    --border-color: #e5e7eb;
-    
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    
-    --radius-sm: 0.25rem;
-    --radius-md: 0.375rem;
-    --radius-lg: 0.5rem;
-    --radius-xl: 0.75rem;
-    
-    --header-height: 4rem;
-    --footer-height: 5rem;
-    --max-content-width: 1440px;
-    
-    --transition-fast: 150ms ease;
-    --transition-normal: 300ms ease;
-    --transition-slow: 500ms ease;
-}
-
-/* ダークテーマのカラー変数 */
-[data-theme="dark"] {
-    --primary-color: #6d8bf8;
-    --primary-dark: #5a75d9;
-    --primary-light: #2a3144;
-    --secondary-color: #10d597;
-    --secondary-dark: #0fb380;
-    --secondary-light: #152f2a;
-    --accent-color: #ff6b4a;
-    --accent-dark: #ea4c38;
-    --accent-light: #3a2824;
-    --info-color: #5e9ced;
-    --info-light: #1e293b;
-    --warning-color: #ffbe0b;
-    --warning-light: #3a3423;
-    --success-color: #10d597;
-    --success-light: #152f2a;
-    --error-color: #ff6b6b;
-    --error-light: #3a2824;
-    
-    --background-color: #121212;
-    --surface-color: #1e1e1e;
-    --hero-bg: linear-gradient(135deg, #1e1e5a 0%, #252550 100%);
-    --text-primary: #e0e0e0;
-    --text-secondary: #a0a0a0;
-    --text-tertiary: #6e6e6e;
-    --border-color: #333333;
-    
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.6), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Noto Sans JP', sans-serif;
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-primary);
-    line-height: 1.6;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    font-size: 16px;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    transition: background-color var(--transition-normal), color var(--transition-normal);
-}
-
-/* スクロールバーのカスタマイズ */
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--background-color);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--text-tertiary);
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--text-secondary);
-}
-
-/* ローディングオーバーレイ */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.9);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    backdrop-filter: blur(3px);
-    transition: opacity var(--transition-normal);
-}
-
-[data-theme="dark"] .loading-overlay {
-    background-color: rgba(18, 18, 18, 0.9);
-}
-
-.loading-overlay.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
-
-.loading-spinner {
-    width: 3rem;
-    height: 3rem;
-    border: 3px solid var(--background-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-}
-
-.loading-spinner-sm {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid var(--background-color);
-    border-top-color: var(--primary-color);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-bottom: 0.5rem;
-}
-
-.notification-loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem;
-    color: var(--text-tertiary);
-}
-
-.notification-loading p {
-    font-size: 0.875rem;
-    margin: 0;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ヘッダー */
-header {
-    background-color: var(--surface-color);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-md);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    transition: all var(--transition-normal);
-    height: var(--header-height);
-    display: flex;
-    align-items: center;
-    padding: 0 2rem;
-}
-
-.header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    max-width: var(--max-content-width);
-    margin: 0 auto;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    font-weight: 700;
-    font-size: 1.5rem;
-    text-decoration: none;
-    color: var(--text-primary);
-}
-
-.logo-text {
-    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 700;
-}
-
-.logo img {
-    height: 2.5rem;
-    margin-right: 0.75rem;
-}
-
-nav ul {
-    display: flex;
-    list-style: none;
-    gap: 1.5rem;
-}
-
-nav ul li a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    padding: 0.5rem 0;
-    position: relative;
-    transition: color var(--transition-fast);
-    cursor: pointer;
-}
-
-nav ul li a:hover {
-    color: var(--primary-color);
-}
-
-nav ul li a::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: var(--primary-color);
-    transition: width var(--transition-fast);
-}
-
-nav ul li a:hover::after,
-nav ul li a.active::after {
-    width: 100%;
-}
-
-/* ユーザーメニュー */
-.user-menu {
-    position: relative;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-
-.user-avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    background-color: var(--primary-light);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 600;
-    color: var(--primary-color);
-    margin-right: 0.75rem;
-}
-
-.user-avatar img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.user-name {
-    font-weight: 500;
-    margin-right: 0.5rem;
-}
-
-.dropdown-arrow {
-    transition: transform var(--transition-fast);
-}
-
-.user-menu:hover .dropdown-arrow {
-    transform: rotate(180deg);
-}
-
-.user-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background-color: var(--surface-color);
-    box-shadow: var(--shadow-lg);
-    border-radius: var(--radius-md);
-    width: 200px;
-    padding: 0.5rem 0;
-    display: none;
-    z-index: 101;
-    margin-top: 0.5rem;
-    border: 1px solid var(--border-color);
-}
-
-.user-menu:hover .user-dropdown {
-    display: block;
-}
-
-.user-dropdown a {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: background-color var(--transition-fast);
-}
-
-.user-dropdown a:hover {
-    background-color: var(--primary-light);
-}
-
-.user-dropdown a i {
-    margin-right: 0.75rem;
-    color: var(--text-tertiary);
-}
-
-.user-dropdown hr {
-    border: none;
-    border-top: 1px solid var(--border-color);
-    margin: 0.5rem 0;
-}
-
-/* 通知システム */
-.notification-system {
-    position: relative;
-    margin-right: 1rem;
-}
-
-.notification-bell {
-    position: relative;
-}
-
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--accent-color);
-    color: white;
-    border-radius: 50%;
-    min-width: 18px;
-    height: 18px;
-    font-size: 0.7rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-}
-
-.notification-dropdown {
-    position: absolute;
-    top: 100%;
-    right: -10px;
-    width: 320px;
-    background-color: var(--surface-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-xl);
-    z-index: 1000;
-    overflow: hidden;
-    display: none;
-    margin-top: 10px;
-    border: 1px solid var(--border-color);
-}
-
-.notification-dropdown.active {
-    display: block;
-    animation: fadeIn 0.2s ease;
-}
-
-.notification-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.notification-header h3 {
-    margin: 0;
-    font-size: 1rem;
-}
-
-.notification-controls {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.notification-body {
-    max-height: 350px;
-    overflow-y: auto;
-}
-
-.notification-item {
-    display: flex;
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    transition: background-color var(--transition-fast);
-    cursor: pointer;
-}
-
-.notification-item:hover {
-    background-color: var(--background-color);
-}
-
-.notification-item.unread {
-    background-color: var(--primary-light);
-}
-
-.notification-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.notification-content {
-    flex: 1;
-}
-
-.notification-title {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-}
-
-.notification-message {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-}
-
-.notification-time {
-    color: var(--text-tertiary);
-    font-size: 0.75rem;
-}
-
-.notification-footer {
-    padding: 1rem;
-    border-top: 1px solid var(--border-color);
-}
-
-/* メイン */
-main {
-    flex: 1;
-    padding: 0;
-    margin: 0 auto;
-    width: 100%;
-    max-width: var(--max-content-width);
-}
-
-/* ヒーローセクション */
-.hero-section {
-    background: var(--hero-bg);
-    padding: 3rem 2rem;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
-.hero-section::after {
-    content: '';
-    position: absolute;
-    bottom: -50px;
-    right: -50px;
-    width: 200px;
-    height: 200px;
-    background: var(--primary-light);
-    border-radius: 50%;
-    opacity: 0.3;
-    z-index: 0;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: -30px;
-    left: -30px;
-    width: 150px;
-    height: 150px;
-    background: var(--accent-light);
-    border-radius: 50%;
-    opacity: 0.3;
-    z-index: 0;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 2rem;
-}
-
-.hero-section h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-}
-
-.welcome-message {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.user-stats {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    flex-wrap: wrap;
-    position: relative;
-    z-index: 1;
-}
-
-.stat-item {
-    display: flex;
-    align-items: center;
-    background-color: var(--surface-color);
-    border-radius: var(--radius-lg);
-    padding: 1rem 1.5rem;
-    box-shadow: var(--shadow-md);
-    min-width: 200px;
-}
-
-.stat-icon {
-    width: 3rem;
-    height: 3rem;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.stat-icon.primary {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
-}
-
-.stat-icon.warning {
-    background-color: var(--warning-light);
-    color: var(--warning-color);
-}
-
-.stat-icon.accent {
-    background-color: var(--accent-light);
-    color: var(--accent-color);
-}
-
-.stat-details h4 {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-.stat-details p {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-}
-
-/* セクションタイトル */
-.section-title {
-    margin: 0 2rem 1.5rem 2rem;
-}
-
-.section-title h2 {
-    font-size: 1.75rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-}
-
-.section-title p {
-    color: var(--text-secondary);
-    margin: 0;
-}
-
-/* メニューグリッド */
-.menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin: 0 2rem 2rem 2rem;
-}
-
-.menu-card {
-    background-color: var(--surface-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    text-decoration: none;
-    color: var(--text-primary);
-    transition: all var(--transition-normal);
-    overflow: hidden;
-    position: relative;
-}
-
-.menu-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--primary-color);
-}
-
-.menu-icon {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.25rem;
-    font-size: 1.75rem;
-    flex-shrink: 0;
-}
-
-.menu-icon.primary {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
-}
-
-.menu-icon.secondary {
-    background-color: var(--secondary-light);
-    color: var(--secondary-color);
-}
-
-.menu-icon.accent {
-    background-color: var(--accent-light);
-    color: var(--accent-color);
-}
-
-.menu-icon.warning {
-    background-color: var(--warning-light);
-    color: var(--warning-color);
-}
-
-.menu-icon.info {
-    background-color: var(--info-light);
-    color: var(--info-color);
-}
-
-.menu-icon.success {
-    background-color: var(--success-light);
-    color: var(--success-color);
-}
-
-.menu-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-.menu-content h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.75rem;
-}
-
-.menu-content p {
-    color: var(--text-secondary);
-    font-size: 0.9375rem;
-    margin: 0 0 1.5rem 0;
-    flex: 1;
-}
-
-.btn-text {
-    display: flex;
-    align-items: center;
-    color: var(--primary-color);
-    font-weight: 500;
-    font-size: 0.875rem;
-}
-
-.btn-text i {
-    margin-left: 0.5rem;
-    transition: transform var(--transition-fast);
-}
-
-.menu-card:hover .btn-text i {
-    transform: translateX(4px);
-}
-
-/* 2カラムレイアウト */
-.two-column-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin: 0 2rem 2rem 2rem;
-}
-
-.section-card {
-    background-color: var(--surface-color);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border-color);
-    padding: 1.5rem;
-    height: 100%;
-}
-
-.section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.25rem;
-}
-
-.section-header h2 {
-    font-size: 1.25rem;
-    margin: 0;
-}
-
-/* 活動リスト */
-.activity-list {
-    list-style: none;
-}
-
-.activity-item {
-    display: flex;
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.activity-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.activity-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.activity-content {
-    flex: 1;
-}
-
-.activity-title {
-    margin: 0;
-    color: var(--text-primary);
-    font-weight: 500;
-}
-
-.activity-time {
-    font-size: 0.875rem;
-    color: var(--text-tertiary);
-    margin-top: 0.25rem;
-}
-
-/* ミッションリスト */
-.mission-list {
-    list-style: none;
-}
-
-.mission-item {
-    padding: 1rem 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.mission-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.mission-title {
-    display: flex;
-    align-items: center;
-    margin: 0 0 0.5rem 0;
-    font-weight: 500;
-}
-
-.mission-title i {
-    margin-right: 0.75rem;
-    color: var(--warning-color);
-}
-
-.mission-description {
-    color: var(--text-secondary);
-    font-size: 0.9375rem;
-    margin: 0 0 0.75rem 0;
-}
-
-.mission-progress {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.875rem;
-    color: var(--text-tertiary);
-}
-
-.mission-progress .btn {
-    padding: 0.25rem 0.75rem;
-    font-size: 0.75rem;
-}
-
-/* プレースホルダー用のシマー効果 */
-.activity-item-placeholder,
-.mission-item-placeholder {
-    height: 4rem;
-    margin-bottom: 1rem;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    position: relative;
-}
-
-.activity-item-placeholder:last-child,
-.mission-item-placeholder:last-child {
-    margin-bottom: 0;
-}
-
-.shimmer {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        var(--background-color) 0%,
-        rgba(255, 255, 255, 0.1) 50%,
-        var(--background-color) 100%
-    );
-    background-size: 200% 100%;
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
-}
-
-/* ボタン */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.625rem 1.25rem;
-    border-radius: var(--radius-md);
-    font-weight: 500;
-    border: none;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-decoration: none;
-    white-space: nowrap;
-    font-size: 0.9375rem;
-}
-
-.btn i {
-    margin-right: 0.5rem;
-}
-
-.btn-primary {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-.btn-primary:hover {
-    background-color: var(--primary-dark);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-secondary {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.btn-secondary:hover {
-    background-color: var(--secondary-dark);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-accent {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-.btn-accent:hover {
-    background-color: var(--accent-dark);
-    box-shadow: var(--shadow-md);
-}
-
-.btn-outline {
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-}
-
-.btn-outline:hover {
-    border-color: var(--primary-color);
-    color: var(--primary-color);
-    background-color: var(--primary-light);
-}
-
-.btn-link {
-    background: none;
-    color: var(--primary-color);
-    padding: 0.25rem 0.5rem;
-    box-shadow: none;
-}
-
-.btn-link:hover {
-    text-decoration: underline;
-    background: none;
-}
-
-.btn-small {
-    padding: 0.375rem 0.75rem;
-    font-size: 0.875rem;
-}
-
-.btn-icon {
-    width: 2.5rem;
-    height: 2.5rem;
-    padding: 0;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-icon i {
-    margin-right: 0;
-}
-
-.w-100 {
-    width: 100%;
-}
-
-/* テーマ切替ボタン */
-.theme-switcher {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 99;
-}
-
-.theme-switcher button {
-    background-color: var(--surface-color);
-    color: var(--text-primary);
-    box-shadow: var(--shadow-lg);
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    transition: all var(--transition-normal);
-}
-
-.theme-switcher button:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-xl);
-}
-
-/* ダークモード時のアイコン変更 */
-#theme-icon-dark {
-    display: none;
-}
-
-[data-theme="dark"] #theme-icon-light {
-    display: none;
-}
-
-[data-theme="dark"] #theme-icon-dark {
-    display: inline-block;
-}
-
-/* 汎用スタイル */
-.stat-primary {
-    background-color: var(--primary-light);
-    color: var(--primary-color);
-}
-
-.stat-secondary {
-    background-color: var(--secondary-light);
-    color: var(--secondary-color);
-}
-
-.stat-accent {
-    background-color: var(--accent-light);
-    color: var(--accent-color);
-}
-
-.stat-warning {
-    background-color: var(--warning-light);
-    color: var(--warning-color);
-}
-
-.stat-success {
-    background-color: var(--success-light);
-    color: var(--success-color);
-}
-
-.stat-info {
-    background-color: var(--info-light);
-    color: var(--info-color);
-}
-
-/* 空の状態表示 */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-    text-align: center;
-    color: var(--text-tertiary);
-}
-
-.empty-state i {
-    font-size: 2rem;
-    margin-bottom: 0.75rem;
-    opacity: 0.6;
-}
-
-.empty-state p {
-    margin-bottom: 1rem;
-}
-
-/* フッター */
-footer {
-    background-color: var(--surface-color);
-    color: var(--text-secondary);
-    padding: 3rem 2rem;
-    box-shadow: 0 -1px 0 var(--border-color);
-    margin-top: 3rem;
-}
-
-.footer-content {
-    max-width: var(--max-content-width);
-    margin: 0 auto;
-}
-
-.footer-top {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-.footer-section {
-    flex: 1;
-    min-width: 200px;
-}
-
-.footer-logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    display: block;
-    color: var(--text-primary);
-    text-decoration: none;
-}
-
-.footer-section h3 {
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
-.footer-links {
-    list-style: none;
-}
-
-.footer-links li {
-    margin-bottom: 0.75rem;
-}
-
-.footer-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color var(--transition-fast);
-    cursor: pointer;
-}
-
-.footer-links a:hover {
-    color: var(--primary-color);
-}
-
-.footer-bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.copyright {
-    font-size: 0.875rem;
-}
-
-.footer-nav {
-    display: flex;
-    gap: 1.5rem;
-}
-
-.footer-nav a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-size: 0.875rem;
-    transition: color var(--transition-fast);
-}
-
-.footer-nav a:hover {
-    color: var(--primary-color);
-}
-
-/* アニメーション */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.fade-in {
-    animation: fadeIn 0.5s ease forwards;
-}
-
-/* レスポンシブデザイン */
-@media (max-width: 1200px) {
-    .menu-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
-}
-
-@media (max-width: 992px) {
-    .two-column-layout {
-        grid-template-columns: 1fr;
-    }
-    
-    .hero-section {
-        padding: 2rem 1.5rem;
-    }
-    
-    .user-stats {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    
-    .stat-item {
-        min-width: auto;
-        flex: 1;
-    }
-}
-
-@media (max-width: 768px) {
-    .header-content {
-        flex-wrap: wrap;
-    }
-
-    nav {
-        width: 100%;
-        margin: 1rem 0;
-        order: 3;
-    }
-
-    nav ul {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .hero-section h1 {
-        font-size: 2rem;
-    }
-    
-    .welcome-message {
-        font-size: 1rem;
-    }
-    
-    .menu-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .section-title,
-    .menu-grid,
-    .two-column-layout {
-        margin-left: 1rem;
-        margin-right: 1rem;
-    }
-    
-    .hero-section::before,
-    .hero-section::after {
-        display: none;
-    }
-    
-    .theme-switcher {
-        bottom: 1rem;
-        right: 1rem;
-    }
-    
-    .footer-section {
-        min-width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    header {
-        padding: 0 1rem;
-    }
-    
-    .user-stats {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .stat-item {
-        width: 100%;
-    }
-    
-    .notification-dropdown {
-        width: 280px;
-    }
-    
-    .footer-bottom {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-}
-</style>
-</head>
-<body>
-    <header>
-        <div class="header-content">
-            <a href="index.html" class="logo">
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="" class="logo">
                 <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
-                <span class="logo-text">KatsujiRingX</span>
+                <span>KatsujiRingX</span>
             </a>
-            <nav>
-                <ul id="nav-menu">
-                    <li><a href="#" class="active">マイページ</a></li>
-                </ul>
-            </nav>
-            <div class="user-menu">
-                <div class="user-avatar">
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="" class="menu-item active">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="editor.html" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="projects.html" class="menu-item">
+                <i class="fas fa-project-diagram"></i> プロジェクト
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+            <a href="settings.html" class="menu-item">
+                <i class="fas fa-cog"></i> 設定
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
                     <span id="user-initial">U</span>
                 </div>
-                <span class="user-name" id="header-user-name">ユーザー名</span>
-                <i class="fas fa-chevron-down dropdown-arrow"></i>
-                <div class="user-dropdown">
-                    <a href="profile.html">
-                        <i class="fas fa-user"></i>プロフィール
-                    </a>
-                    <a href="settings.html">
-                        <i class="fas fa-cog"></i>設定
-                    </a>
-                    <a href="notifications.html">
-                        <i class="fas fa-bell"></i>通知
-                    </a>
-                    <hr>
-                    <a href="#" id="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>ログアウト
-                    </a>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
                 </div>
             </div>
             
-            <!-- 通知システム -->
-            <div class="notification-system">
-                <div class="notification-bell">
-                    <button class="btn btn-icon notification-toggle" id="notification-toggle">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge" id="notification-count">0</span>
-                    </button>
-                    <div class="notification-dropdown" id="notification-dropdown">
-                        <div class="notification-header">
-                            <h3>通知</h3>
-                            <div class="notification-controls">
-                                <button class="btn btn-small btn-link" id="mark-all-read">すべて既読</button>
-                                <button class="btn btn-small btn-link" id="notification-settings">設定</button>
-                            </div>
-                        </div>
-                        <div class="notification-body" id="notification-list">
-                            <!-- 通知リストがここに動的に追加されます -->
-                            <div class="notification-loading">
-                                <div class="loading-spinner-sm"></div>
-                                <p>読み込み中...</p>
-                            </div>
-                        </div>
-                        <div class="notification-footer">
-                            <a href="notifications.html" class="btn btn-outline btn-small w-100">すべての通知を見る</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <main>
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1>こんにちは、<span id="user-name">ユーザー</span>さん</h1>
-                <p class="welcome-message">KatsujiRingXへようこそ。今日も活字化活動を始めましょう。</p>
-            </div>
-            <div class="user-stats">
-                <div class="stat-item">
-                    <div class="stat-icon primary">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <div class="stat-details">
-                        <h4>活字化文書</h4>
-                        <p id="document-count">0</p>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon warning">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <div class="stat-details">
-                        <h4>達成ミッション</h4>
-                        <p id="mission-count">0/10</p>
-                    </div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-icon accent">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="stat-details">
-                        <h4>経験値</h4>
-                        <p id="point-count">0</p>
-                    </div>
-                </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="section-title">
-            <h2>機能メニュー</h2>
-            <p>必要な機能にすぐにアクセスできます</p>
-        </div>
-        
-        <div class="menu-grid">
-            <a href="editor.html" class="menu-card">
-                <div class="menu-icon primary">
-                    <i class="fas fa-edit"></i>
-                </div>
-                <div class="menu-content">
-                    <h2>活字化エディタ</h2>
-                    <p>文書の活字化作業を行います。OCR機能を使って効率的に文字起こしができます。</p>
-                    <span class="btn-text">エディタを開く <i class="fas fa-chevron-right"></i></span>
-                </div>
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
             </a>
-            
-            <a href="documents.html" class="menu-card">
-                <div class="menu-icon secondary">
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ホーム</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>ダッシュボード</span>
+            </div>
+            <h1 class="page-title">こんにちは、ユーザーさん</h1>
+        </div>
+        
+        <!-- 統計カード -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon stat-primary">
                     <i class="fas fa-file-alt"></i>
                 </div>
-                <div class="menu-content">
-                    <h2>資料管理</h2>
-                    <p>アップロードした資料の管理や整理を行います。効率的に資料を検索できます。</p>
-                    <span class="btn-text">資料を管理 <i class="fas fa-chevron-right"></i></span>
+                <div class="stat-content">
+                    <div class="stat-value" id="document-count">0</div>
+                    <div class="stat-label">活字化文書</div>
                 </div>
-            </a>
+            </div>
             
-            <a href="projects.html" class="menu-card">
-                <div class="menu-icon accent">
-                    <i class="fas fa-project-diagram"></i>
+            <div class="stat-card">
+                <div class="stat-icon stat-warning">
+                    <i class="fas fa-trophy"></i>
                 </div>
-                <div class="menu-content">
-                    <h2>プロジェクト</h2>
-                    <p>活字化プロジェクトの作成・管理を行います。チームでの共同作業もサポートします。</p>
-                    <span class="btn-text">プロジェクト管理 <i class="fas fa-chevron-right"></i></span>
+                <div class="stat-content">
+                    <div class="stat-value" id="mission-count">0/10</div>
+                    <div class="stat-label">達成ミッション</div>
                 </div>
-            </a>
+            </div>
             
-            <a href="games.html" class="menu-card">
-                <div class="menu-icon warning">
-                    <i class="fas fa-gamepad"></i>
+            <div class="stat-card">
+                <div class="stat-icon stat-success">
+                    <i class="fas fa-star"></i>
                 </div>
-                <div class="menu-content">
-                    <h2>ゲーム・ミッション</h2>
-                    <p>崩し字の読解スキルを楽しく向上させるゲームやチャレンジに挑戦できます。</p>
-                    <span class="btn-text">ゲームで学ぶ <i class="fas fa-chevron-right"></i></span>
+                <div class="stat-content">
+                    <div class="stat-value" id="point-count">0</div>
+                    <div class="stat-label">経験値</div>
                 </div>
-            </a>
+            </div>
             
-            <a href="history.html" class="menu-card">
-                <div class="menu-icon info">
-                    <i class="fas fa-history"></i>
-                </div>
-                <div class="menu-content">
-                    <h2>活動履歴</h2>
-                    <p>過去の活動記録や進捗状況を確認できます。あなたの成長が見えます。</p>
-                    <span class="btn-text">履歴を見る <i class="fas fa-chevron-right"></i></span>
-                </div>
-            </a>
-            
-            <a href="community.html" class="menu-card">
-                <div class="menu-icon success">
+            <div class="stat-card">
+                <div class="stat-icon stat-info">
                     <i class="fas fa-users"></i>
                 </div>
-                <div class="menu-content">
-                    <h2>コミュニティ</h2>
-                    <p>他のユーザーとの交流や共同プロジェクトを行えます。知識を共有しましょう。</p>
-                    <span class="btn-text">交流する <i class="fas fa-chevron-right"></i></span>
+                <div class="stat-content">
+                    <div class="stat-value" id="community-count">0</div>
+                    <div class="stat-label">コミュニティ投稿</div>
                 </div>
-            </a>
-
-            <a href="blog.html" class="menu-card">
-                <div class="menu-icon success">
-                    <i class="fas fa-pen"></i>
-                </div>
-                <div class="menu-content">
-                    <h2>ブログ</h2>
-                    <p>最新情報、活用事例、使い方のヒントを発信しています</p>
-                    <span class="btn-text">見る <i class="fas fa-chevron-right"></i></span>
-                </div>
-            </a>
+            </div>
         </div>
         
-        <div class="two-column-layout">
-            <div class="column">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h2>最近の活動</h2>
-                        <a href="history.html" class="btn btn-link">すべて表示</a>
+        <!-- クイックアクセス -->
+        <div class="card-section">
+            <div class="section-header">
+                <h2 class="section-title">クイックアクセス</h2>
+            </div>
+            
+            <div class="quick-access">
+                <a href="editor.html" class="quick-card">
+                    <div class="quick-icon">
+                        <i class="fas fa-edit"></i>
                     </div>
+                    <div class="quick-content">
+                        <h3 class="quick-title">活字化エディタ</h3>
+                        <p class="quick-desc">OCR機能を使って効率的に文書の活字化作業を行います</p>
+                        <span class="quick-action">エディタを開く <i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="documents.html" class="quick-card">
+                    <div class="quick-icon" style="background-color: var(--secondary-light); color: var(--secondary);">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="quick-content">
+                        <h3 class="quick-title">資料管理</h3>
+                        <p class="quick-desc">アップロードした資料の管理や整理、検索を行います</p>
+                        <span class="quick-action">資料を管理 <i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="games.html" class="quick-card">
+                    <div class="quick-icon" style="background-color: var(--warning-light); color: var(--warning);">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <div class="quick-content">
+                        <h3 class="quick-title">学習ゲーム</h3>
+                        <p class="quick-desc">崩し字の読解スキルを楽しく向上させるゲームに挑戦</p>
+                        <span class="quick-action">ゲームで学ぶ <i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </a>
+                
+                <a href="community.html" class="quick-card">
+                    <div class="quick-icon" style="background-color: var(--info-light); color: var(--info);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="quick-content">
+                        <h3 class="quick-title">コミュニティ</h3>
+                        <p class="quick-desc">他のユーザーとの交流や共同プロジェクトを行います</p>
+                        <span class="quick-action">交流する <i class="fas fa-chevron-right"></i></span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 2カラムレイアウト -->
+        <div class="grid-2">
+            <!-- 最近の活動 -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>最近の活動</h3>
+                    <a href="history.html" class="btn btn-sm btn-outline">すべて表示</a>
+                </div>
+                <div class="card-body">
                     <ul class="activity-list" id="activity-list">
+                        <div id="activity-loading">
+                            <div class="loading-spinner"></div>
+                        </div>
                         <!-- 活動リストがここに動的に追加されます -->
-                        <li class="activity-item-placeholder">
-                            <div class="shimmer"></div>
-                        </li>
-                        <li class="activity-item-placeholder">
-                            <div class="shimmer"></div>
-                        </li>
-                        <li class="activity-item-placeholder">
-                            <div class="shimmer"></div>
-                        </li>
                     </ul>
                 </div>
             </div>
             
-            <div class="column">
-                <div class="section-card">
-                    <div class="section-header">
-                        <h2>本日のミッション</h2>
-                        <a href="missions.html" class="btn btn-link">すべて表示</a>
-                    </div>
-                    <ul class="mission-list" id="mission-list">
+            <!-- ミッション -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>本日のミッション</h3>
+                    <a href="missions.html" class="btn btn-sm btn-outline">すべて表示</a>
+                </div>
+                <div class="card-body">
+                    <ul class="notice-list" id="mission-list">
+                        <div id="mission-loading">
+                            <div class="loading-spinner"></div>
+                        </div>
                         <!-- ミッションリストがここに動的に追加されます -->
-                        <li class="mission-item-placeholder">
-                            <div class="shimmer"></div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- お知らせ -->
+        <div class="card-section">
+            <div class="card">
+                <div class="card-header">
+                    <h3>お知らせ</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="notice-list" id="announcement-list">
+                        <div id="announcement-loading">
+                            <div class="loading-spinner"></div>
+                        </div>
+                        <!-- お知らせがここに動的に追加されます -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScripts -->
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // 日本語ロケールの設定
+        auth.languageCode = 'ja';
+
+        // DOM要素の参照
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const userInitial = document.getElementById('user-initial');
+        const userAvatar = document.getElementById('user-avatar');
+        const documentCount = document.getElementById('document-count');
+        const missionCount = document.getElementById('mission-count');
+        const pointCount = document.getElementById('point-count');
+        const communityCount = document.getElementById('community-count');
+        const activityList = document.getElementById('activity-list');
+        const activityLoading = document.getElementById('activity-loading');
+        const missionList = document.getElementById('mission-list');
+        const missionLoading = document.getElementById('mission-loading');
+        const announcementList = document.getElementById('announcement-list');
+        const announcementLoading = document.getElementById('announcement-loading');
+        const logoutBtn = document.getElementById('logout-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // ユーザーがログインしている場合
+                console.log("ログイン中:", user.uid);
+                
+                // 初期表示名の即時反映（暫定表示）
+                const initialDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                document.querySelector('.page-title').textContent = `こんにちは、${initialDisplayName}さん`;
+                if (sidebarUserName) {
+                    sidebarUserName.textContent = initialDisplayName;
+                }
+                
+                // ユーザーの初期アバター表示
+                if (userInitial && user.displayName) {
+                    const initial = user.displayName.charAt(0).toUpperCase();
+                    userInitial.textContent = initial;
+                    
+                    if (user.photoURL) {
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = user.photoURL;
+                        avatarImg.alt = user.displayName;
+                        userAvatar.innerHTML = '';
+                        userAvatar.appendChild(avatarImg);
+                    }
+                }
+                
+                // 完全なユーザーデータ取得
+                fetchUserData(user.uid);
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ユーザーデータの取得
+        async function fetchUserData(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                const currentUser = auth.currentUser;
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    // Firebase Authentication からの最新ユーザー名があれば更新
+                    if (currentUser && currentUser.displayName && 
+                        currentUser.displayName !== userData.displayName) {
+                        await db.collection('users').doc(userId).update({
+                            displayName: currentUser.displayName
+                        });
+                        userData.displayName = currentUser.displayName;
+                    }
+                    
+                    // ユーザー名を表示
+                    if (sidebarUserName) {
+                        sidebarUserName.textContent = userData.displayName || 'ゲスト';
+                    }
+                    
+                    // ユーザーアバター設定
+                    if (userInitial) {
+                        const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                        userInitial.textContent = initial;
+                        
+                        // Firebase Authentication のプロフィール画像を優先
+                        const profileImageUrl = (currentUser && currentUser.photoURL) || userData.profileImageUrl;
+                        if (profileImageUrl) {
+                            const avatarImg = document.createElement('img');
+                            avatarImg.src = profileImageUrl;
+                            avatarImg.alt = userData.displayName || 'ユーザー';
+                            userAvatar.innerHTML = '';
+                            userAvatar.appendChild(avatarImg);
+                        }
+                    }
+                    
+                    // 統計情報の表示
+                    if (documentCount) {
+                        documentCount.textContent = userData.documentCount || '0';
+                    }
+                    
+                    if (pointCount) {
+                        pointCount.textContent = userData.points || '0';
+                    }
+                    
+                    if (communityCount) {
+                        communityCount.textContent = userData.communityPosts || '0';
+                    }
+                    
+                    // 活動履歴とミッションの取得
+                    fetchActivities(userId);
+                    fetchMissions(userId);
+                    
+                } else {
+                    console.log("ユーザーデータが見つかりません");
+                    // ユーザーデータがない場合は新規作成
+                    await createUserProfile(auth.currentUser);
+                }
+            } catch (error) {
+                console.error("ユーザーデータ取得エラー:", error);
+            }
+        }
+
+        // 新規ユーザープロファイルの作成
+        async function createUserProfile(user) {
+            try {
+                // ユーザー名を Authentication から取得
+                // displayName が null の場合は、メールアドレスの @ より前の部分を使用
+                let displayName = user.displayName;
+                if (!displayName && user.email) {
+                    displayName = user.email.split('@')[0];
+                } else if (!displayName) {
+                    displayName = '新規ユーザー';
+                }
+                
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: displayName,
+                    profileImageUrl: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    documentCount: 0,
+                    points: 0,
+                    communityPosts: 0,
+                    level: 1
+                };
+                
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log("ユーザープロファイル作成完了");
+                
+                // 初期ミッションの作成
+                await createDefaultMissions(user.uid);
+                
+                // 初期アクティビティログの作成
+                await db.collection('activities').add({
+                    userId: user.uid,
+                    type: 'account_created',
+                    title: 'アカウント作成',
+                    description: 'KatsujiRingXへようこそ！アカウントが作成されました。',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // ページをリロード
+                window.location.reload();
+            } catch (error) {
+                console.error("ユーザープロファイル作成エラー:", error);
+            }
+        }
+
+        // 活動履歴の取得
+        async function fetchActivities(userId) {
+            try {
+                if (!activityList) return;
+                
+                // 最近の活動履歴を取得
+                const activitiesSnapshot = await db.collection('activities')
+                    .where('userId', '==', userId)
+                    .orderBy('timestamp', 'desc')
+                    .limit(5)
+                    .get();
+                
+                // ローディング表示を非表示
+                if (activityLoading) {
+                    activityLoading.style.display = 'none';
+                }
+                
+                if (activitiesSnapshot.empty) {
+                    // 活動履歴がない場合
+                    activityList.innerHTML = `
+                        <div style="text-align: center; padding: 2rem 0;">
+                            <i class="fas fa-history" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                            <p style="color: var(--text-muted);">まだ活動がありません</p>
+                            <a href="editor.html" class="btn btn-primary mt-3">活字化を始める</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 活動履歴を表示
+                let activityHTML = '';
+                
+                activitiesSnapshot.forEach(doc => {
+                    const activity = doc.data();
+                    
+                    // 日時フォーマット
+                    const timestamp = activity.timestamp.toDate();
+                    const formattedDate = new Intl.DateTimeFormat('ja-JP', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    }).format(timestamp);
+                    
+                    // アイコンとカラー設定
+                    let iconClass = 'fas fa-file-alt';
+                    let iconColorClass = 'stat-primary';
+                    
+                    switch (activity.type) {
+                        case 'document_created':
+                            iconClass = 'fas fa-file-alt';
+                            iconColorClass = 'stat-primary';
+                            break;
+                        case 'document_edited':
+                            iconClass = 'fas fa-edit';
+                            iconColorClass = 'stat-info';
+                            break;
+                        case 'mission_completed':
+                            iconClass = 'fas fa-trophy';
+                            iconColorClass = 'stat-warning';
+                            break;
+                        case 'level_up':
+                            iconClass = 'fas fa-star';
+                            iconColorClass = 'stat-accent';
+                            break;
+                        case 'achievement':
+                            iconClass = 'fas fa-medal';
+                            iconColorClass = 'stat-success';
+                            break;
+                        case 'account_created':
+                            iconClass = 'fas fa-user-plus';
+                            iconColorClass = 'stat-secondary';
+                            break;
+                        default:
+                            iconClass = 'fas fa-history';
+                            iconColorClass = 'stat-secondary';
+                    }
+                    
+                    activityHTML += `
+                        <li class="activity-item">
+                            <div class="activity-icon ${iconColorClass}">
+                                <i class="${iconClass}"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-title">${activity.title}</div>
+                                <div class="activity-time">${formattedDate}</div>
+                            </div>
                         </li>
-                        <li class="mission-item-placeholder">
-                            <div class="shimmer"></div>
+                    `;
+                });
+                
+                activityList.innerHTML = activityHTML;
+                
+            } catch (error) {
+                console.error("活動履歴取得エラー:", error);
+                
+                if (activityList) {
+                    activityList.innerHTML = `
+                        <div style="text-align: center; padding: 2rem 0;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 0.5rem;"></i>
+                            <p style="color: var(--text-muted);">活動履歴の読み込み中にエラーが発生しました</p>
+                        </div>
+                    `;
+                }
+                
+                if (activityLoading) {
+                    activityLoading.style.display = 'none';
+                }
+            }
+        }
+
+        // ミッションの取得
+        async function fetchMissions(userId) {
+            try {
+                if (!missionList) return;
+                
+                // 今日の日付
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // ミッション取得
+                const missionsSnapshot = await db.collection('missions')
+                    .where('userId', '==', userId)
+                    .where('date', '>=', today)
+                    .orderBy('date', 'asc')
+                    .limit(3)
+                    .get();
+                
+                // ローディング表示を非表示
+                if (missionLoading) {
+                    missionLoading.style.display = 'none';
+                }
+                
+                if (missionsSnapshot.empty) {
+                    // ミッションがない場合は新規作成
+                    await createDefaultMissions(userId);
+                    return fetchMissions(userId);
+                }
+                
+                // 完了ミッション数の取得と表示
+                const completedMissionsSnapshot = await db.collection('missions')
+                    .where('userId', '==', userId)
+                    .where('completed', '==', true)
+                    .get();
+                
+                const totalMissionsSnapshot = await db.collection('missions')
+                    .where('userId', '==', userId)
+                    .get();
+                
+                if (missionCount) {
+                    missionCount.textContent = `${completedMissionsSnapshot.size}/${totalMissionsSnapshot.size}`;
+                }
+                
+                // ミッションを表示
+                let missionHTML = '';
+                
+                missionsSnapshot.forEach(doc => {
+                    const mission = doc.data();
+                    
+                    const progressText = mission.completed ? '完了' : '未完了';
+                    const progressButtonClass = mission.completed ? 'btn-outline' : 'btn-primary';
+                    const progressButtonText = mission.completed ? '詳細を見る' : 'チャレンジ';
+                    const progressButtonLink = mission.completed ? `mission-details.html?id=${doc.id}` : mission.link;
+                    
+                    missionHTML += `
+                        <li class="notice-item">
+                            <h4 class="notice-title"><i class="fas fa-trophy"></i> ${mission.title}</h4>
+                            <p class="notice-content">${mission.description}</p>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: var(--text-muted); font-size: 0.75rem;">${progressText}</span>
+                                <a href="${progressButtonLink}" class="btn btn-sm ${progressButtonClass}">${progressButtonText}</a>
+                            </div>
                         </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+                    `;
+                });
+                
+                missionList.innerHTML = missionHTML;
+                
+            } catch (error) {
+                console.error("ミッション取得エラー:", error);
+                
+                if (missionList) {
+                    missionList.innerHTML = `
+                        <div style="text-align: center; padding: 2rem 0;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 0.5rem;"></i>
+                            <p style="color: var(--text-muted);">ミッションの読み込み中にエラーが発生しました</p>
+                        </div>
+                    `;
+                }
+                
+                if (missionLoading) {
+                    missionLoading.style.display = 'none';
+                }
+            }
+        }
 
-        <!-- テーマ切替ボタン -->
-        <div class="theme-switcher">
-            <button class="btn btn-icon" id="theme-toggle" title="テーマ切り替え">
-                <i class="fas fa-sun" id="theme-icon-light"></i>
-                <i class="fas fa-moon" id="theme-icon-dark"></i>
-            </button>
-        </div>
-    </main>
+        // デフォルトミッションを作成
+        async function createDefaultMissions(userId) {
+            try {
+                const today = new Date();
+                
+                // デフォルトミッション定義
+                const defaultMissions = [
+                    {
+                        userId: userId,
+                        title: '本日の崩し字チャレンジ',
+                        description: '今日の崩し字テストで5問解いてみましょう',
+                        date: today,
+                        completed: false,
+                        link: 'games.html?type=kuzushiji',
+                        type: 'daily'
+                    },
+                    {
+                        userId: userId,
+                        title: '活字化エディタで文書を編集',
+                        description: '活字化エディタで5分以上文書の編集を行いましょう',
+                        date: today,
+                        completed: false,
+                        link: 'editor.html',
+                        type: 'daily'
+                    },
+                    {
+                        userId: userId,
+                        title: 'コミュニティに参加する',
+                        description: 'コミュニティの議論に参加して他のユーザーと交流しましょう',
+                        date: today,
+                        completed: false,
+                        link: 'community.html',
+                        type: 'weekly'
+                    }
+                ];
+                
+                // バッチ処理
+                const batch = db.batch();
+                
+                defaultMissions.forEach(mission => {
+                    const missionRef = db.collection('missions').doc();
+                    batch.set(missionRef, mission);
+                });
+                
+                await batch.commit();
+                console.log("デフォルトミッション作成完了");
+            } catch (error) {
+                console.error("デフォルトミッション作成エラー:", error);
+            }
+        }
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-top">
-                <div class="footer-section">
-                    <a href="index.html" class="footer-logo">
-                        <span class="logo-text">KatsujiRingX</span>
-                    </a>
-                    <p>次世代の活字化プラットフォーム。OCR技術を活用した日本語縦書き文書の活字化をサポートします。</p>
-                </div>
-                <div class="footer-section">
-                    <h3>現在の提供サービス</h3>
-                    <ul class="footer-links">
-                        <li><a>活字化エディター</a></li>
-                        <li><a>OCR文字認識</a></li>
-                        <li><a>資料管理</a></li>
-                        <li><a>学習ゲーム</a></li>
-                        <li><a>みんなの活字化広場(2025年6月サポート終了)</a></li>
-                        <li><a>デジタルアーカイブ(2025年8月運用予定)</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>サポート</h3>
-                    <ul class="footer-links">
-                        <li><a href="helpcenter.html">ヘルプセンター</a></li>
-                        <li><a href="faqpage.html">よくある質問</a></li>
-                        <li><a href="contact.html">お問い合わせ</a></li>
-                        <li><a href="feedback.html">フィードバック</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>リソース</h3>
-                    <ul class="footer-links">
-                        <li><a href="blog.html">ブログ（定期更新中！！）</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <div class="copyright">
-                    &copy; 2025 KatsujiRingX. All rights reserved.
-                </div>
-                <div class="footer-nav">
-                    <a href="privacypolicy.html">プライバシーポリシー</a>
-                    <a href="useinguser.html">利用規約</a>
-                </div>
-            </div>
-        </div>
-    </footer>
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("ログアウトエラー:", error);
+            }
+        }
 
-    <script src="app.js"></script>
+        // テーマ切替
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (newTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        // サイドバー切替（モバイル用）
+        function toggleSidebar() {
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+
+        // イベントリスナー
+        document.addEventListener('DOMContentLoaded', () => {
+            // テーマ初期化
+            initTheme();
+            
+            // ログアウトボタン
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // テーマ切替ボタン
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // サイドバー切替ボタン
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
