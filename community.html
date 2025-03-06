@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
+    <title>コミュニティ広場 | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="mainpage.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="editor.html" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="projects.html" class="menu-item">
+                <i class="fas fa-project-diagram"></i> プロジェクト
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item active">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ホーム</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>コミュニティ広場</span>
+            </div>
+            <h1 class="page-title">コミュニティ広場</h1>
+        </div>
+        
+        <!-- コミュニティレイアウト -->
+        <div class="community-layout">
+            <!-- 左サイドバー - トレンド、検索、カテゴリ -->
+            <div class="community-sidebar-left">
+                <div class="card">
+                    <div class="search-wrapper">
+                        <div class="input-with-icon">
+                            <input type="text" id="search-input" class="form-control" placeholder="コミュニティを検索...">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3>トレンドハッシュタグ</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="trending-list" id="trending-hashtags">
+                            <div id="trending-loading">
+                                <div class="loading-spinner"></div>
+                            </div>
+                            <!-- トレンドハッシュタグが動的に追加される -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3>カテゴリ</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="category-list">
+                            <li class="category-item">
+                                <a href="#" data-category="all" class="active" onclick="filterByCategory('all'); return false;">
+                                    <i class="fas fa-globe"></i>すべての投稿
+                                </a>
+                            </li>
+                            <li class="category-item">
+                                <a href="#" data-category="活字化" onclick="filterByCategory('活字化'); return false;">
+                                    <i class="fas fa-keyboard"></i>活字化
+                                </a>
+                            </li>
+                            <li class="category-item">
+                                <a href="#" data-category="古文書" onclick="filterByCategory('古文書'); return false;">
+                                    <i class="fas fa-scroll"></i>古文書
+                                </a>
+                            </li>
+                            <li class="category-item">
+                                <a href="#" data-category="歴史資料" onclick="filterByCategory('歴史資料'); return false;">
+                                    <i class="fas fa-history"></i>歴史資料
+                                </a>
+                            </li>
+                            <li class="category-item">
+                                <a href="#" data-category="勉強会" onclick="filterByCategory('勉強会'); return false;">
+                                    <i class="fas fa-book"></i>勉強会
+                                </a>
+                            </li>
+                            <li class="category-item">
+                                <a href="#" data-category="質問" onclick="filterByCategory('質問'); return false;">
+                                    <i class="fas fa-question-circle"></i>質問
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- メインコンテンツ - 投稿フォームとフィード -->
+            <div class="community-main">
+                <!-- 投稿フォーム -->
+                <div class="card post-form-card">
+                    <div class="post-form">
+                        <div class="post-form-header">
+                            <div class="user-avatar-small" id="post-form-avatar">
+                                <span id="post-form-initial">U</span>
+                            </div>
+                            <div class="post-form-placeholder" id="post-form-placeholder">
+                                考えていることをシェアしましょう...
+                            </div>
+                        </div>
+                        
+                        <div class="post-form-expanded" id="post-form-expanded" style="display: none;">
+                            <textarea id="post-content" class="form-control" placeholder="考えていることをシェアしましょう..."></textarea>
+                            
+                            <div class="post-form-options">
+                                <div class="post-visibility">
+                                    <select id="post-visibility" class="form-control form-control-sm">
+                                        <option value="public">公開</option>
+                                        <option value="members">メンバーのみ</option>
+                                        <option value="private">非公開（自分のみ）</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="post-category">
+                                    <select id="post-category" class="form-control form-control-sm">
+                                        <option value="">カテゴリ選択</option>
+                                        <option value="活字化">活字化</option>
+                                        <option value="古文書">古文書</option>
+                                        <option value="歴史資料">歴史資料</option>
+                                        <option value="勉強会">勉強会</option>
+                                        <option value="質問">質問</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="post-form-footer">
+                                <div class="post-form-attachments">
+                                    <button type="button" class="btn btn-icon btn-outline" id="btn-image">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <input type="file" id="image-upload" style="display: none;" accept="image/*">
+                                    
+                                    <button type="button" class="btn btn-icon btn-outline" id="btn-poll">
+                                        <i class="fas fa-poll"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="post-form-actions">
+                                    <button type="button" class="btn btn-outline" id="btn-cancel">キャンセル</button>
+                                    <button type="button" class="btn btn-primary" id="btn-post">投稿</button>
+                                </div>
+                            </div>
+                            
+                            <div id="image-preview" class="image-preview-container" style="display: none;"></div>
+                            
+                            <div id="poll-form" class="poll-form" style="display: none;">
+                                <div class="form-group">
+                                    <input type="text" id="poll-question" class="form-control" placeholder="質問を入力...">
+                                </div>
+                                <div id="poll-options">
+                                    <div class="form-group">
+                                        <div class="input-with-button">
+                                            <input type="text" class="form-control poll-option" placeholder="選択肢1">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-with-button">
+                                            <input type="text" class="form-control poll-option" placeholder="選択肢2">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline btn-sm" id="btn-add-option">
+                                    <i class="fas fa-plus"></i> 選択肢を追加
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 投稿フィード -->
+                <div id="post-feed">
+                    <div id="feed-loading">
+                        <div class="loading-spinner"></div>
+                        <p class="text-center">投稿を読み込み中...</p>
+                    </div>
+                    <!-- 投稿が動的に追加される -->
+                </div>
+            </div>
+            
+            <!-- 右サイドバー - グループ、おすすめユーザー -->
+            <div class="community-sidebar-right">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>マイグループ</h3>
+                        <button class="btn btn-sm btn-outline" id="create-group-btn">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <ul class="group-list" id="my-groups">
+                            <div id="groups-loading">
+                                <div class="loading-spinner"></div>
+                            </div>
+                            <!-- グループが動的に追加される -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3>おすすめグループ</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="group-list" id="recommended-groups">
+                            <div id="recommended-loading">
+                                <div class="loading-spinner"></div>
+                            </div>
+                            <!-- おすすめグループが動的に追加される -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h3>アクティブユーザー</h3>
+                    </div>
+                    <div class="card-body">
+                        <ul class="user-list" id="active-users">
+                            <div id="users-loading">
+                                <div class="loading-spinner"></div>
+                            </div>
+                            <!-- アクティブユーザーが動的に追加される -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- モーダル：グループ作成 -->
+    <div class="modal" id="create-group-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>新しいグループを作成</h3>
+                <button type="button" class="btn-close" id="close-group-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="create-group-form">
+                    <div class="form-group">
+                        <label for="group-name">グループ名</label>
+                        <input type="text" id="group-name" class="form-control" placeholder="グループ名を入力" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="group-description">説明</label>
+                        <textarea id="group-description" class="form-control" placeholder="グループの説明を入力" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="group-category">カテゴリ</label>
+                        <select id="group-category" class="form-control">
+                            <option value="活字化">活字化</option>
+                            <option value="古文書">古文書</option>
+                            <option value="歴史資料">歴史資料</option>
+                            <option value="勉強会">勉強会</option>
+                            <option value="その他">その他</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="group-privacy">公開設定</label>
+                        <select id="group-privacy" class="form-control">
+                            <option value="public">公開（誰でも参加可能）</option>
+                            <option value="restricted">制限付き（承認が必要）</option>
+                            <option value="private">非公開（招待のみ）</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="group-image">グループ画像（任意）</label>
+                        <div class="input-with-button">
+                            <input type="file" id="group-image" class="form-control" accept="image/*">
+                        </div>
+                        <div id="group-image-preview" class="image-preview mt-2" style="display: none;"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" id="cancel-group-btn">キャンセル</button>
+                <button type="button" class="btn btn-primary" id="submit-group-btn">作成</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- モーダル：投稿詳細 -->
+    <div class="modal" id="post-detail-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3>投稿</h3>
+                <button type="button" class="btn-close" id="close-post-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="post-detail-content"></div>
+                
+                <div class="divider"></div>
+                
+                <div class="comments-section">
+                    <h4>コメント</h4>
+                    <div id="comments-container"></div>
+                    
+                    <div class="comment-form">
+                        <div class="user-avatar-small" id="comment-avatar">
+                            <span id="comment-initial">U</span>
+                        </div>
+                        <div class="comment-input-wrapper">
+                            <textarea id="comment-input" class="form-control" placeholder="コメントを入力..."></textarea>
+                            <button type="button" class="btn btn-primary btn-sm" id="submit-comment-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- モーダル：グループ詳細 -->
+    <div class="modal" id="group-detail-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container modal-lg">
+            <div class="modal-header">
+                <h3 id="group-detail-name">グループ名</h3>
+                <button type="button" class="btn-close" id="close-group-detail-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="group-detail-header">
+                    <div class="group-image" id="group-detail-image">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="group-info">
+                        <p id="group-detail-description">グループの説明</p>
+                        <div class="group-meta">
+                            <span><i class="fas fa-user-friends"></i> <span id="group-member-count">0</span> メンバー</span>
+                            <span><i class="fas fa-calendar-alt"></i> 作成日: <span id="group-created-date">2025/01/01</span></span>
+                        </div>
+                        <div class="group-actions mt-3">
+                            <button type="button" class="btn btn-primary" id="join-group-btn">参加する</button>
+                            <button type="button" class="btn btn-outline" id="leave-group-btn" style="display: none;">退会する</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tabs mt-4">
+                    <button type="button" class="tab-btn active" data-tab="group-posts">投稿</button>
+                    <button type="button" class="tab-btn" data-tab="group-members">メンバー</button>
+                    <button type="button" class="tab-btn" data-tab="group-about">情報</button>
+                </div>
+                
+                <div class="tab-content">
+                    <div id="group-posts" class="tab-pane active">
+                        <div class="post-form-card mt-3">
+                            <div class="post-form">
+                                <div class="post-form-header">
+                                    <div class="user-avatar-small" id="group-post-avatar">
+                                        <span id="group-post-initial">U</span>
+                                    </div>
+                                    <div class="post-form-placeholder" id="group-post-placeholder">
+                                        グループに投稿...
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="group-post-feed">
+                            <div id="group-feed-loading">
+                                <div class="loading-spinner"></div>
+                                <p class="text-center">投稿を読み込み中...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="group-members" class="tab-pane">
+                        <div class="members-list mt-3" id="members-list">
+                            <div id="members-loading">
+                                <div class="loading-spinner"></div>
+                                <p class="text-center">メンバーを読み込み中...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="group-about" class="tab-pane">
+                        <div class="group-details mt-3">
+                            <div class="detail-item">
+                                <h4>カテゴリ</h4>
+                                <p id="group-detail-category">活字化</p>
+                            </div>
+                            <div class="detail-item">
+                                <h4>公開設定</h4>
+                                <p id="group-detail-privacy">公開</p>
+                            </div>
+                            <div class="detail-item">
+                                <h4>管理者</h4>
+                                <div id="group-admin"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
