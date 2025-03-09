@@ -1,0 +1,3407 @@
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
+    <title>資料管理 | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin var(--transition-normal);
+        }
+        
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
+        
+        /* ツールバー */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .toolbar-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            position: relative;
+            min-width: 200px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .search-box input {
+            background-color: #1e293b;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        /* ボタンスタイル */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            border-radius: 50%;
+        }
+        
+        .btn-icon i {
+            margin-right: 0;
+        }
+        
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            min-width: 200px;
+            z-index: 10;
+            display: none;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .dropdown-menu {
+            background-color: #1e293b;
+        }
+        
+        .dropdown.active .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--gray-100);
+            color: var(--primary);
+        }
+        
+        [data-theme="dark"] .dropdown-item:hover {
+            background-color: #283548;
+        }
+        
+        .dropdown-item i {
+            margin-right: 0.75rem;
+            width: 1rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 0.25rem 0;
+        }
+        
+        /* ファイルグリッド */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .file-card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .file-card {
+            background-color: #1e293b;
+        }
+        
+        .file-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary);
+        }
+        
+        .file-thumbnail {
+            width: 100%;
+            padding-top: 75%; /* 4:3 aspect ratio */
+            background-color: var(--gray-100);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .file-thumbnail {
+            background-color: #283548;
+        }
+        
+        .file-thumbnail img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform var(--transition-normal);
+        }
+        
+        .file-card:hover .file-thumbnail img {
+            transform: scale(1.05);
+        }
+        
+        .file-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: var(--primary);
+        }
+        
+        .file-info {
+            padding: 0.75rem 1rem;
+        }
+        
+        .file-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .file-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .file-date {
+            white-space: nowrap;
+        }
+        
+        .file-size {
+            white-space: nowrap;
+        }
+        
+        .file-select {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            z-index: 2;
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: var(--radius-sm);
+            background-color: white;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        
+        [data-theme="dark"] .file-select {
+            background-color: #1e293b;
+        }
+        
+        .file-card:hover .file-select,
+        .file-card.selected .file-select {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .file-select.checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+        
+        .file-select.checked::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: white;
+            font-size: 0.6875rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .file-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all var(--transition-normal);
+        }
+        
+        .file-card:hover .file-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .file-action-btn {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            background-color: white;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        [data-theme="dark"] .file-action-btn {
+            background-color: #1e293b;
+        }
+        
+        .file-action-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: var(--shadow);
+        }
+        
+        /* フォルダビュー */
+        .folder-panel {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .folder-panel {
+            background-color: #1e293b;
+        }
+        
+        .folder-tree {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            cursor: pointer;
+            transition: color var(--transition-normal);
+        }
+        
+        .folder-item:hover {
+            color: var(--primary);
+        }
+        
+        .folder-item.active {
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .folder-item i {
+            margin-right: 0.75rem;
+            width: 1rem;
+            text-align: center;
+        }
+        
+        .folder-item .folder-name {
+            flex: 1;
+        }
+        
+        .folder-children {
+            margin-left: 1.75rem;
+            border-left: 1px dashed var(--border-color);
+            padding-left: 0.75rem;
+        }
+        
+        /* フォルダパス */
+        .folder-path {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .folder-path {
+            background-color: #1e293b;
+        }
+        
+        .folder-path-item {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color var(--transition-normal);
+            display: flex;
+            align-items: center;
+        }
+        
+        .folder-path-item:hover {
+            color: var(--primary);
+        }
+        
+        /* モーダル */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-normal), visibility var(--transition-normal);
+        }
+        
+        .modal-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: transform var(--transition-normal), opacity var(--transition-normal);
+            position: relative;
+        }
+        
+        [data-theme="dark"] .modal {
+            background-color: #1e293b;
+        }
+        
+        .modal-backdrop.active .modal {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        
+        .modal-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.125rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color var(--transition-normal);
+        }
+        
+        .modal-close:hover {
+            color: var(--danger);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+        
+        /* フォーム */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .form-control {
+            background-color: #1e293b;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .form-help {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* ファイルビューモード */
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .view-toggle-btn {
+            padding: 0.375rem 0.75rem;
+            background-color: white;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .view-toggle-btn {
+            background-color: #1e293b;
+        }
+        
+        .view-toggle-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* テーブルビュー */
+        .file-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        
+        .file-table th, .file-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .file-table th {
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        
+        .file-table tr:hover td {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .file-table tr:hover td {
+            background-color: #283548;
+        }
+        
+        .file-table-name {
+            display: flex;
+            align-items: center;
+        }
+        
+        .file-table-icon {
+            margin-right: 0.75rem;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--text-muted);
+        }
+        
+        .file-table-info {
+            flex: 1;
+        }
+        
+        .file-table-filename {
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+        
+        .file-table-folder {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .file-table-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .file-table-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background-color: white;
+        }
+        
+        [data-theme="dark"] .file-table-checkbox {
+            background-color: #1e293b;
+        }
+        
+        .file-table-checkbox.checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        /* コンテキストメニュー */
+        .context-menu {
+            position: fixed;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            z-index: 100;
+            min-width: 200px;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        
+        [data-theme="dark"] .context-menu {
+            background-color: #1e293b;
+        }
+        
+        .context-menu.active {
+            display: block;
+        }
+        
+        .context-menu-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            cursor: pointer;
+        }
+        
+        .context-menu-item:hover {
+            background-color: var(--gray-100);
+            color: var(--primary);
+        }
+        
+        [data-theme="dark"] .context-menu-item:hover {
+            background-color: #283548;
+        }
+        
+        .context-menu-item i {
+            margin-right: 0.75rem;
+            width: 1rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        .context-menu-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 0.25rem 0;
+        }
+        
+        /* トースト通知 */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .toast {
+            padding: 1rem 1.5rem;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 100%;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            border-left: 4px solid;
+        }
+        
+        [data-theme="dark"] .toast {
+            background-color: #1e293b;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .toast-success {
+            border-color: var(--success);
+        }
+        
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+        
+        .toast-error {
+            border-color: var(--danger);
+        }
+        
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+        
+        .toast-warning {
+            border-color: var(--warning);
+        }
+        
+        .toast-warning .toast-icon {
+            color: var(--warning);
+        }
+        
+        .toast-info {
+            border-color: var(--info);
+        }
+        
+        .toast-info .toast-icon {
+            color: var(--info);
+        }
+        
+        .toast-icon {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+            margin-left: 0.5rem;
+            transition: color var(--transition-normal);
+        }
+        
+        .toast-close:hover {
+            color: var(--danger);
+        }
+        
+        /* ファイルプレビュー */
+        .file-preview {
+            max-width: 100%;
+            max-height: 400px;
+            margin: 0 auto 1.5rem;
+            display: block;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* ローディングスピナー */
+        .loading-spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .loading-container p {
+            margin-top: 1rem;
+            color: var(--text-muted);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+        
+        /* 空の状態 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
+        }
+        
+        .empty-state h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        /* ユーティリティクラス */
+        .d-flex {
+            display: flex;
+        }
+        
+        .align-items-center {
+            align-items: center;
+        }
+        
+        .justify-content-between {
+            justify-content: space-between;
+        }
+        
+        .justify-content-center {
+            justify-content: center;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+        
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+        
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        
+        .mt-5 {
+            margin-top: 3rem;
+        }
+        
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .w-100 {
+            width: 100%;
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .folder-panel {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .toolbar-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .search-box {
+                width: 100%;
+            }
+            
+            .file-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .file-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            }
+            
+            .file-table-actions {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <!-- Firebase SDK -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+        
+        <!-- サイドバー -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="mainpage.html" class="logo">
+                    <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                    <span>KatsujiRingX</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-menu">
+                <p class="menu-label">メインメニュー</p>
+                <a href="mainpage.html" class="menu-item">
+                    <i class="fas fa-home"></i> ダッシュボード
+                </a>
+                <a href="katsujieditor.html" class="menu-item">
+                    <i class="fas fa-edit"></i> 活字化エディタ
+                </a>
+                <a href="documents.html" class="menu-item active">
+                    <i class="fas fa-file-alt"></i> 資料管理
+                </a>
+                <a href="projects.html" class="menu-item">
+                    <i class="fas fa-project-diagram"></i> アップロード
+                </a>
+                <a href="booklink.html" class="menu-item">
+                    <i class="fas fa-book"></i> 完成本を見る
+                </a>
+                
+                <p class="menu-label">学習・コミュニティ</p>
+                <a href="games.html" class="menu-item">
+                    <i class="fas fa-gamepad"></i> 学習ゲーム
+                </a>
+                <a href="community.html" class="menu-item">
+                    <i class="fas fa-users"></i> コミュニティ広場
+                </a>
+                <a href="blog.html" class="menu-item">
+                    <i class="fas fa-pen"></i> ブログ
+                </a>
+                
+                <p class="menu-label">ユーザー</p>
+                <a href="profile.html" class="menu-item">
+                    <i class="fas fa-user"></i> プロフィール
+                </a>
+    
+                <p class="menu-label">サポート</p>
+                <a href="helpcenter.html" class="menu-item">
+                    <i class="fas fa-question-circle"></i>ヘルプデスク
+                </a>
+                <a href="feedback.html" class="menu-item">
+                    <i class="fas fa-comment-dots"></i>フィードバック
+                </a>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-toggle">
+                    <i class="fas fa-moon"></i> ダークモード
+                </button>
+                
+                <div class="user-profile">
+                    <div class="user-avatar" id="user-avatar">
+                        <span id="user-initial">U</span>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                        <div class="user-status">オンライン</div>
+                    </div>
+                </div>
+                
+                <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                    <i class="fas fa-sign-out-alt"></i> ログアウト
+                </a>
+            </div>
+        </aside>
+        
+        <!-- モバイル用サイドバー切替ボタン -->
+        <button class="sidebar-toggle" id="sidebar-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <!-- メインコンテンツ -->
+        <div class="main-content">
+            <div class="page-header">
+                <div class="breadcrumb">
+                    <a href="mainpage.html">ホーム</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>資料管理</span>
+                </div>
+                <h1 class="page-title">資料管理</h1>
+            </div>
+            
+            <!-- ツールバー -->
+            <div class="toolbar">
+                <div class="toolbar-actions">
+                    <a href="upload.html" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> アップロード
+                    </a>
+                    <button id="new-folder-btn" class="btn btn-outline">
+                        <i class="fas fa-folder-plus"></i> 新規フォルダ
+                    </button>
+                    <div class="dropdown" id="sort-dropdown">
+                        <button class="btn btn-outline">
+                            <i class="fas fa-sort"></i> 並び替え <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" data-sort="name-asc">
+                                <i class="fas fa-sort-alpha-down"></i> 名前（昇順）
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="name-desc">
+                                <i class="fas fa-sort-alpha-up"></i> 名前（降順）
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="date-desc">
+                                <i class="fas fa-calendar-alt"></i> 日付（新しい順）
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="date-asc">
+                                <i class="fas fa-calendar-alt"></i> 日付（古い順）
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="size-desc">
+                                <i class="fas fa-weight"></i> サイズ（大きい順）
+                            </a>
+                            <a href="#" class="dropdown-item" data-sort="size-asc">
+                                <i class="fas fa-weight"></i> サイズ（小さい順）
+                            </a>
+                        </div>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-toggle-btn active" data-view="grid" title="グリッド表示">
+                            <i class="fas fa-th"></i>
+                        </button>
+                        <button class="view-toggle-btn" data-view="list" title="リスト表示">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="資料を検索...">
+                </div>
+            </div>
+            
+            <!-- フォルダとファイルの表示エリア -->
+            <div class="folder-path" id="current-path">
+                <a href="#" data-folder-id="root" class="folder-path-item">
+                    <i class="fas fa-home"></i> マイ資料
+                </a>
+            </div>
+            
+            <!-- グリッドビュー -->
+            <div id="grid-view">
+                <div id="file-loading" class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <p>資料を読み込み中...</p>
+                </div>
+                
+                <div class="file-grid" id="file-grid">
+                    <!-- ここにファイルカードが動的に追加されます -->
+                </div>
+            </div>
+            
+            <!-- リストビュー（初期状態では非表示） -->
+            <div id="list-view" style="display: none;">
+                <table class="file-table" id="file-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">
+                                <div class="file-table-checkbox" id="select-all-checkbox"></div>
+                            </th>
+                            <th>名前</th>
+                            <th>更新日</th>
+                            <th>サイズ</th>
+                            <th style="width: 100px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="file-table-body">
+                        <!-- ここにファイル行が動的に追加されます -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 空の状態（初期状態では非表示） -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <i class="fas fa-file-upload"></i>
+                <h2>資料がありません</h2>
+                <p>資料をアップロードして、活字化作業を始めましょう。</p>
+                <a href="upload.html" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> アップロード
+                </a>
+            </div>
+        </div>
+        
+        <!-- コンテキストメニュー -->
+        <div class="context-menu" id="context-menu">
+            <div class="context-menu-item" id="ctx-open">
+                <i class="fas fa-external-link-alt"></i> 開く
+            </div>
+            <div class="context-menu-item" id="ctx-transcribe">
+                <i class="fas fa-edit"></i> 活字化する
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" id="ctx-rename">
+                <i class="fas fa-pencil-alt"></i> 名前の変更
+            </div>
+            <div class="context-menu-item" id="ctx-move">
+                <i class="fas fa-folder-open"></i> 移動
+            </div>
+            <div class="context-menu-item" id="ctx-download">
+                <i class="fas fa-download"></i> ダウンロード
+            </div>
+            <div class="context-menu-divider"></div>
+            <div class="context-menu-item" id="ctx-delete">
+                <i class="fas fa-trash-alt"></i> 削除
+            </div>
+        </div>
+        
+        <!-- 新規フォルダモーダル -->
+        <div class="modal-backdrop" id="new-folder-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">新規フォルダ作成</h3>
+                    <button class="modal-close" id="close-new-folder-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="new-folder-form">
+                        <div class="form-group">
+                            <label for="folder-name" class="form-label">フォルダ名</label>
+                            <input type="text" id="folder-name" class="form-control" placeholder="フォルダ名を入力" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancel-new-folder">キャンセル</button>
+                    <button class="btn btn-primary" id="create-folder-btn">作成</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 名前変更モーダル -->
+        <div class="modal-backdrop" id="rename-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">名前の変更</h3>
+                    <button class="modal-close" id="close-rename-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="rename-form">
+                        <div class="form-group">
+                            <label for="new-name" class="form-label">新しい名前</label>
+                            <input type="text" id="new-name" class="form-control" placeholder="新しい名前を入力" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancel-rename">キャンセル</button>
+                    <button class="btn btn-primary" id="rename-btn">変更</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 移動モーダル -->
+        <div class="modal-backdrop" id="move-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">移動先を選択</h3>
+                    <button class="modal-close" id="close-move-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="folder-tree" id="folder-tree">
+                        <!-- フォルダツリーがここに動的に追加されます -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancel-move">キャンセル</button>
+                    <button class="btn btn-primary" id="move-btn">移動</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 削除確認モーダル -->
+        <div class="modal-backdrop" id="delete-modal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">削除の確認</h3>
+                    <button class="modal-close" id="close-delete-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>本当に「<span id="delete-item-name"></span>」を削除しますか？</p>
+                    <p class="text-danger"><strong>この操作は元に戻せません。</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" id="cancel-delete">キャンセル</button>
+                    <button class="btn btn-danger" id="confirm-delete">削除</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ファイルプレビューモーダル -->
+        <div class="modal-backdrop" id="preview-modal">
+            <div class="modal" style="max-width: 800px;">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="preview-title">ファイルプレビュー</h3>
+                    <button class="modal-close" id="close-preview-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img id="preview-image" class="file-preview" src="" alt="プレビュー">
+                    <div id="preview-actions" class="text-center mt-3">
+                        <button class="btn btn-primary" id="preview-transcribe">
+                            <i class="fas fa-edit"></i> 活字化エディタで開く
+                        </button>
+                        <button class="btn btn-outline" id="preview-download">
+                            <i class="fas fa-download"></i> ダウンロード
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- トースト通知コンテナ -->
+        <div class="toast-container" id="toast-container">
+            <!-- トースト通知がここに動的に追加されます -->
+        </div>
+    <script>
+         // Firebase設定
+         const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+        } catch (error) {
+            console.error("Firebase初期化エラー:", error);
+            showToast('error', 'Firebaseの初期化に失敗しました', 'ページを再読み込みしてください');
+        }
+
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // DOM要素の参照
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const themeToggle = document.getElementById('theme-toggle');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userAvatar = document.getElementById('user-avatar');
+        const userInitial = document.getElementById('user-initial');
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const fileGrid = document.getElementById('file-grid');
+        const fileTableBody = document.getElementById('file-table-body');
+        const fileLoading = document.getElementById('file-loading');
+        const emptyState = document.getElementById('empty-state');
+        const gridView = document.getElementById('grid-view');
+        const listView = document.getElementById('list-view');
+        const viewToggleBtns = document.querySelectorAll('.view-toggle-btn');
+        const searchInput = document.getElementById('search-input');
+        const sortDropdown = document.getElementById('sort-dropdown');
+        const currentPath = document.getElementById('current-path');
+        const contextMenu = document.getElementById('context-menu');
+        const newFolderBtn = document.getElementById('new-folder-btn');
+        const newFolderModal = document.getElementById('new-folder-modal');
+        const closeNewFolderModal = document.getElementById('close-new-folder-modal');
+        const folderNameInput = document.getElementById('folder-name');
+        const createFolderBtn = document.getElementById('create-folder-btn');
+        const cancelNewFolder = document.getElementById('cancel-new-folder');
+        const renameModal = document.getElementById('rename-modal');
+        const closeRenameModal = document.getElementById('close-rename-modal');
+        const newNameInput = document.getElementById('new-name');
+        const renameBtn = document.getElementById('rename-btn');
+        const cancelRename = document.getElementById('cancel-rename');
+        const moveModal = document.getElementById('move-modal');
+        const closeMoveModal = document.getElementById('close-move-modal');
+        const folderTree = document.getElementById('folder-tree');
+        const moveBtn = document.getElementById('move-btn');
+        const cancelMove = document.getElementById('cancel-move');
+        const deleteModal = document.getElementById('delete-modal');
+        const closeDeleteModal = document.getElementById('close-delete-modal');
+        const deleteItemName = document.getElementById('delete-item-name');
+        const confirmDelete = document.getElementById('confirm-delete');
+        const cancelDelete = document.getElementById('cancel-delete');
+        const previewModal = document.getElementById('preview-modal');
+        const closePreviewModal = document.getElementById('close-preview-modal');
+        const previewImage = document.getElementById('preview-image');
+        const previewTitle = document.getElementById('preview-title');
+        const previewTranscribe = document.getElementById('preview-transcribe');
+        const previewDownload = document.getElementById('preview-download');
+        const toastContainer = document.getElementById('toast-container');
+        
+        // アプリケーションの状態
+        let currentUser = null;
+        let currentFolder = "root";
+        let currentItems = [];
+        let selectedItems = [];
+        let currentSortOrder = "date-desc";
+        let currentView = "grid";
+        let contextMenuTarget = null;
+        let folderStructure = [];
+        let selectedMoveTarget = null;
+        let searchQuery = "";
+        
+        // ユーティリティ関数
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function formatDate(timestamp) {
+            if (!timestamp) return '';
+            
+            try {
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                return new Intl.DateTimeFormat('ja-JP', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(date);
+            } catch (error) {
+                console.error("日付フォーマットエラー:", error);
+                return "日付不明";
+            }
+        }
+        
+        function getFileIcon(fileType, extension) {
+            if (fileType === 'folder') {
+                return '<i class="fas fa-folder"></i>';
+            }
+            
+            switch (extension) {
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                case 'gif':
+                case 'bmp':
+                case 'webp':
+                case 'tiff':
+                case 'tif':
+                    return '<i class="fas fa-image"></i>';
+                case 'pdf':
+                    return '<i class="fas fa-file-pdf"></i>';
+                case 'doc':
+                case 'docx':
+                    return '<i class="fas fa-file-word"></i>';
+                case 'xls':
+                case 'xlsx':
+                    return '<i class="fas fa-file-excel"></i>';
+                case 'ppt':
+                case 'pptx':
+                    return '<i class="fas fa-file-powerpoint"></i>';
+                case 'txt':
+                    return '<i class="fas fa-file-alt"></i>';
+                default:
+                    return '<i class="fas fa-file"></i>';
+            }
+        }
+        
+        function getFileExtension(filename) {
+            if (!filename) return '';
+            return filename.split('.').pop().toLowerCase();
+        }
+        
+        function isImageFile(filename) {
+            if (!filename) return false;
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'tif'];
+            const extension = getFileExtension(filename);
+            return imageExtensions.includes(extension);
+        }
+        
+        // トースト通知を表示
+        function showToast(type, title, message = '') {
+            const toastId = 'toast-' + Date.now();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.id = toastId;
+            
+            let iconClass = 'fa-info-circle';
+            switch (type) {
+                case 'success': iconClass = 'fa-check-circle'; break;
+                case 'error': iconClass = 'fa-exclamation-circle'; break;
+                case 'warning': iconClass = 'fa-exclamation-triangle'; break;
+            }
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    ${message ? `<div class="toast-message">${message}</div>` : ''}
+                </div>
+                <button class="toast-close" onclick="document.getElementById('${toastId}').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            if (toastContainer) {
+                toastContainer.appendChild(toast);
+                
+                // アニメーション適用
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                // 自動で閉じる
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.classList.remove('show');
+                        setTimeout(() => {
+                            if (toast.parentNode) {
+                                toast.remove();
+                            }
+                        }, 300);
+                    }
+                }, 5000);
+            }
+        }
+        
+        // モーダルを閉じる
+        function closeModal(modal) {
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+        
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                
+                // ユーザープロフィールの表示
+                updateUserProfile(user);
+                
+                // 資料データの読み込み
+                loadItems();
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+        
+        // ユーザープロフィールの更新
+        function updateUserProfile(user) {
+            // 表示名の取得
+            const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+            
+            // サイドバーのユーザー名を更新
+            if (sidebarUserName) {
+                sidebarUserName.textContent = displayName;
+            }
+            
+            // ユーザーイニシャルの更新
+            if (userInitial) {
+                const initial = displayName.charAt(0).toUpperCase();
+                userInitial.textContent = initial;
+            }
+            
+            // プロフィール画像の設定
+            if (userAvatar) {
+                if (user.photoURL) {
+                    // 画像がある場合
+                    userAvatar.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = user.photoURL;
+                    img.alt = displayName;
+                    img.onload = function() {
+                        userAvatar.appendChild(img);
+                    };
+                    img.onerror = function() {
+                        // 画像読み込みエラーの場合はイニシャルを表示
+                        userAvatar.innerHTML = `<span>${initial}</span>`;
+                    };
+                }
+            }
+            
+            // Firestoreからユーザー情報を取得（追加情報がある場合）
+            try {
+                db.collection('users').doc(user.uid).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            
+                            // 表示名の更新
+                            if (userData.displayName && sidebarUserName) {
+                                sidebarUserName.textContent = userData.displayName;
+                            }
+                            
+                            // プロフィール画像の更新（カスタム画像がある場合）
+                            if (userData.profileImageUrl && userAvatar) {
+                                userAvatar.innerHTML = '';
+                                const img = document.createElement('img');
+                                img.src = userData.profileImageUrl;
+                                img.alt = userData.displayName || displayName;
+                                img.onload = function() {
+                                    userAvatar.appendChild(img);
+                                };
+                                img.onerror = function() {
+                                    // カスタム画像読み込みエラーの場合は標準画像またはイニシャルに戻す
+                                    if (user.photoURL) {
+                                        const defaultImg = document.createElement('img');
+                                        defaultImg.src = user.photoURL;
+                                        defaultImg.alt = displayName;
+                                        userAvatar.appendChild(defaultImg);
+                                    } else {
+                                        userAvatar.innerHTML = `<span>${initial}</span>`;
+                                    }
+                                };
+                            }
+                        } else {
+                            // ユーザードキュメントが存在しない場合は新規作成
+                            createUserProfile(user);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("ユーザー情報取得エラー:", error);
+                    });
+            } catch (error) {
+                console.error("Firestore操作エラー:", error);
+            }
+        }
+        
+        // 新規ユーザープロファイルの作成
+        async function createUserProfile(user) {
+            try {
+                // 表示名を取得
+                const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                
+                // ユーザーデータを準備
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: displayName,
+                    profileImageUrl: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    documentCount: 0,
+                    points: 0,
+                    level: 1
+                };
+                
+                // Firestoreに保存
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log("ユーザープロファイル作成完了");
+                
+                // アクティビティログの作成
+                await db.collection('activities').add({
+                    userId: user.uid,
+                    type: 'account_created',
+                    title: 'アカウント作成',
+                    description: 'KatsujiRingXへようこそ！アカウントが作成されました。',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error("ユーザープロファイル作成エラー:", error);
+                showToast('error', 'ユーザープロファイルの作成に失敗しました');
+            }
+        }
+        
+        // 資料の読み込み
+        async function loadItems() {
+            try {
+                // ローディング表示
+                if (fileLoading) {
+                    fileLoading.style.display = 'flex';
+                }
+                if (fileGrid) {
+                    fileGrid.style.display = 'none';
+                }
+                if (emptyState) {
+                    emptyState.style.display = 'none';
+                }
+                
+                // 現在のフォルダパスを表示
+                await updateFolderPath();
+                
+                // クエリの作成
+                let query = db.collection('documents')
+                    .where('userId', '==', currentUser.uid);
+                
+                if (currentFolder !== "root") {
+                    query = query.where('parentFolder', '==', currentFolder);
+                } else {
+                    query = query.where('parentFolder', '==', null);
+                }
+                
+                // データを取得
+                const snapshot = await query.get();
+                const items = [];
+                
+                snapshot.forEach(doc => {
+                    items.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // 検索クエリがある場合はフィルタリング
+                if (searchQuery) {
+                    currentItems = items.filter(item => 
+                        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+                    );
+                } else {
+                    currentItems = items;
+                }
+                
+                // ソート
+                currentItems = sortItems(currentItems);
+                
+                // 表示の更新
+                renderItems();
+                
+                // ローディングを非表示
+                if (fileLoading) {
+                    fileLoading.style.display = 'none';
+                }
+                if (fileGrid) {
+                    fileGrid.style.display = 'grid';
+                }
+                
+                // アイテムがない場合は空の状態を表示
+                if (currentItems.length === 0 && !searchQuery) {
+                    if (emptyState) {
+                        emptyState.style.display = 'block';
+                    }
+                    if (gridView) {
+                        gridView.style.display = 'none';
+                    }
+                    if (listView) {
+                        listView.style.display = 'none';
+                    }
+                } else {
+                    if (emptyState) {
+                        emptyState.style.display = 'none';
+                    }
+                    
+                    if (currentView === 'grid') {
+                        if (gridView) {
+                            gridView.style.display = 'block';
+                        }
+                        if (listView) {
+                            listView.style.display = 'none';
+                        }
+                    } else {
+                        if (gridView) {
+                            gridView.style.display = 'none';
+                        }
+                        if (listView) {
+                            listView.style.display = 'block';
+                        }
+                    }
+                }
+                
+                // フォルダ構造の読み込み
+                loadFolderStructure();
+                
+            } catch (error) {
+                console.error("資料読み込みエラー:", error);
+                showToast('error', '資料の読み込みに失敗しました', '再読み込みしてください');
+                
+                if (fileLoading) {
+                    fileLoading.style.display = 'none';
+                }
+                if (fileGrid) {
+                    fileGrid.style.display = 'grid';
+                }
+            }
+        }
+        
+        // フォルダパスの更新
+        async function updateFolderPath() {
+            if (!currentPath) return;
+            
+            try {
+                // パスをクリア
+                currentPath.innerHTML = `
+                    <a href="#" data-folder-id="root" class="folder-path-item">
+                        <i class="fas fa-home"></i> マイ資料
+                    </a>
+                `;
+                
+                if (currentFolder === "root") return;
+                
+                // 親フォルダ情報を取得
+                const path = [];
+                let folderId = currentFolder;
+                
+                // 親フォルダを遡ってパスを作成
+                while (folderId) {
+                    try {
+                        const folderDoc = await db.collection('documents').doc(folderId).get();
+                        if (folderDoc.exists) {
+                            const folderData = folderDoc.data();
+                            path.unshift({
+                                id: folderId,
+                                name: folderData.name
+                            });
+                            folderId = folderData.parentFolder;
+                        } else {
+                            break;
+                        }
+                    } catch (error) {
+                        console.error("フォルダ情報取得エラー:", error);
+                        break;
+                    }
+                }
+                
+                // パスを表示
+                path.forEach((folder, index) => {
+                    const chevron = document.createElement('i');
+                    chevron.className = 'fas fa-chevron-right';
+                    chevron.style.margin = '0 8px';
+                    currentPath.appendChild(chevron);
+                    
+                    const folderLink = document.createElement('a');
+                    folderLink.href = '#';
+                    folderLink.dataset.folderId = folder.id;
+                    folderLink.className = 'folder-path-item';
+                    folderLink.innerText = folder.name;
+                    
+                    currentPath.appendChild(folderLink);
+                });
+                
+                // クリックイベントを設定
+                const pathItems = currentPath.querySelectorAll('.folder-path-item');
+                pathItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const folderId = this.dataset.folderId;
+                        if (folderId) {
+                            currentFolder = folderId;
+                            loadItems();
+                        }
+                    });
+                });
+            } catch (error) {
+                console.error("フォルダパス更新エラー:", error);
+            }
+        }
+        
+        // フォルダ構造の読み込み
+        async function loadFolderStructure() {
+            try {
+                const folders = [];
+                
+                // すべてのフォルダを取得
+                const folderSnapshot = await db.collection('documents')
+                    .where('userId', '==', currentUser.uid)
+                    .where('type', '==', 'folder')
+                    .get();
+                
+                folderSnapshot.forEach(doc => {
+                    folders.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // ルートフォルダ（parentFolder が null のもの）
+                const rootFolders = folders.filter(folder => !folder.parentFolder);
+                
+                // 階層構造を構築
+                folderStructure = rootFolders.map(folder => buildFolderTree(folder, folders));
+                
+                // フォルダツリーの表示更新
+                renderFolderTree();
+                
+            } catch (error) {
+                console.error("フォルダ構造読み込みエラー:", error);
+                showToast('error', 'フォルダ構造の読み込みに失敗しました');
+            }
+        }
+        
+        // フォルダ構造の構築（再帰的に）
+        function buildFolderTree(folder, allFolders) {
+            const children = allFolders.filter(f => f.parentFolder === folder.id);
+            return {
+                ...folder,
+                children: children.map(child => buildFolderTree(child, allFolders))
+            };
+        }
+        
+        // フォルダツリーの表示
+        function renderFolderTree() {
+            if (!folderTree) return;
+            
+            // ルート要素を追加
+            folderTree.innerHTML = `
+                <div class="folder-item ${currentFolder === 'root' ? 'active' : ''}" data-folder-id="root">
+                    <i class="fas fa-home"></i>
+                    <span class="folder-name">マイ資料</span>
+                </div>
+            `;
+            
+            // フォルダ構造を表示
+            folderStructure.forEach(folder => {
+                const folderElement = renderFolderNode(folder);
+                folderTree.appendChild(folderElement);
+            });
+            
+            // フォルダクリックイベント
+            const folderItems = folderTree.querySelectorAll('.folder-item');
+            folderItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // フォルダ選択を更新
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 選択したフォルダを記録
+                    selectedMoveTarget = this.dataset.folderId;
+                });
+            });
+        }
+        
+        // フォルダノードの表示（再帰的に）
+        function renderFolderNode(folder) {
+            const folderDiv = document.createElement('div');
+            
+            // フォルダアイテム
+            const folderItem = document.createElement('div');
+            folderItem.className = `folder-item ${currentFolder === folder.id ? 'active' : ''}`;
+            folderItem.dataset.folderId = folder.id;
+            
+            folderItem.innerHTML = `
+                <i class="fas fa-folder"></i>
+                <span class="folder-name">${folder.name}</span>
+            `;
+            
+            folderDiv.appendChild(folderItem);
+            
+            // 子フォルダがある場合は表示
+            if (folder.children && folder.children.length > 0) {
+                const childrenDiv = document.createElement('div');
+                childrenDiv.className = 'folder-children';
+                
+                folder.children.forEach(child => {
+                    const childNode = renderFolderNode(child);
+                    childrenDiv.appendChild(childNode);
+                });
+                
+                folderDiv.appendChild(childrenDiv);
+            }
+            
+            return folderDiv;
+        }
+        
+        // 資料のソート
+        function sortItems(items) {
+            const [field, direction] = currentSortOrder.split('-');
+            const sortDirection = direction === 'asc' ? 1 : -1;
+            
+            return [...items].sort((a, b) => {
+                // フォルダを常に先頭に表示
+                if (a.type === 'folder' && b.type !== 'folder') {
+                    return -1;
+                }
+                if (a.type !== 'folder' && b.type === 'folder') {
+                    return 1;
+                }
+                
+                // フィールドに基づいてソート
+                switch (field) {
+                    case 'name':
+                        return sortDirection * (a.name || '').localeCompare(b.name || '');
+                    case 'date':
+                        const dateA = a.updatedAt ? (a.updatedAt.toDate ? a.updatedAt.toDate().getTime() : a.updatedAt) : 0;
+                        const dateB = b.updatedAt ? (b.updatedAt.toDate ? b.updatedAt.toDate().getTime() : b.updatedAt) : 0;
+                        return sortDirection * (dateA - dateB);
+                    case 'size':
+                        const sizeA = a.size || 0;
+                        const sizeB = b.size || 0;
+                        return sortDirection * (sizeA - sizeB);
+                    default:
+                        return 0;
+                }
+            });
+        }
+        
+        // 資料の表示（グリッドとリスト）
+        function renderItems() {
+            if (fileGrid) {
+                fileGrid.innerHTML = '';
+                
+                currentItems.forEach(item => {
+                    const fileCardElement = createFileCard(item);
+                    fileGrid.appendChild(fileCardElement);
+                });
+            }
+            
+            if (fileTableBody) {
+                fileTableBody.innerHTML = '';
+                
+                currentItems.forEach(item => {
+                    const fileRowElement = createFileRow(item);
+                    fileTableBody.appendChild(fileRowElement);
+                });
+            }
+        }
+        
+        // ファイルカードの作成（グリッドビュー用）
+        function createFileCard(item) {
+            const fileCard = document.createElement('div');
+            fileCard.className = 'file-card';
+            fileCard.dataset.id = item.id;
+            fileCard.dataset.type = item.type || 'file';
+            
+            // サムネイル
+            const thumbnail = document.createElement('div');
+            thumbnail.className = 'file-thumbnail';
+            
+            if (item.type === 'folder') {
+                // フォルダアイコン
+                const folderIcon = document.createElement('div');
+                folderIcon.className = 'file-icon';
+                folderIcon.innerHTML = '<i class="fas fa-folder"></i>';
+                thumbnail.appendChild(folderIcon);
+            } else if (isImageFile(item.name) && item.url) {
+                // 画像ファイルの場合はサムネイル表示
+                const img = document.createElement('img');
+                img.src = item.url;
+                img.alt = item.name;
+                img.loading = 'lazy';
+                img.onerror = function() {
+                    // 画像読み込みエラーの場合はアイコンを表示
+                    this.parentNode.innerHTML = `
+                        <div class="file-icon">${getFileIcon('file', getFileExtension(item.name))}</div>
+                    `;
+                };
+                thumbnail.appendChild(img);
+            } else {
+                // その他のファイルアイコン
+                const fileIcon = document.createElement('div');
+                fileIcon.className = 'file-icon';
+                fileIcon.innerHTML = getFileIcon('file', getFileExtension(item.name));
+                thumbnail.appendChild(fileIcon);
+            }
+            
+            // 選択チェックボックス
+            const selectBox = document.createElement('div');
+            selectBox.className = 'file-select';
+            selectBox.dataset.id = item.id;
+            
+            // ファイル操作ボタン
+            const fileActions = document.createElement('div');
+            fileActions.className = 'file-actions';
+            
+            const menuBtn = document.createElement('div');
+            menuBtn.className = 'file-action-btn';
+            menuBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+            menuBtn.title = 'メニュー';
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showContextMenu(e, item);
+            });
+            
+            fileActions.appendChild(menuBtn);
+            
+            // ファイル情報
+            const fileInfo = document.createElement('div');
+            fileInfo.className = 'file-info';
+            
+            const fileName = document.createElement('div');
+            fileName.className = 'file-name';
+            fileName.innerText = item.name || 'Unknown';
+            fileName.title = item.name || 'Unknown';
+            
+            const fileMeta = document.createElement('div');
+            fileMeta.className = 'file-meta';
+            
+            const fileDate = document.createElement('div');
+            fileDate.className = 'file-date';
+            fileDate.innerText = formatDate(item.updatedAt || item.createdAt);
+            
+            const fileSize = document.createElement('div');
+            fileSize.className = 'file-size';
+            fileSize.innerText = item.type === 'folder' ? '' : formatFileSize(item.size || 0);
+            
+            fileMeta.appendChild(fileDate);
+            fileMeta.appendChild(fileSize);
+            fileInfo.appendChild(fileName);
+            fileInfo.appendChild(fileMeta);
+            
+            fileCard.appendChild(thumbnail);
+            fileCard.appendChild(selectBox);
+            fileCard.appendChild(fileActions);
+            fileCard.appendChild(fileInfo);
+            
+            // イベントリスナー
+            fileCard.addEventListener('click', function() {
+                if (item.type === 'folder') {
+                    // フォルダをクリックした場合は中を表示
+                    currentFolder = item.id;
+                    loadItems();
+                } else {
+                    // ファイルをクリックした場合はプレビュー表示
+                    showFilePreview(item);
+                }
+            });
+            
+            selectBox.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleItemSelection(item.id, this);
+            });
+            
+            return fileCard;
+        }
+        
+        // ファイル行の作成（リストビュー用）
+        function createFileRow(item) {
+            const row = document.createElement('tr');
+            row.dataset.id = item.id;
+            row.dataset.type = item.type || 'file';
+            
+            // チェックボックス列
+            const checkboxCell = document.createElement('td');
+            const checkbox = document.createElement('div');
+            checkbox.className = 'file-table-checkbox';
+            checkbox.dataset.id = item.id;
+            checkboxCell.appendChild(checkbox);
+            
+            // ファイル名列
+            const nameCell = document.createElement('td');
+            const fileNameDiv = document.createElement('div');
+            fileNameDiv.className = 'file-table-name';
+            const fileIconDiv = document.createElement('div');
+            fileIconDiv.className = 'file-table-icon';
+            
+            if (item.type === 'folder') {
+                fileIconDiv.innerHTML = '<i class="fas fa-folder"></i>';
+            } else {
+                fileIconDiv.innerHTML = getFileIcon('file', getFileExtension(item.name));
+            }
+            
+            const fileInfoDiv = document.createElement('div');
+            fileInfoDiv.className = 'file-table-info';
+            
+            const fileNameSpan = document.createElement('div');
+            fileNameSpan.className = 'file-table-filename';
+            fileNameSpan.innerText = item.name || 'Unknown';
+            fileNameSpan.title = item.name || 'Unknown';
+            
+            fileInfoDiv.appendChild(fileNameSpan);
+            fileNameDiv.appendChild(fileIconDiv);
+            fileNameDiv.appendChild(fileInfoDiv);
+            nameCell.appendChild(fileNameDiv);
+            
+            // 更新日列
+            const dateCell = document.createElement('td');
+            dateCell.innerText = formatDate(item.updatedAt || item.createdAt);
+            
+            // サイズ列
+            const sizeCell = document.createElement('td');
+            sizeCell.innerText = item.type === 'folder' ? '-' : formatFileSize(item.size || 0);
+            
+            // 操作列
+            const actionsCell = document.createElement('td');
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'file-table-actions';
+            
+            const menuBtn = document.createElement('button');
+            menuBtn.className = 'btn btn-sm btn-outline';
+            menuBtn.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                showContextMenu(e, item);
+            });
+            
+            actionsDiv.appendChild(menuBtn);
+            actionsCell.appendChild(actionsDiv);
+            
+            // 行の組み立て
+            row.appendChild(checkboxCell);
+            row.appendChild(nameCell);
+            row.appendChild(dateCell);
+            row.appendChild(sizeCell);
+            row.appendChild(actionsCell);
+            
+            // イベントリスナー
+            row.addEventListener('click', function() {
+                if (item.type === 'folder') {
+                    // フォルダをクリックした場合は中を表示
+                    currentFolder = item.id;
+                    loadItems();
+                } else {
+                    // ファイルをクリックした場合はプレビュー表示
+                    showFilePreview(item);
+                }
+            });
+            
+            checkbox.addEventListener('click', function(e) {
+                e.stopPropagation();
+                toggleItemSelection(item.id, this);
+            });
+            
+            return row;
+        }
+        
+        // アイテム選択の切り替え
+        function toggleItemSelection(itemId, checkboxElement) {
+            const index = selectedItems.indexOf(itemId);
+            
+            if (index === -1) {
+                // 選択に追加
+                selectedItems.push(itemId);
+                checkboxElement.classList.add('checked');
+                
+                // 対応するカードまたは行も選択状態に
+                const fileCard = document.querySelector(`.file-card[data-id="${itemId}"]`);
+                if (fileCard) {
+                    fileCard.classList.add('selected');
+                }
+                
+                const fileRow = document.querySelector(`tr[data-id="${itemId}"]`);
+                if (fileRow) {
+                    fileRow.classList.add('selected');
+                }
+            } else {
+                // 選択から削除
+                selectedItems.splice(index, 1);
+                checkboxElement.classList.remove('checked');
+                
+                // 対応するカードまたは行の選択を解除
+                const fileCard = document.querySelector(`.file-card[data-id="${itemId}"]`);
+                if (fileCard) {
+                    fileCard.classList.remove('selected');
+                }
+                
+                const fileRow = document.querySelector(`tr[data-id="${itemId}"]`);
+                if (fileRow) {
+                    fileRow.classList.remove('selected');
+                }
+            }
+            
+            // 選択状態に応じてツールバーボタンの有効/無効を切り替え
+            updateActionButtonsState();
+        }
+        
+        // ツールバーボタンの状態更新
+        function updateActionButtonsState() {
+            // 選択中のアイテム数に応じて一括操作ボタンを有効/無効に
+            const hasSelection = selectedItems.length > 0;
+            
+            // ここで一括操作ボタンの状態を更新
+            // 例: document.getElementById('bulk-delete-btn').disabled = !hasSelection;
+        }
+        
+        // ファイルプレビューの表示
+        function showFilePreview(item) {
+            if (previewModal && previewImage && previewTitle) {
+                previewTitle.innerText = item.name || 'ファイルプレビュー';
+                
+                if (isImageFile(item.name) && item.url) {
+                    previewImage.src = item.url;
+                    previewImage.style.display = 'block';
+                    
+                    // 画像読み込みエラー処理
+                    previewImage.onerror = function() {
+                        this.style.display = 'none';
+                        showToast('warning', '画像の読み込みに失敗しました');
+                    };
+                } else {
+                    previewImage.style.display = 'none';
+                    // 画像以外のプレビュー表示（未実装）
+                }
+                
+                // コンテキストメニューターゲットを設定
+                contextMenuTarget = item;
+                
+                // 活字化ボタンの表示/非表示
+                if (previewTranscribe) {
+                    if (isImageFile(item.name)) {
+                        previewTranscribe.style.display = 'inline-flex';
+                    } else {
+                        previewTranscribe.style.display = 'none';
+                    }
+                }
+                
+                // モーダルを表示
+                previewModal.classList.add('active');
+            }
+        }
+        
+        // コンテキストメニューの表示
+        function showContextMenu(event, item) {
+            event.preventDefault();
+            
+            // ターゲットアイテムを保存
+            contextMenuTarget = item;
+            
+            // メニュー項目の調整（フォルダとファイルで異なる）
+            const ctxTranscribe = document.getElementById('ctx-transcribe');
+            if (ctxTranscribe) {
+                ctxTranscribe.style.display = (item.type === 'folder' || !isImageFile(item.name)) ? 'none' : 'flex';
+            }
+            
+            // メニューを表示
+            if (contextMenu) {
+                const x = event.clientX;
+                const y = event.clientY;
+                
+                contextMenu.style.left = `${x}px`;
+                contextMenu.style.top = `${y}px`;
+                contextMenu.classList.add('active');
+                
+                // 画面からはみ出す場合の調整
+                setTimeout(() => {
+                    const menuRect = contextMenu.getBoundingClientRect();
+                    
+                    if (menuRect.right > window.innerWidth) {
+                        contextMenu.style.left = `${window.innerWidth - menuRect.width - 10}px`;
+                    }
+                    
+                    if (menuRect.bottom > window.innerHeight) {
+                        contextMenu.style.top = `${window.innerHeight - menuRect.height - 10}px`;
+                    }
+                }, 0);
+            }
+            
+            // 他の場所をクリックしたらメニューを閉じる
+            document.addEventListener('click', hideContextMenu);
+        }
+        
+        // コンテキストメニューを閉じる
+        function hideContextMenu() {
+            if (contextMenu) {
+                contextMenu.classList.remove('active');
+            }
+            document.removeEventListener('click', hideContextMenu);
+        }
+        
+        // 新規フォルダ作成
+        async function createFolder() {
+            try {
+                const folderName = folderNameInput ? folderNameInput.value.trim() : '';
+                if (!folderName) {
+                    showToast('warning', 'フォルダ名を入力してください');
+                    return;
+                }
+                
+                // 同じ名前のフォルダがないか確認
+                const existingFolders = currentItems.filter(item => 
+                    item.type === 'folder' && item.name === folderName
+                );
+                
+                if (existingFolders.length > 0) {
+                    showToast('warning', '同じ名前のフォルダが既に存在します');
+                    return;
+                }
+                
+                // フォルダを作成
+                await db.collection('documents').add({
+                    userId: currentUser.uid,
+                    name: folderName,
+                    type: 'folder',
+                    parentFolder: currentFolder === 'root' ? null : currentFolder,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // フォルダ作成成功
+                showToast('success', 'フォルダを作成しました', folderName);
+                
+                // モーダルを閉じる
+                closeModal(newFolderModal);
+                
+                // フォルダ名入力をクリア
+                if (folderNameInput) {
+                    folderNameInput.value = '';
+                }
+                
+                // 資料を再読み込み
+                loadItems();
+                
+            } catch (error) {
+                console.error("フォルダ作成エラー:", error);
+                showToast('error', 'フォルダの作成に失敗しました', error.message);
+            }
+        }
+        
+        // ファイル/フォルダの名前変更
+        async function renameItem() {
+            try {
+                if (!contextMenuTarget) return;
+                
+                const newName = newNameInput ? newNameInput.value.trim() : '';
+                if (!newName) {
+                    showToast('warning', '名前を入力してください');
+                    return;
+                }
+                
+                // 同じ名前のアイテムがないか確認
+                const existingItems = currentItems.filter(item => 
+                    item.id !== contextMenuTarget.id && 
+                    item.name === newName &&
+                    item.type === contextMenuTarget.type
+                );
+                
+                if (existingItems.length > 0) {
+                    showToast('warning', '同じ名前のアイテムが既に存在します');
+                    return;
+                }
+                
+                // 名前を更新
+                await db.collection('documents').doc(contextMenuTarget.id).update({
+                    name: newName,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // 名前変更成功
+                showToast('success', '名前を変更しました', `${contextMenuTarget.name} → ${newName}`);
+                
+                // モーダルを閉じる
+                closeModal(renameModal);
+                
+                // 入力をクリア
+                if (newNameInput) {
+                    newNameInput.value = '';
+                }
+                
+                // 資料を再読み込み
+                loadItems();
+                
+            } catch (error) {
+                console.error("名前変更エラー:", error);
+                showToast('error', '名前の変更に失敗しました', error.message);
+            }
+        }
+        
+        // ファイル/フォルダの移動
+        async function moveItem() {
+            try {
+                if (!contextMenuTarget || !selectedMoveTarget) return;
+                
+                // 自分自身を親フォルダにはできない
+                if (contextMenuTarget.id === selectedMoveTarget) {
+                    showToast('warning', '現在のフォルダには移動できません');
+                    return;
+                }
+                
+                // 子フォルダを親フォルダにはできない（循環参照防止）
+                if (contextMenuTarget.type === 'folder') {
+                    const isChildFolder = await isChildFolderOf(selectedMoveTarget, contextMenuTarget.id);
+                    if (isChildFolder) {
+                        showToast('warning', 'サブフォルダには移動できません');
+                        return;
+                    }
+                }
+                
+                // 移動先の親フォルダIDを設定
+                const parentFolder = selectedMoveTarget === 'root' ? null : selectedMoveTarget;
+                
+                // アイテムを移動
+                await db.collection('documents').doc(contextMenuTarget.id).update({
+                    parentFolder: parentFolder,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // 移動成功
+                showToast('success', '移動しました', contextMenuTarget.name);
+                
+                // モーダルを閉じる
+                closeModal(moveModal);
+                
+                // 資料を再読み込み
+                loadItems();
+                
+            } catch (error) {
+                console.error("アイテム移動エラー:", error);
+                showToast('error', 'アイテムの移動に失敗しました', error.message);
+            }
+        }
+        
+        // 特定のフォルダが別のフォルダの子フォルダかどうかをチェック
+        async function isChildFolderOf(potentialChildId, parentId) {
+            if (potentialChildId === 'root') return false;
+            if (potentialChildId === parentId) return true;
+            
+            try {
+                const folderDoc = await db.collection('documents').doc(potentialChildId).get();
+                if (!folderDoc.exists) return false;
+                
+                const folderData = folderDoc.data();
+                if (!folderData.parentFolder) return false;
+                
+                return isChildFolderOf(folderData.parentFolder, parentId);
+            } catch (error) {
+                console.error("フォルダチェックエラー:", error);
+                return false;
+            }
+        }
+        
+        // ファイル/フォルダの削除
+        async function deleteItem() {
+            try {
+                if (!contextMenuTarget) return;
+                
+                // ファイルの場合はStorageからも削除
+                if (contextMenuTarget.type !== 'folder' && contextMenuTarget.storagePath) {
+                    try {
+                        const fileRef = storage.ref(contextMenuTarget.storagePath);
+                        await fileRef.delete();
+                    } catch (storageError) {
+                        console.error("Storageファイル削除エラー:", storageError);
+                        // Storage削除に失敗しても処理は続行
+                    }
+                }
+                
+                // フォルダの場合は中のアイテムも再帰的に削除
+                if (contextMenuTarget.type === 'folder') {
+                    await deleteFolder(contextMenuTarget.id);
+                } else {
+                    // 単一アイテムの削除
+                    await db.collection('documents').doc(contextMenuTarget.id).delete();
+                }
+                
+                // 削除成功
+                showToast('success', '削除しました', contextMenuTarget.name);
+                
+                // モーダルを閉じる
+                closeModal(deleteModal);
+                
+                // 資料を再読み込み
+                loadItems();
+                
+            } catch (error) {
+                console.error("アイテム削除エラー:", error);
+                showToast('error', 'アイテムの削除に失敗しました', error.message);
+            }
+        }
+        
+        // フォルダの再帰的削除
+        async function deleteFolder(folderId) {
+            try {
+                // フォルダ内のアイテムを取得
+                const itemsSnapshot = await db.collection('documents')
+                    .where('userId', '==', currentUser.uid)
+                    .where('parentFolder', '==', folderId)
+                    .get();
+                
+                // アイテムがある場合は先に削除
+                const deletePromises = [];
+                
+                itemsSnapshot.forEach(doc => {
+                    const item = doc.data();
+                    
+                    if (item.type === 'folder') {
+                        // サブフォルダは再帰的に削除
+                        deletePromises.push(deleteFolder(doc.id));
+                    } else if (item.storagePath) {
+                        // ファイルはStorageからも削除
+                        try {
+                            const fileRef = storage.ref(item.storagePath);
+                            deletePromises.push(fileRef.delete().catch(error => {
+                                console.error(`Storage削除エラー (${item.name}):`, error);
+                            }));
+                        } catch (storageError) {
+                            console.error("Storageファイル削除エラー:", storageError);
+                        }
+                        
+                        // Firestoreから削除
+                        deletePromises.push(db.collection('documents').doc(doc.id).delete());
+                    } else {
+                        // StorageパスがないファイルはFirestoreからのみ削除
+                        deletePromises.push(db.collection('documents').doc(doc.id).delete());
+                    }
+                });
+                
+                // すべての削除処理を実行
+                await Promise.all(deletePromises);
+                
+                // 最後にフォルダ自体を削除
+                await db.collection('documents').doc(folderId).delete();
+                
+            } catch (error) {
+                console.error("フォルダ削除エラー:", error);
+                throw error;
+            }
+        }
+        
+        // 活字化エディタで開く
+        function openInEditor(item) {
+            if (!item || item.type === 'folder' || !isImageFile(item.name)) {
+                showToast('warning', '活字化は画像ファイルのみ対応しています');
+                return;
+            }
+            
+            try {
+                // セッションストレージに情報を保存
+                sessionStorage.setItem('editImageId', item.id);
+                sessionStorage.setItem('editImageUrl', item.url);
+                sessionStorage.setItem('editImageName', item.name);
+                
+                // 活字化エディタページへ移動
+                window.location.href = 'katsujieditor.html';
+            } catch (error) {
+                console.error("活字化エディタ遷移エラー:", error);
+                showToast('error', '活字化エディタの起動に失敗しました');
+            }
+        }
+        
+        // ファイルダウンロード
+        function downloadFile(item) {
+            if (!item || !item.url) {
+                showToast('error', 'ダウンロードできませんでした', 'ファイルのURLが見つかりません');
+                return;
+            }
+            
+            try {
+                // ダウンロードリンクを作成して自動クリック
+                const a = document.createElement('a');
+                a.href = item.url;
+                a.download = item.name || 'download';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error("ダウンロードエラー:", error);
+                showToast('error', 'ダウンロードに失敗しました');
+            }
+        }
+        
+        // イベントリスナー設定
+        document.addEventListener('DOMContentLoaded', function() {
+            // テーマ切替
+            if (themeToggle) {
+                // 保存されたテーマを適用
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.body.setAttribute('data-theme', savedTheme);
+                
+                // テーマアイコンを更新
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+                
+                // クリックイベント
+                themeToggle.addEventListener('click', function() {
+                    const currentTheme = document.body.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    
+                    document.body.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    
+                    // アイコンを更新
+                    if (newTheme === 'dark') {
+                        themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                    } else {
+                        themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                    }
+                });
+            }
+            
+            // サイドバー切替（モバイル用）
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // ログアウト
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    try {
+                        auth.signOut().then(() => {
+                            window.location.href = 'login.html';
+                        }).catch(error => {
+                            console.error("ログアウトエラー:", error);
+                            showToast('error', 'ログアウトに失敗しました');
+                        });
+                    } catch (error) {
+                        console.error("ログアウト処理エラー:", error);
+                        showToast('error', 'ログアウト処理中にエラーが発生しました');
+                    }
+                });
+            }
+            
+            // 表示モード切替
+            if (viewToggleBtns) {
+                viewToggleBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const viewMode = this.dataset.view;
+                        
+                        // すべてのボタンから active クラスを削除
+                        viewToggleBtns.forEach(b => b.classList.remove('active'));
+                        
+                        // クリックされたボタンに active クラスを追加
+                        this.classList.add('active');
+                        
+                        // ビューモードを保存
+                        currentView = viewMode;
+                        localStorage.setItem('documentView', viewMode);
+                        
+                        // 表示を切り替え
+                        if (viewMode === 'grid') {
+                            if (gridView) gridView.style.display = 'block';
+                            if (listView) listView.style.display = 'none';
+                        } else {
+                            if (gridView) gridView.style.display = 'none';
+                            if (listView) listView.style.display = 'block';
+                        }
+                    });
+                });
+                
+                // 保存されたビューモードを適用
+                const savedView = localStorage.getItem('documentView') || 'grid';
+                currentView = savedView;
+                
+                viewToggleBtns.forEach(btn => {
+                    if (btn.dataset.view === savedView) {
+                        btn.click();
+                    }
+                });
+            }
+            
+            // 検索
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    searchQuery = this.value.trim();
+                    loadItems();
+                });
+            }
+            
+            // 並び替え
+            if (sortDropdown) {
+                // ドロップダウン表示切替
+                sortDropdown.addEventListener('click', function(e) {
+                    if (e.target.matches('.dropdown-item')) return;
+                    e.stopPropagation();
+                    this.classList.toggle('active');
+                });
+                
+                // 並び替え項目選択
+                const sortItems = sortDropdown.querySelectorAll('.dropdown-item');
+                sortItems.forEach(item => {
+                    item.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        currentSortOrder = this.dataset.sort;
+                        
+                        // 資料を再読み込み
+                        loadItems();
+                        
+                        // ドロップダウンを閉じる
+                        sortDropdown.classList.remove('active');
+                    });
+                });
+                
+                // 他の場所をクリックしたらドロップダウンを閉じる
+                document.addEventListener('click', function(e) {
+                    if (!sortDropdown.contains(e.target)) {
+                        sortDropdown.classList.remove('active');
+                    }
+                });
+            }
+            
+            // 新規フォルダボタン
+            if (newFolderBtn && newFolderModal) {
+                newFolderBtn.addEventListener('click', function() {
+                    // モーダルを表示
+                    newFolderModal.classList.add('active');
+                    
+                    // 入力欄にフォーカス
+                    if (folderNameInput) {
+                        folderNameInput.value = '';
+                        folderNameInput.focus();
+                    }
+                });
+            }
+            
+            // 新規フォルダモーダルを閉じる
+            if (closeNewFolderModal) {
+                closeNewFolderModal.addEventListener('click', function() {
+                    closeModal(newFolderModal);
+                });
+            }
+            
+            // キャンセルボタン
+            if (cancelNewFolder) {
+                cancelNewFolder.addEventListener('click', function() {
+                    closeModal(newFolderModal);
+                });
+            }
+            
+            // フォルダ作成ボタン
+            if (createFolderBtn) {
+                createFolderBtn.addEventListener('click', function() {
+                    createFolder();
+                });
+            }
+            
+            // フォルダ名入力でEnterキー
+            if (folderNameInput) {
+                folderNameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        createFolder();
+                    }
+                });
+            }
+            
+            // 名前変更モーダルを閉じる
+            if (closeRenameModal) {
+                closeRenameModal.addEventListener('click', function() {
+                    closeModal(renameModal);
+                });
+            }
+            
+            // 名前変更キャンセル
+            if (cancelRename) {
+                cancelRename.addEventListener('click', function() {
+                    closeModal(renameModal);
+                });
+            }
+            
+            // 名前変更ボタン
+            if (renameBtn) {
+                renameBtn.addEventListener('click', function() {
+                    renameItem();
+                });
+            }
+            
+            // 新しい名前入力でEnterキー
+            if (newNameInput) {
+                newNameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        renameItem();
+                    }
+                });
+            }
+            
+            // 移動モーダルを閉じる
+            if (closeMoveModal) {
+                closeMoveModal.addEventListener('click', function() {
+                    closeModal(moveModal);
+                });
+            }
+            
+            // 移動キャンセル
+            if (cancelMove) {
+                cancelMove.addEventListener('click', function() {
+                    closeModal(moveModal);
+                });
+            }
+            
+            // 移動ボタン
+            if (moveBtn) {
+                moveBtn.addEventListener('click', function() {
+                    moveItem();
+                });
+            }
+            
+            // 削除モーダルを閉じる
+            if (closeDeleteModal) {
+                closeDeleteModal.addEventListener('click', function() {
+                    closeModal(deleteModal);
+                });
+            }
+            
+            // 削除キャンセル
+            if (cancelDelete) {
+                cancelDelete.addEventListener('click', function() {
+                    closeModal(deleteModal);
+                });
+            }
+            
+            // 削除確認ボタン
+            if (confirmDelete) {
+                confirmDelete.addEventListener('click', function() {
+                    deleteItem();
+                });
+            }
+            
+            // プレビューモーダルを閉じる
+            if (closePreviewModal) {
+                closePreviewModal.addEventListener('click', function() {
+                    closeModal(previewModal);
+                });
+            }
+            
+            // プレビューから活字化
+            if (previewTranscribe) {
+                previewTranscribe.addEventListener('click', function() {
+                    if (contextMenuTarget) {
+                        openInEditor(contextMenuTarget);
+                    }
+                });
+            }
+            
+            // プレビューからダウンロード
+            if (previewDownload) {
+                previewDownload.addEventListener('click', function() {
+                    if (contextMenuTarget) {
+                        downloadFile(contextMenuTarget);
+                    }
+                });
+            }
+            
+            // コンテキストメニューの各アクションボタン
+            // 開く
+            const ctxOpen = document.getElementById('ctx-open');
+            if (ctxOpen) {
+                ctxOpen.addEventListener('click', function() {
+                    if (!contextMenuTarget) return;
+                    
+                    if (contextMenuTarget.type === 'folder') {
+                        currentFolder = contextMenuTarget.id;
+                        loadItems();
+                    } else {
+                        showFilePreview(contextMenuTarget);
+                    }
+                });
+            }
+            
+            // 活字化
+            const ctxTranscribe = document.getElementById('ctx-transcribe');
+            if (ctxTranscribe) {
+                ctxTranscribe.addEventListener('click', function() {
+                    if (!contextMenuTarget) return;
+                    openInEditor(contextMenuTarget);
+                });
+            }
+            
+            // 名前変更
+            const ctxRename = document.getElementById('ctx-rename');
+            if (ctxRename) {
+                ctxRename.addEventListener('click', function() {
+                    if (!contextMenuTarget) return;
+                    
+                    // 名前変更モーダルを表示
+                    if (renameModal && newNameInput) {
+                        newNameInput.value = contextMenuTarget.name || '';
+                        renameModal.classList.add('active');
+                        
+                        // 入力欄にフォーカスとテキスト選択
+                        setTimeout(() => {
+                            newNameInput.focus();
+                            newNameInput.select();
+                        }, 100);
+                    }
+                });
+            }
+            
+            // 移動
+            const ctxMove = document.getElementById('ctx-move');
+            if (ctxMove) {
+                ctxMove.addEventListener('click', function() {
+                    if (!contextMenuTarget) return;
+                    
+                    // フォルダ構造を読み込み
+                    loadFolderStructure();
+                    
+                    // 現在のフォルダを初期選択
+                    selectedMoveTarget = contextMenuTarget.parentFolder || 'root';
+                    
+                    // 移動モーダルを表示
+                    if (moveModal) {
+                        moveModal.classList.add('active');
+                    }
+                });
+            }
+            
+            // ダウンロード
+            const ctxDownload = document.getElementById('ctx-download');
+            if (ctxDownload) {
+                ctxDownload.addEventListener('click', function() {
+                    if (!contextMenuTarget) return;
+                    
+                    // フォルダの場合は未実装
+                    if (contextMenuTarget.type === 'folder') {
+                        showToast('warning', 'フォルダのダウンロードは現在実装中です');
+                        return;
+                    }
+                    
+                    downloadFile(contextMenuTarget);
+                });
+            }
+            
+            // 削除
+            const ctxDelete = document.getElementById('ctx-delete');
+            if (ctxDelete) {
+                ctxDelete.addEventListener('click', function() {
+                    if (!contextMenuTarget) return;
+                    
+                    // 削除確認モーダルを表示
+                    if (deleteModal && deleteItemName) {
+                        deleteItemName.textContent = contextMenuTarget.name || '選択したアイテム';
+                        deleteModal.classList.add('active');
+                    }
+                });
+            }
+            
+            // エラーハンドリング
+            window.addEventListener('error', function(e) {
+                console.error('グローバルエラー:', e.error || e.message);
+                showToast('error', 'エラーが発生しました', 'ページを再読み込みしてください');
+            });
+            
+            // モーダルの背景クリックで閉じる
+            document.querySelectorAll('.modal-backdrop').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeModal(this);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>        
+    

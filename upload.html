@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
+    <title>資料アップロード | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin var(--transition-normal);
+        }
+        
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
+        
+        /* ボタンスタイル */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-lg {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            border-radius: 50%;
+        }
+        
+        .btn-icon i {
+            margin-right: 0;
+        }
+        
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+        
+        /* カード */
+        .card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: box-shadow var(--transition-normal);
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .card {
+            background-color: #1e293b;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow);
+        }
+        
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        .card-footer {
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* フォーム */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .form-control {
+            background-color: #1e293b;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .form-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.375rem;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.5rem 2rem 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b7280'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5rem;
+        }
+        
+        [data-theme="dark"] .form-select {
+            background-color: #1e293b;
+        }
+        
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        /* ドラッグ&ドロップエリア */
+        .upload-area {
+            position: relative;
+            padding: 2rem;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: all var(--transition-normal);
+            background-color: var(--gray-50);
+        }
+        
+        [data-theme="dark"] .upload-area {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        .upload-area.drag-active {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        [data-theme="dark"] .upload-area.drag-active {
+            background-color: rgba(var(--primary), 0.2);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+        
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        /* プログレスバー */
+        .progress {
+            height: 0.5rem;
+            background-color: var(--gray-200);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
+        }
+        
+        /* アップロードリスト */
+        .upload-list {
+            margin-top: 1.5rem;
+        }
+        
+        .upload-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-bottom: 0.75rem;
+            background-color: white;
+            transition: all var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .upload-item {
+            background-color: #1e293b;
+        }
+        
+        .upload-item:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .upload-item-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .upload-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .upload-item-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .upload-item-size {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .upload-item-status {
+            margin-left: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .upload-item-status.pending {
+            color: var(--warning);
+        }
+        
+        .upload-item-status.uploading {
+            color: var(--info);
+        }
+        
+        .upload-item-status.success {
+            color: var(--success);
+        }
+        
+        .upload-item-status.error {
+            color: var(--danger);
+        }
+        
+        .upload-item-actions {
+            margin-left: 0.75rem;
+        }
+        
+        .upload-item-action {
+            border: none;
+            background: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            font-size: 1rem;
+            transition: color var(--transition-normal);
+        }
+        
+        .upload-item-action:hover {
+            color: var(--danger);
+        }
+        
+        /* プレビュー */
+        .preview-container {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .preview-item {
+            width: 150px;
+            height: 150px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--border-color);
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .preview-item {
+            background-color: #1e293b;
+        }
+        
+        .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-file {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .preview-file-icon {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .preview-file-name {
+            font-size: 0.75rem;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .preview-remove {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .preview-remove:hover {
+            background-color: var(--danger);
+        }
+        
+        /* フォルダツリー */
+        .folder-tree {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            background-color: white;
+        }
+        
+        [data-theme="dark"] .folder-tree {
+            background-color: #1e293b;
+        }
+        
+        .folder-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .folder-item:hover {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .folder-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .folder-item.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        [data-theme="dark"] .folder-item.active {
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        .folder-item i {
+            margin-right: 0.75rem;
+        }
+        
+        .folder-children {
+            margin-left: 1.5rem;
+            border-left: 1px dashed var(--border-color);
+            padding-left: 0.5rem;
+        }
+        
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+        
+        /* トースト通知 */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .toast {
+            padding: 1rem 1.5rem;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 100%;
+            transform: translateX(100%);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            border-left: 4px solid;
+        }
+        
+        [data-theme="dark"] .toast {
+            background-color: #1e293b;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .toast-success {
+            border-color: var(--success);
+        }
+        
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+        
+        .toast-error {
+            border-color: var(--danger);
+        }
+        
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+        
+        .toast-warning {
+            border-color: var(--warning);
+        }
+        
+        .toast-warning .toast-icon {
+            color: var(--warning);
+        }
+        
+        .toast-info {
+            border-color: var(--info);
+        }
+        
+        .toast-info .toast-icon {
+            color: var(--info);
+        }
+        
+        .toast-icon {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .toast-message {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+            margin-left: 0.5rem;
+            transition: color var(--transition-normal);
+        }
+        
+        .toast-close:hover {
+            color: var(--danger);
+        }
+        
+        /* ローディングスピナー */
+        .spinner {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid rgba(var(--primary), 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .loading-container p {
+            margin-top: 1rem;
+            color: var(--text-muted);
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* オーバーレイ */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-normal), visibility var(--transition-normal);
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .overlay-content {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            transform: translateY(20px);
+            transition: transform var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .overlay-content {
+            background-color: #1e293b;
+        }
+        
+        .overlay.active .overlay-content {
+            transform: translateY(0);
+        }
+        
+        /* ユーティリティクラス */
+        .d-flex {
+            display: flex;
+        }
+        
+        .flex-column {
+            flex-direction: column;
+        }
+        
+        .align-items-center {
+            align-items: center;
+        }
+        
+        .justify-content-between {
+            justify-content: space-between;
+        }
+        
+        .justify-content-center {
+            justify-content: center;
+        }
+        
+        .text-center {
+            text-align: center;
+        }
+        
+        .mb-1 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+        
+        .mb-3 {
+            margin-bottom: 1rem;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mb-5 {
+            margin-bottom: 3rem;
+        }
+        
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+        
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+        
+        .mt-3 {
+            margin-top: 1rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        
+        .mt-5 {
+            margin-top: 3rem;
+        }
+        
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+        
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .w-100 {
+            width: 100%;
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .preview-item {
+                width: 120px;
+                height: 120px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .preview-container {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .upload-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .upload-item-icon {
+                margin-bottom: 0.5rem;
+            }
+            
+            .upload-item-status {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+            
+            .upload-item-actions {
+                align-self: flex-end;
+                margin-top: -1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="mainpage.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="katsujieditor.html" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item active">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="projects.html" class="menu-item">
+                <i class="fas fa-project-diagram"></i> アップロード
+            </a>
+            <a href="booklink.html" class="menu-item">
+                <i class="fas fa-book"></i> 完成本を見る
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ホーム</a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="documents.html">資料管理</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>資料アップロード</span>
+            </div>
+            <h1 class="page-title">資料アップロード</h1>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">アップロード設定</h2>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="upload-folder" class="form-label">保存先フォルダ</label>
+                    <div id="folder-loading" class="loading-container">
+                        <div class="spinner"></div>
+                        <p>フォルダ情報を読み込み中...</p>
+                    </div>
+                    <div class="folder-tree" id="folder-tree" style="display: none;">
+                        <!-- フォルダツリーがここに動的に追加されます -->
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">アップロード方法</label>
+                    <div class="upload-area" id="upload-area">
+                        <input type="file" id="file-input" class="file-input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3 class="upload-title">ファイルをドラッグ＆ドロップ</h3>
+                        <p class="upload-subtitle">または、クリックしてファイルを選択</p>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-folder-open"></i> ファイルを選択
+                        </button>
+                    </div>
+                    <div class="form-text">
+                        <i class="fas fa-info-circle"></i> アップロード可能なファイル形式: JPEG, PNG, GIF, PDF, TIFF, DOC, XLS, PPT, TXTなど
+                    </div>
+                </div>
+                
+                <div id="preview-container" class="preview-container">
+                    <!-- ファイルプレビューがここに動的に追加されます -->
+                </div>
+                
+                <div id="upload-progress" style="display: none;">
+                    <div class="d-flex justify-content-between">
+                        <div>アップロード中... <span id="progress-percentage">0%</span></div>
+                        <div><span id="uploaded-count">0</span>/<span id="total-count">0</span> ファイル</div>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="upload-list" class="upload-list">
+                    <!-- アップロードリストがここに動的に追加されます -->
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a href="documents.html" class="btn btn-outline">
+                        <i class="fas fa-arrow-left"></i> 資料管理に戻る
+                    </a>
+                    <button id="upload-btn" class="btn btn-primary" disabled>
+                        <i class="fas fa-upload"></i> アップロード開始
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="card-title">アップロードのヒント</h2>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h3 class="mb-2"><i class="fas fa-lightbulb text-warning"></i> 効率的なアップロード</h3>
+                    <ul>
+                        <li>複数のファイルを一度にアップロードできます。</li>
+                        <li>アップロードする前にフォルダを選択して整理しましょう。</li>
+                        <li>画像ファイルは活字化エディタで直接開くことができます。</li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h3 class="mb-2"><i class="fas fa-image text-primary"></i> 画像ファイルについて</h3>
+                    <ul>
+                        <li>活字化に最適なのは300dpi以上の高解像度画像です。</li>
+                        <li>JPG、PNG、TIFFなどの形式がサポートされています。</li>
+                        <li>大判の原稿は、OCR精度向上のため分割してアップロードすることをお勧めします。</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="mb-2"><i class="fas fa-exclamation-triangle text-warning"></i> 制限事項</h3>
+                    <ul>
+                        <li>1ファイル当たりの最大サイズは50MBです。</li>
+                        <li>一度にアップロードできるファイル数は最大20個までです。</li>
+                        <li>サポートされているファイル形式: JPEG, PNG, GIF, PDF, TIFF, DOC, XLS, PPT, TXTなど</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 完了オーバーレイ -->
+    <div class="overlay" id="upload-complete-overlay">
+        <div class="overlay-content text-center">
+            <div class="mb-4">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--success);"></i>
+            </div>
+            <h2 class="mb-3">アップロード完了</h2>
+            <p class="mb-4"><span id="completed-count">0</span>個のファイルがアップロードされました。</p>
+            <div class="d-flex justify-content-center">
+                <button id="transcribe-now-btn" class="btn btn-primary mr-2">
+                    <i class="fas fa-edit"></i> 今すぐ活字化
+                </button>
+                <a href="documents.html" class="btn btn-outline">
+                    資料管理に戻る
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- トースト通知コンテナ -->
+    <div class="toast-container" id="toast-container">
+        <!-- トースト通知がここに動的に追加されます -->
+    </div>
+     <!-- JavaScript -->
+     <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+        } catch (error) {
+            console.error("Firebase初期化エラー:", error);
+            showToast('error', 'Firebaseの初期化に失敗しました', 'ページを再読み込みしてください');
+        }
+
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // DOM要素の参照
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const themeToggle = document.getElementById('theme-toggle');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userAvatar = document.getElementById('user-avatar');
+        const userInitial = document.getElementById('user-initial');
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        
+        const folderTree = document.getElementById('folder-tree');
+        const folderLoading = document.getElementById('folder-loading');
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('preview-container');
+        const uploadProgress = document.getElementById('upload-progress');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const uploadedCount = document.getElementById('uploaded-count');
+        const totalCount = document.getElementById('total-count');
+        const uploadList = document.getElementById('upload-list');
+        const uploadBtn = document.getElementById('upload-btn');
+        
+        const uploadCompleteOverlay = document.getElementById('upload-complete-overlay');
+        const completedCount = document.getElementById('completed-count');
+        const transcribeNowBtn = document.getElementById('transcribe-now-btn');
+        
+        const toastContainer = document.getElementById('toast-container');
+
+        // アプリケーションの状態
+        let currentUser = null;
+        let selectedFolderId = "root";
+        let selectedFiles = [];
+        let uploadedFiles = [];
+        let folderStructure = [];
+        let lastUploadedImageId = null;
+        
+        // 制限
+        const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+        const MAX_FILES = 20;
+        
+        // ユーティリティ関数
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function getFileExtension(filename) {
+            if (!filename) return '';
+            return filename.split('.').pop().toLowerCase();
+        }
+        
+        function isImageFile(filename) {
+            if (!filename) return false;
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'tiff', 'tif'];
+            const extension = getFileExtension(filename);
+            return imageExtensions.includes(extension);
+        }
+        
+        function getFileIcon(filename) {
+            const extension = getFileExtension(filename);
+            
+            switch (extension) {
+                case 'jpg':
+                case 'jpeg':
+                case 'png':
+                case 'gif':
+                case 'bmp':
+                case 'webp':
+                case 'tiff':
+                case 'tif':
+                    return '<i class="fas fa-image"></i>';
+                case 'pdf':
+                    return '<i class="fas fa-file-pdf"></i>';
+                case 'doc':
+                case 'docx':
+                    return '<i class="fas fa-file-word"></i>';
+                case 'xls':
+                case 'xlsx':
+                    return '<i class="fas fa-file-excel"></i>';
+                case 'ppt':
+                case 'pptx':
+                    return '<i class="fas fa-file-powerpoint"></i>';
+                case 'txt':
+                    return '<i class="fas fa-file-alt"></i>';
+                default:
+                    return '<i class="fas fa-file"></i>';
+            }
+        }
+        
+        // トースト通知を表示
+        function showToast(type, title, message = '') {
+            const toastId = 'toast-' + Date.now();
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.id = toastId;
+            
+            let iconClass = 'fa-info-circle';
+            switch (type) {
+                case 'success': iconClass = 'fa-check-circle'; break;
+                case 'error': iconClass = 'fa-exclamation-circle'; break;
+                case 'warning': iconClass = 'fa-exclamation-triangle'; break;
+            }
+            
+            toast.innerHTML = `
+                <div class="toast-icon">
+                    <i class="fas ${iconClass}"></i>
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    ${message ? `<div class="toast-message">${message}</div>` : ''}
+                </div>
+                <button class="toast-close" onclick="document.getElementById('${toastId}').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            if (toastContainer) {
+                toastContainer.appendChild(toast);
+                
+                // アニメーション適用
+                setTimeout(() => {
+                    toast.classList.add('show');
+                }, 10);
+                
+                // 自動で閉じる
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.classList.remove('show');
+                        setTimeout(() => {
+                            if (toast.parentNode) {
+                                toast.remove();
+                            }
+                        }, 300);
+                    }
+                }, 5000);
+            }
+        }
+        
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                
+                // ユーザープロフィールの表示
+                updateUserProfile(user);
+                
+                // フォルダ構造の読み込み
+                loadFolderStructure();
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+        
+        // ユーザープロフィールの更新
+        function updateUserProfile(user) {
+            // 表示名の取得
+            const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+            
+            // サイドバーのユーザー名を更新
+            if (sidebarUserName) {
+                sidebarUserName.textContent = displayName;
+            }
+            
+            // ユーザーイニシャルの更新
+            if (userInitial) {
+                const initial = displayName.charAt(0).toUpperCase();
+                userInitial.textContent = initial;
+            }
+            
+            // プロフィール画像の設定
+            if (userAvatar) {
+                if (user.photoURL) {
+                    // 画像がある場合
+                    userAvatar.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = user.photoURL;
+                    img.alt = displayName;
+                    img.onload = function() {
+                        userAvatar.appendChild(img);
+                    };
+                    img.onerror = function() {
+                        // 画像読み込みエラーの場合はイニシャルを表示
+                        userAvatar.innerHTML = `<span>${initial}</span>`;
+                    };
+                }
+            }
+            
+            // Firestoreからユーザー情報を取得（追加情報がある場合）
+            try {
+                db.collection('users').doc(user.uid).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+                            
+                            // 表示名の更新
+                            if (userData.displayName && sidebarUserName) {
+                                sidebarUserName.textContent = userData.displayName;
+                            }
+                            
+                            // プロフィール画像の更新（カスタム画像がある場合）
+                            if (userData.profileImageUrl && userAvatar) {
+                                userAvatar.innerHTML = '';
+                                const img = document.createElement('img');
+                                img.src = userData.profileImageUrl;
+                                img.alt = userData.displayName || displayName;
+                                img.onload = function() {
+                                    userAvatar.appendChild(img);
+                                };
+                                img.onerror = function() {
+                                    // カスタム画像読み込みエラーの場合は標準画像またはイニシャルに戻す
+                                    if (user.photoURL) {
+                                        const defaultImg = document.createElement('img');
+                                        defaultImg.src = user.photoURL;
+                                        defaultImg.alt = displayName;
+                                        userAvatar.appendChild(defaultImg);
+                                    } else {
+                                        userAvatar.innerHTML = `<span>${initial}</span>`;
+                                    }
+                                };
+                            }
+                        } else {
+                            // ユーザードキュメントが存在しない場合は新規作成
+                            createUserProfile(user);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("ユーザー情報取得エラー:", error);
+                    });
+            } catch (error) {
+                console.error("Firestore操作エラー:", error);
+            }
+        }
+        
+        // 新規ユーザープロファイルの作成
+        async function createUserProfile(user) {
+            try {
+                // 表示名を取得
+                const displayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                
+                // ユーザーデータを準備
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: displayName,
+                    profileImageUrl: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    documentCount: 0,
+                    points: 0,
+                    level: 1
+                };
+                
+                // Firestoreに保存
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log("ユーザープロファイル作成完了");
+                
+                // アクティビティログの作成
+                await db.collection('activities').add({
+                    userId: user.uid,
+                    type: 'account_created',
+                    title: 'アカウント作成',
+                    description: 'KatsujiRingXへようこそ！アカウントが作成されました。',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            } catch (error) {
+                console.error("ユーザープロファイル作成エラー:", error);
+                showToast('error', 'ユーザープロファイルの作成に失敗しました');
+            }
+        }
+        
+        // フォルダ構造の読み込み
+        async function loadFolderStructure() {
+            try {
+                if (folderLoading) {
+                    folderLoading.style.display = 'flex';
+                }
+                if (folderTree) {
+                    folderTree.style.display = 'none';
+                }
+                
+                const folders = [];
+                
+                // すべてのフォルダを取得
+                const folderSnapshot = await db.collection('documents')
+                    .where('userId', '==', currentUser.uid)
+                    .where('type', '==', 'folder')
+                    .get();
+                
+                folderSnapshot.forEach(doc => {
+                    folders.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // ルートフォルダ（parentFolder が null のもの）
+                const rootFolders = folders.filter(folder => !folder.parentFolder);
+                
+                // 階層構造を構築
+                folderStructure = rootFolders.map(folder => buildFolderTree(folder, folders));
+                
+                // フォルダツリーの表示更新
+                renderFolderTree();
+                
+                if (folderLoading) {
+                    folderLoading.style.display = 'none';
+                }
+                if (folderTree) {
+                    folderTree.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error("フォルダ構造読み込みエラー:", error);
+                showToast('error', 'フォルダ構造の読み込みに失敗しました', 'ページを再読み込みしてください');
+                
+                if (folderLoading) {
+                    folderLoading.style.display = 'none';
+                }
+            }
+        }
+        
+        // フォルダ構造の構築（再帰的に）
+        function buildFolderTree(folder, allFolders) {
+            const children = allFolders.filter(f => f.parentFolder === folder.id);
+            return {
+                ...folder,
+                children: children.map(child => buildFolderTree(child, allFolders))
+            };
+        }
+        
+        // フォルダツリーの表示
+        function renderFolderTree() {
+            if (!folderTree) return;
+            
+            // ルート要素を追加
+            folderTree.innerHTML = `
+                <div class="folder-item ${selectedFolderId === 'root' ? 'active' : ''}" data-folder-id="root">
+                    <i class="fas fa-home"></i>
+                    <span class="folder-name">マイ資料</span>
+                </div>
+            `;
+            
+            // フォルダ構造を表示
+            folderStructure.forEach(folder => {
+                const folderElement = renderFolderNode(folder);
+                folderTree.appendChild(folderElement);
+            });
+            
+            // フォルダクリックイベント
+            const folderItems = folderTree.querySelectorAll('.folder-item');
+            folderItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    
+                    // フォルダ選択を更新
+                    folderItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 選択したフォルダを記録
+                    selectedFolderId = this.dataset.folderId;
+                });
+            });
+        }
+        
+        // フォルダノードの表示（再帰的に）
+        function renderFolderNode(folder) {
+            const folderDiv = document.createElement('div');
+            
+            // フォルダアイテム
+            const folderItem = document.createElement('div');
+            folderItem.className = `folder-item ${selectedFolderId === folder.id ? 'active' : ''}`;
+            folderItem.dataset.folderId = folder.id;
+            
+            folderItem.innerHTML = `
+                <i class="fas fa-folder"></i>
+                <span class="folder-name">${folder.name}</span>
+            `;
+            
+            folderDiv.appendChild(folderItem);
+            
+            // 子フォルダがある場合は表示
+            if (folder.children && folder.children.length > 0) {
+                const childrenDiv = document.createElement('div');
+                childrenDiv.className = 'folder-children';
+                
+                folder.children.forEach(child => {
+                    const childNode = renderFolderNode(child);
+                    childrenDiv.appendChild(childNode);
+                });
+                
+                folderDiv.appendChild(childrenDiv);
+            }
+            
+            return folderDiv;
+        }
+        
+        // ファイル選択処理
+        function handleFileSelect(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            const files = event.target.files || event.dataTransfer.files;
+            
+            if (!files || files.length === 0) return;
+            
+            // 選択制限チェック
+            if (selectedFiles.length + files.length > MAX_FILES) {
+                showToast('warning', '選択できるファイル数の上限を超えています', `一度にアップロードできるのは最大${MAX_FILES}個までです`);
+                return;
+            }
+            
+            // ファイルを追加
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // ファイルサイズチェック
+                if (file.size > MAX_FILE_SIZE) {
+                    showToast('warning', 'ファイルサイズが大きすぎます', `${file.name}のサイズは${formatFileSize(file.size)}です。上限は${formatFileSize(MAX_FILE_SIZE)}です。`);
+                    continue;
+                }
+                
+                // 既に選択済みのファイルと重複しないか確認
+                const isDuplicate = selectedFiles.some(f => 
+                    f.name === file.name && f.size === file.size && f.lastModified === file.lastModified
+                );
+                
+                if (!isDuplicate) {
+                    selectedFiles.push(file);
+                    addFilePreview(file);
+                    
+                    // アップロードリストに追加
+                    addUploadListItem(file);
+                }
+            }
+            
+            // ファイルが選択されていればアップロードボタンを有効化
+            uploadBtn.disabled = selectedFiles.length === 0;
+            
+            // 入力をクリア（同じファイルを連続で選択できるように）
+            if (event.target === fileInput) {
+                fileInput.value = '';
+            }
+            
+            // ドラッグ状態を解除
+            if (uploadArea) {
+                uploadArea.classList.remove('drag-active');
+            }
+        }
+        
+        // ファイルプレビューを追加
+        function addFilePreview(file) {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            previewItem.dataset.name = file.name;
+            
+            if (isImageFile(file.name)) {
+                // 画像ファイルの場合はサムネイル表示
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" class="preview-img" alt="${file.name}">
+                        <div class="preview-remove" title="削除" data-name="${file.name}">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    `;
+                    
+                    // 削除ボタンのイベント追加
+                    const removeBtn = previewItem.querySelector('.preview-remove');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            removeFile(this.dataset.name);
+                        });
+                    }
+                };
+                
+                reader.onerror = function() {
+                    // 読み込みエラーの場合はアイコン表示
+                    previewItem.innerHTML = `
+                        <div class="preview-file">
+                            <div class="preview-file-icon">${getFileIcon(file.name)}</div>
+                            <div class="preview-file-name">${file.name}</div>
+                        </div>
+                        <div class="preview-remove" title="削除" data-name="${file.name}">
+                            <i class="fas fa-times"></i>
+                        </div>
+                    `;
+                    
+                    // 削除ボタンのイベント追加
+                    const removeBtn = previewItem.querySelector('.preview-remove');
+                    if (removeBtn) {
+                        removeBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            removeFile(this.dataset.name);
+                        });
+                    }
+                };
+                
+                reader.readAsDataURL(file);
+            } else {
+                // その他のファイルはアイコン表示
+                previewItem.innerHTML = `
+                    <div class="preview-file">
+                        <div class="preview-file-icon">${getFileIcon(file.name)}</div>
+                        <div class="preview-file-name">${file.name}</div>
+                    </div>
+                    <div class="preview-remove" title="削除" data-name="${file.name}">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+                
+                // 削除ボタンのイベント追加
+                const removeBtn = previewItem.querySelector('.preview-remove');
+                if (removeBtn) {
+                    removeBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        removeFile(this.dataset.name);
+                    });
+                }
+            }
+            
+            if (previewContainer) {
+                previewContainer.appendChild(previewItem);
+            }
+        }
+        
+        // アップロードリストにアイテム追加
+        function addUploadListItem(file) {
+            const listItem = document.createElement('div');
+            listItem.className = 'upload-item';
+            listItem.dataset.name = file.name;
+            
+            listItem.innerHTML = `
+                <div class="upload-item-icon">
+                    ${getFileIcon(file.name)}
+                </div>
+                <div class="upload-item-info">
+                    <div class="upload-item-name">${file.name}</div>
+                    <div class="upload-item-size">${formatFileSize(file.size)}</div>
+                </div>
+                <div class="upload-item-status pending">待機中</div>
+                <div class="upload-item-actions">
+                    <button class="upload-item-action" title="削除" data-name="${file.name}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            if (uploadList) {
+                uploadList.appendChild(listItem);
+            }
+            
+            // 削除ボタンのイベント追加
+            const removeBtn = listItem.querySelector('.upload-item-action');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    removeFile(this.dataset.name);
+                });
+            }
+        }
+        
+        // ファイルの削除
+        function removeFile(fileName) {
+            // 選択ファイルから削除
+            selectedFiles = selectedFiles.filter(file => file.name !== fileName);
+            
+            // プレビューから削除
+            const previewItem = document.querySelector(`.preview-item[data-name="${fileName}"]`);
+            if (previewItem) {
+                previewItem.remove();
+            }
+            
+            // アップロードリストから削除
+            const listItem = document.querySelector(`.upload-item[data-name="${fileName}"]`);
+            if (listItem) {
+                listItem.remove();
+            }
+            
+            // ファイルがなくなったらアップロードボタンを無効化
+            uploadBtn.disabled = selectedFiles.length === 0;
+        }
+        
+        // ファイルのアップロード処理
+        async function uploadFiles() {
+            if (selectedFiles.length === 0) {
+                showToast('warning', 'アップロードするファイルがありません');
+                return;
+            }
+            
+            try {
+                // アップロード開始
+                uploadBtn.disabled = true;
+                
+                if (uploadProgress) {
+                    uploadProgress.style.display = 'block';
+                }
+                
+                // プログレス表示の初期化
+                if (totalCount) totalCount.textContent = selectedFiles.length;
+                if (uploadedCount) uploadedCount.textContent = '0';
+                if (progressBar) progressBar.style.width = '0%';
+                if (progressPercentage) progressPercentage.textContent = '0%';
+                
+                // アップロードするファイルの総数
+                const totalFiles = selectedFiles.length;
+                let completedFiles = 0;
+                let failedFiles = 0;
+                uploadedFiles = [];
+                
+                // すべてのファイルを順次アップロード
+                for (let i = 0; i < selectedFiles.length; i++) {
+                    const file = selectedFiles[i];
+                    const listItem = document.querySelector(`.upload-item[data-name="${file.name}"]`);
+                    
+                    if (listItem) {
+                        // ステータスを「アップロード中」に更新
+                        const statusElem = listItem.querySelector('.upload-item-status');
+                        if (statusElem) {
+                            statusElem.className = 'upload-item-status uploading';
+                            statusElem.textContent = 'アップロード中...';
+                        }
+                    }
+                    
+                    try {
+                        // ファイルをアップロード
+                        const fileData = await uploadFile(file);
+                        
+                        // アップロード成功
+                        completedFiles++;
+                        uploadedFiles.push(fileData);
+                        
+                        // 最後にアップロードした画像のIDを保存
+                        if (isImageFile(file.name)) {
+                            lastUploadedImageId = fileData.id;
+                        }
+                        
+                        if (listItem) {
+                            // ステータスを「完了」に更新
+                            const statusElem = listItem.querySelector('.upload-item-status');
+                            if (statusElem) {
+                                statusElem.className = 'upload-item-status success';
+                                statusElem.textContent = '完了';
+                            }
+                        }
+                    } catch (error) {
+                        console.error(`ファイル「${file.name}」のアップロードエラー:`, error);
+                        failedFiles++;
+                        
+                        if (listItem) {
+                            // ステータスを「エラー」に更新
+                            const statusElem = listItem.querySelector('.upload-item-status');
+                            if (statusElem) {
+                                statusElem.className = 'upload-item-status error';
+                                statusElem.textContent = 'エラー';
+                            }
+                        }
+                    }
+                    
+                    // プログレスを更新
+                    const progress = Math.round(((completedFiles + failedFiles) / totalFiles) * 100);
+                    if (progressBar) progressBar.style.width = `${progress}%`;
+                    if (progressPercentage) progressPercentage.textContent = `${progress}%`;
+                    if (uploadedCount) uploadedCount.textContent = completedFiles;
+                }
+                
+                // アップロード完了メッセージ
+                if (failedFiles === 0) {
+                    showToast('success', 'アップロード完了', `${completedFiles}個のファイルがアップロードされました`);
+                } else if (completedFiles > 0) {
+                    showToast('warning', '一部ファイルのアップロードに失敗', `${completedFiles}個成功、${failedFiles}個失敗`);
+                } else {
+                    showToast('error', 'アップロード失敗', 'すべてのファイルのアップロードに失敗しました');
+                }
+                
+                // 選択ファイルをクリア
+                selectedFiles = [];
+                
+                // 完了オーバーレイを表示（成功したファイルがある場合）
+                if (completedFiles > 0 && uploadCompleteOverlay && completedCount) {
+                    completedCount.textContent = completedFiles;
+                    uploadCompleteOverlay.classList.add('active');
+                    
+                    // 活字化ボタンの表示/非表示
+                    if (transcribeNowBtn) {
+                        transcribeNowBtn.style.display = lastUploadedImageId ? 'inline-flex' : 'none';
+                    }
+                }
+                
+            } catch (error) {
+                console.error("アップロードエラー:", error);
+                showToast('error', 'アップロードに失敗しました', error.message);
+            } finally {
+                // 選択したファイルとプレビューをクリア
+                if (previewContainer) previewContainer.innerHTML = '';
+                if (uploadList) uploadList.innerHTML = '';
+                if (uploadBtn) uploadBtn.disabled = true;
+            }
+        }
+        
+        // 単一ファイルのアップロード
+        async function uploadFile(file) {
+            // ファイル参照の作成
+            const storagePath = `users/${currentUser.uid}/documents/${Date.now()}_${file.name}`;
+            const storageRef = storage.ref(storagePath);
+            
+            // Storageにアップロード
+            const snapshot = await storageRef.put(file);
+            
+            // ダウンロードURLを取得
+            const downloadURL = await snapshot.ref.getDownloadURL();
+            
+            // 親フォルダIDの取得
+            const parentFolder = selectedFolderId === 'root' ? null : selectedFolderId;
+            
+            // Firestoreにメタデータを保存
+            const docRef = await db.collection('documents').add({
+                userId: currentUser.uid,
+                name: file.name,
+                type: 'file',
+                size: file.size,
+                mimeType: file.type,
+                storagePath: storagePath,
+                url: downloadURL,
+                parentFolder: parentFolder,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // アクティビティログの作成
+            await db.collection('activities').add({
+                userId: currentUser.uid,
+                type: 'document_upload',
+                title: 'ファイルアップロード',
+                description: `${file.name}をアップロードしました`,
+                documentId: docRef.id,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // ユーザーのドキュメント数を更新
+            const userRef = db.collection('users').doc(currentUser.uid);
+            await userRef.update({
+                documentCount: firebase.firestore.FieldValue.increment(1),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // アップロードしたファイルの情報を返す
+            return {
+                id: docRef.id,
+                name: file.name,
+                url: downloadURL,
+                storagePath: storagePath,
+                size: file.size,
+                type: 'file'
+            };
+        }
+        
+        // 活字化エディタで開く
+        function openInEditor() {
+            if (!lastUploadedImageId) {
+                showToast('warning', '活字化できるファイルがありません', '画像ファイルをアップロードしてください');
+                return;
+            }
+            
+            try {
+                // 最後にアップロードした画像を活字化エディタで開く
+                const lastImage = uploadedFiles.find(file => file.id === lastUploadedImageId);
+                
+                if (lastImage) {
+                    // セッションストレージに情報を保存
+                    sessionStorage.setItem('editImageId', lastImage.id);
+                    sessionStorage.setItem('editImageUrl', lastImage.url);
+                    sessionStorage.setItem('editImageName', lastImage.name);
+                    
+                    // オーバーレイを閉じる
+                    if (uploadCompleteOverlay) {
+                        uploadCompleteOverlay.classList.remove('active');
+                    }
+                    
+                    // 活字化エディタページへ移動
+                    window.location.href = 'katsujieditor.html';
+                } else {
+                    showToast('error', '画像情報が見つかりません');
+                }
+            } catch (error) {
+                console.error("活字化エディタ遷移エラー:", error);
+                showToast('error', '活字化エディタの起動に失敗しました');
+            }
+        }
+        
+        // イベントリスナー設定
+        document.addEventListener('DOMContentLoaded', function() {
+            // テーマ切替
+            if (themeToggle) {
+                // 保存されたテーマを適用
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.body.setAttribute('data-theme', savedTheme);
+                
+                // テーマアイコンを更新
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+                
+                // クリックイベント
+                themeToggle.addEventListener('click', function() {
+                    const currentTheme = document.body.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    
+                    document.body.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    
+                    // アイコンを更新
+                    if (newTheme === 'dark') {
+                        themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                    } else {
+                        themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                    }
+                });
+            }
+            
+            // サイドバー切替（モバイル用）
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('active');
+                });
+            }
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // ログアウト
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    try {
+                        auth.signOut().then(() => {
+                            window.location.href = 'login.html';
+                        }).catch(error => {
+                            console.error("ログアウトエラー:", error);
+                            showToast('error', 'ログアウトに失敗しました');
+                        });
+                    } catch (error) {
+                        console.error("ログアウト処理エラー:", error);
+                        showToast('error', 'ログアウト処理中にエラーが発生しました');
+                    }
+                });
+            }
+            
+            // ファイル選択
+            if (fileInput) {
+                fileInput.addEventListener('change', handleFileSelect);
+            }
+            
+            // ドラッグ&ドロップ
+            if (uploadArea) {
+                // ドラッグエンター
+                uploadArea.addEventListener('dragenter', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.classList.add('drag-active');
+                });
+                
+                // ドラッグオーバー
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.classList.add('drag-active');
+                });
+                
+                // ドラッグリーブ
+                uploadArea.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.classList.remove('drag-active');
+                });
+                
+                // ドロップ
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.classList.remove('drag-active');
+                    
+                    handleFileSelect(e);
+                });
+                
+                // クリックでファイル選択を開く
+                uploadArea.addEventListener('click', function() {
+                    fileInput.click();
+                });
+            }
+            
+            // アップロードボタン
+            if (uploadBtn) {
+                uploadBtn.addEventListener('click', uploadFiles);
+            }
+            
+            // 活字化ボタン
+            if (transcribeNowBtn) {
+                transcribeNowBtn.addEventListener('click', function() {
+                    openInEditor();
+                });
+            }
+            
+            // 完了オーバーレイを閉じる
+            if (uploadCompleteOverlay) {
+                uploadCompleteOverlay.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        this.classList.remove('active');
+                    }
+                });
+            }
+            
+            // エラーハンドリング
+            window.addEventListener('error', function(e) {
+                console.error('グローバルエラー:', e.error || e.message);
+                showToast('error', 'エラーが発生しました', 'ページを再読み込みしてください');
+            });
+        });
+    </script>
+</body>
+</html> 
