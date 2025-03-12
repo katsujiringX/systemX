@@ -223,6 +223,73 @@
             background-color: var(--primary-hover);
         }
         
+        /* ユーザープロフィール表示 */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.75rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: 600;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            width: 100%;
+            transition: color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            color: white;
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.5rem;
+        }
+        
         /* メインコンテンツ */
         .main-content {
             flex: 1;
@@ -241,6 +308,7 @@
             margin-bottom: 0.5rem;
         }
         
+        /* Breadcrumb navigation */
         .breadcrumb {
             display: flex;
             align-items: center;
@@ -248,19 +316,38 @@
             color: var(--text-muted);
             margin-bottom: 1rem;
             font-size: 0.8125rem;
+            flex-wrap: wrap;
         }
         
         .breadcrumb a {
             color: var(--primary);
             text-decoration: none;
+            transition: color var(--transition-normal);
+            display: flex;
+            align-items: center;
         }
         
         .breadcrumb a:hover {
+            color: var(--primary-hover);
             text-decoration: underline;
         }
         
         .breadcrumb i {
             font-size: 0.625rem;
+            margin: 0 0.25rem;
+        }
+        
+        .breadcrumb-item {
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-color);
+            font-weight: 500;
         }
         
         /* ファイル管理スタイル */
@@ -766,10 +853,15 @@
             border-radius: var(--radius);
         }
 
-        .close-preview {
+        .image-preview-actions {
             position: absolute;
             top: -40px;
             right: 0;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .image-preview-action {
             color: white;
             background: rgba(0, 0, 0, 0.5);
             border: none;
@@ -780,6 +872,11 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .image-preview-action:hover {
+            background: rgba(0, 0, 0, 0.8);
         }
         
         /* フォーム */
@@ -833,6 +930,112 @@
             background-repeat: no-repeat;
             background-position: right 0.5rem center;
             background-size: 1.5rem;
+        }
+        
+        /* 共有ユーザーUIの改善 */
+        .shared-users-container {
+            margin-top: 1rem;
+        }
+        
+        .shared-user-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            margin-top: 0.5rem;
+        }
+        
+        .shared-user-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .shared-user-item:last-child {
+            border-bottom: none;
+        }
+        
+        .shared-user-avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: 500;
+            overflow: hidden;
+        }
+        
+        .shared-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .shared-user-info {
+            flex: 1;
+        }
+        
+        .shared-user-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .shared-user-email {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .shared-user-role {
+            margin-left: auto;
+            padding-left: 1rem;
+        }
+        
+        .shared-user-search {
+            position: relative;
+            margin-bottom: 0.5rem;
+        }
+        
+        .shared-user-search input {
+            width: 100%;
+            padding: 0.5rem 0.75rem 0.5rem 2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+        }
+        
+        .shared-user-search i {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        .add-user-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            color: var(--primary);
+            background: none;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .add-user-btn:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .add-user-btn i {
+            margin-right: 0.5rem;
         }
         
         /* ドラッグ＆ドロップ関連 */
@@ -1097,6 +1300,36 @@
         .justify-center { justify-content: center; }
         .flex-1 { flex: 1; }
         
+        /* 新規追加: 戻るボタン */
+        .back-button {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: var(--gray-100);
+            border-radius: var(--radius);
+            color: var(--text-color);
+            text-decoration: none;
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .back-button:hover {
+            background-color: var(--gray-200);
+        }
+        
+        [data-theme="dark"] .back-button {
+            background-color: var(--gray-700);
+        }
+        
+        [data-theme="dark"] .back-button:hover {
+            background-color: var(--gray-600);
+        }
+        
+        .back-button i {
+            margin-right: 0.5rem;
+        }
+        
         /* レスポンシブデザイン */
         @media (max-width: 1024px) {
             .file-manager-body {
@@ -1188,7 +1421,7 @@
         
         <div class="sidebar-menu">
             <p class="menu-label">メインメニュー</p>
-            <a href="index.html" class="menu-item">
+            <a href="mainpage.html" class="menu-item">
                 <i class="fas fa-home"></i> ダッシュボード
             </a>
             <a href="katsujieditor.html" class="menu-item">
@@ -1255,10 +1488,10 @@
     <!-- メインコンテンツ -->
     <div class="main-content">
         <div class="page-header">
-            <div class="breadcrumb">
+            <div id="breadcrumb-container" class="breadcrumb">
                 <a href="index.html">ホーム</a>
                 <i class="fas fa-chevron-right"></i>
-                <span>資料管理</span>
+                <span class="breadcrumb-item active">資料管理</span>
             </div>
             <h1 class="page-title">資料管理</h1>
         </div>
@@ -1296,18 +1529,6 @@
                             <li class="sidebar-item active" data-type="all">
                                 <i class="fas fa-th-large"></i> すべてのファイル
                             </li>
-                            <li class="sidebar-item" data-type="documents">
-                                <i class="fas fa-file-alt"></i> ドキュメント
-                            </li>
-                            <li class="sidebar-item" data-type="images">
-                                <i class="fas fa-image"></i> 画像
-                            </li>
-                            <li class="sidebar-item" data-type="pdfs">
-                                <i class="fas fa-file-pdf"></i> PDF
-                            </li>
-                            <li class="sidebar-item" data-type="others">
-                                <i class="fas fa-file"></i> その他
-                            </li>
                         </ul>
                     </div>
                     
@@ -1324,56 +1545,70 @@
                     <div class="storage-info">
                         <div class="d-flex justify-between">
                             <span>ストレージ使用量</span>
-                            <span id="storage-badge" class="badge badge-primary">無料</span>
+                            <span id="storage-badge" class="badge badge-primary">Plus</span>
                         </div>
                         <div class="storage-bar">
                             <div id="storage-progress" class="storage-progress" style="width: 0%;"></div>
                         </div>
                         <div class="storage-text">
                             <span id="storage-used">0 KB</span>
-                            <span id="storage-total">10 GB</span>
+                            <span id="storage-total">無制限</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="file-content">
-                    <div class="d-flex justify-between mb-3">
-                        <div class="d-flex align-center">
-                            <button id="view-grid-btn" class="btn btn-sm btn-outline active">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button id="view-list-btn" class="btn btn-sm btn-outline ml-1">
-                                <i class="fas fa-list"></i>
-                            </button>
+                    <!-- 戻るボタン (ファイルを表示中に表示される) -->
+                    <div id="back-navigation" class="back-button" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> 一覧に戻る
+                    </div>
+                    
+                    <div id="file-view-container" class="d-flex flex-column" style="display: none;">
+                        <!-- ファイルプレビューエリア -->
+                        <div id="file-preview" class="mb-3"></div>
+                        <div id="file-info" class="mb-3"></div>
+                        <div id="file-actions" class="d-flex gap-2"></div>
+                    </div>
+                
+                    <div id="file-list-container">
+                        <div class="d-flex justify-between mb-3">
+                            <div class="d-flex align-center">
+                                <button id="view-grid-btn" class="btn btn-sm btn-outline active">
+                                    <i class="fas fa-th"></i>
+                                </button>
+                                <button id="view-list-btn" class="btn btn-sm btn-outline ml-1">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="d-flex align-center">
+                                <select id="sort-select" class="form-select" style="width: auto; padding-right: 2rem;">
+                                    <option value="name-asc">名前（昇順）</option>
+                                    <option value="name-desc">名前（降順）</option>
+                                    <option value="date-desc" selected>日付（新しい順）</option>
+                                    <option value="date-asc">日付（古い順）</option>
+                                    <option value="size-desc">サイズ（大きい順）</option>
+                                    <option value="size-asc">サイズ（小さい順）</option>
+                                </select>
+                            </div>
                         </div>
                         
-                        <div class="d-flex align-center">
-                            <select id="sort-select" class="form-select" style="width: auto; padding-right: 2rem;">
-                                <option value="name-asc">名前（昇順）</option>
-                                <option value="name-desc">名前（降順）</option>
-                                <option value="date-desc" selected>日付（新しい順）</option>
-                                <option value="date-asc">日付（古い順）</option>
-                                <option value="size-desc">サイズ（大きい順）</option>
-                                <option value="size-asc">サイズ（小さい順）</option>
-                            </select>
+                        <!-- ファイル一覧（グリッドビュー） -->
+                        <div id="file-grid" class="file-grid">
+                            <!-- ファイルはここに動的に追加されます -->
                         </div>
-                    </div>
-                    
-                    <!-- ファイル一覧（グリッドビュー） -->
-                    <div id="file-grid" class="file-grid">
-                        <!-- ファイルはここに動的に追加されます -->
-                    </div>
-                    
-                    <!-- ファイル一覧（リストビュー） -->
-                    <div id="file-list" class="file-list" style="display: none;">
-                        <div class="file-list-header">
-                            <div>名前</div>
-                            <div class="owner-col">所有者</div>
-                            <div class="date-col">更新日</div>
-                            <div class="size-col">サイズ</div>
-                            <div></div>
+                        
+                        <!-- ファイル一覧（リストビュー） -->
+                        <div id="file-list" class="file-list" style="display: none;">
+                            <div class="file-list-header">
+                                <div>名前</div>
+                                <div class="owner-col">所有者</div>
+                                <div class="date-col">更新日</div>
+                                <div class="size-col">サイズ</div>
+                                <div></div>
+                            </div>
+                            <!-- ファイルはここに動的に追加されます -->
                         </div>
-                        <!-- ファイルはここに動的に追加されます -->
                     </div>
                     
                     <!-- 空の状態表示 -->
@@ -1453,10 +1688,16 @@
                     
                     <div id="share-users-container" class="form-group" style="display: none;">
                         <label class="form-label">共有するユーザー</label>
-                        <select id="share-users" class="form-select" multiple>
-                            <!-- ユーザーは動的に追加されます -->
-                        </select>
-                        <p class="mt-1" style="font-size: 0.75rem; color: var(--text-muted);">Ctrlキーを押しながらクリックで複数選択</p>
+                        <div class="shared-user-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="shared-user-search" placeholder="ユーザーを検索...">
+                        </div>
+                        <div class="shared-user-list" id="shared-user-list">
+                            <!-- ユーザーリストが表示されます -->
+                        </div>
+                        <button class="add-user-btn" id="add-user-btn">
+                            <i class="fas fa-plus"></i> ユーザーを追加
+                        </button>
                     </div>
                     
                     <div id="upload-progress-container" style="display: none;">
@@ -1510,10 +1751,16 @@
                     
                     <div id="folder-share-users" class="form-group" style="display: none;">
                         <label class="form-label">共有するユーザー</label>
-                        <select id="folder-users" class="form-select" multiple>
-                            <!-- ユーザーは動的に追加されます -->
-                        </select>
-                        <p class="mt-1" style="font-size: 0.75rem; color: var(--text-muted);">Ctrlキーを押しながらクリックで複数選択</p>
+                        <div class="shared-user-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="folder-shared-user-search" placeholder="ユーザーを検索...">
+                        </div>
+                        <div class="shared-user-list" id="folder-shared-user-list">
+                            <!-- ユーザーリストが表示されます -->
+                        </div>
+                        <button class="add-user-btn" id="folder-add-user-btn">
+                            <i class="fas fa-plus"></i> ユーザーを追加
+                        </button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1570,10 +1817,16 @@
                     
                     <div id="share-settings-users" class="form-group" style="display: none;">
                         <label class="form-label">共有するユーザー</label>
-                        <select id="share-settings-users-select" class="form-select" multiple>
-                            <!-- ユーザーは動的に追加されます -->
-                        </select>
-                        <p class="mt-1" style="font-size: 0.75rem; color: var(--text-muted);">Ctrlキーを押しながらクリックで複数選択</p>
+                        <div class="shared-user-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="share-settings-user-search" placeholder="ユーザーを検索...">
+                        </div>
+                        <div class="shared-user-list" id="share-settings-user-list">
+                            <!-- ユーザーリストが表示されます -->
+                        </div>
+                        <button class="add-user-btn" id="share-settings-add-user-btn">
+                            <i class="fas fa-plus"></i> ユーザーを追加
+                        </button>
                     </div>
                     
                     <div id="share-link-container" class="form-group" style="display: none;">
@@ -1664,10 +1917,45 @@
             </div>
         </div>
         
+        <!-- ユーザー選択モーダル -->
+        <div id="user-select-modal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">共有するユーザーを選択</h3>
+                    <button class="modal-close" data-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="shared-user-search mb-3">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="user-select-search" placeholder="ユーザーを検索...">
+                    </div>
+                    <div id="user-select-list" class="shared-user-list" style="max-height: 300px;">
+                        <!-- ユーザー一覧が表示されます -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
+                    <button id="user-select-submit" class="btn btn-primary">選択</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- 画像プレビューモーダル -->
         <div id="image-preview-modal" class="image-preview-modal">
             <div class="image-preview-content">
-                <button class="close-preview"><i class="fas fa-times"></i></button>
+                <div class="image-preview-actions">
+                    <button class="image-preview-action" id="open-editor-btn" title="活字化エディタで開く">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="image-preview-action" id="download-preview-btn" title="ダウンロード">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="image-preview-action close-preview" title="閉じる">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
                 <img id="preview-image" src="" alt="">
             </div>
         </div>
@@ -1713,6 +2001,16 @@
         let currentFolder = 'root'; // root または folder ID
         let currentViewMode = 'grid'; // grid または list
         
+        // パンくずリストの履歴
+        let folderHistory = [];
+        let folderNameMap = { 'root': 'ルート' };
+        
+        // 共有ユーザーリスト
+        let sharedUsers = [];
+        
+        // 現在プレビュー中のファイル
+        let currentPreviewFile = null;
+        
         // アクティブなファイル/フォルダ（右クリックメニューなどで使用）
         let activeFile = null;
         
@@ -1740,10 +2038,22 @@
         const loadingState = document.getElementById('loading-state');
         const emptyUploadBtn = document.getElementById('empty-upload-btn');
         
+        // ファイルプレビュー関連
+        const fileViewContainer = document.getElementById('file-view-container');
+        const filePreview = document.getElementById('file-preview');
+        const fileInfo = document.getElementById('file-info');
+        const fileActions = document.getElementById('file-actions');
+        const backNavigation = document.getElementById('back-navigation');
+        
         // 画像プレビュー
         const imagePreviewModal = document.getElementById('image-preview-modal');
         const previewImage = document.getElementById('preview-image');
         const closePreviewBtn = document.querySelector('.close-preview');
+        const openEditorBtn = document.getElementById('open-editor-btn');
+        const downloadPreviewBtn = document.getElementById('download-preview-btn');
+        
+        // ブレッドクラム
+        const breadcrumbContainer = document.getElementById('breadcrumb-container');
         
         // ストレージ情報
         const storageBadge = document.getElementById('storage-badge');
@@ -1762,7 +2072,9 @@
         const uploadFolder = document.getElementById('upload-folder');
         const uploadVisibility = document.getElementById('upload-visibility');
         const shareUsersContainer = document.getElementById('share-users-container');
-        const shareUsers = document.getElementById('share-users');
+        const sharedUserList = document.getElementById('shared-user-list');
+        const sharedUserSearch = document.getElementById('shared-user-search');
+        const addUserBtn = document.getElementById('add-user-btn');
         const uploadProgressContainer = document.getElementById('upload-progress-container');
         const uploadProgressBar = document.getElementById('upload-progress-bar');
         const uploadProgressText = document.getElementById('upload-progress-text');
@@ -1776,7 +2088,9 @@
         const parentFolder = document.getElementById('parent-folder');
         const folderVisibility = document.getElementById('folder-visibility');
         const folderShareUsers = document.getElementById('folder-share-users');
-        const folderUsers = document.getElementById('folder-users');
+        const folderSharedUserList = document.getElementById('folder-shared-user-list');
+        const folderSharedUserSearch = document.getElementById('folder-shared-user-search');
+        const folderAddUserBtn = document.getElementById('folder-add-user-btn');
         const folderSubmit = document.getElementById('folder-submit');
         
         // 名前変更モーダル
@@ -1790,13 +2104,21 @@
         const shareModal = document.getElementById('share-modal');
         const shareVisibility = document.getElementById('share-visibility');
         const shareSettingsUsers = document.getElementById('share-settings-users');
-        const shareSettingsUsersSelect = document.getElementById('share-settings-users-select');
+        const shareSettingsUserList = document.getElementById('share-settings-user-list');
+        const shareSettingsUserSearch = document.getElementById('share-settings-user-search');
+        const shareSettingsAddUserBtn = document.getElementById('share-settings-add-user-btn');
         const shareLinkContainer = document.getElementById('share-link-container');
         const shareLink = document.getElementById('share-link');
         const copyLinkBtn = document.getElementById('copy-link-btn');
         const shareFileId = document.getElementById('share-file-id');
         const shareFileType = document.getElementById('share-file-type');
         const shareSubmit = document.getElementById('share-submit');
+        
+        // ユーザー選択モーダル
+        const userSelectModal = document.getElementById('user-select-modal');
+        const userSelectList = document.getElementById('user-select-list');
+        const userSelectSearch = document.getElementById('user-select-search');
+        const userSelectSubmit = document.getElementById('user-select-submit');
         
         // 移動モーダル
         const moveModal = document.getElementById('move-modal');
@@ -1857,25 +2179,8 @@
                 // 初期設定を実行
                 setupInitialUser(user);
                 
-                // 初期表示名の反映
-                const initialDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
-                if (sidebarUserName) {
-                    sidebarUserName.textContent = initialDisplayName;
-                }
-                
-                // ユーザーの初期アバター表示
-                if (userInitial) {
-                    const initial = (user.displayName || 'U').charAt(0).toUpperCase();
-                    userInitial.textContent = initial;
-                    
-                    if (user.photoURL) {
-                        const avatarImg = document.createElement('img');
-                        avatarImg.src = user.photoURL;
-                        avatarImg.alt = user.displayName || 'ユーザー';
-                        userAvatar.innerHTML = '';
-                        userAvatar.appendChild(avatarImg);
-                    }
-                }
+                // ユーザー情報を取得して表示
+                fetchUserData(user.uid);
                 
                 // 各種データ読み込み - エラーを個別に処理
                 loadFiles().catch(err => {
@@ -1915,17 +2220,15 @@
                         sidebarUserName.textContent = userData.displayName || 'ゲスト';
                     }
                     
-                    // ユーザーアバター設定
-                    if (userInitial) {
-                        const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
-                        userInitial.textContent = initial;
-                        
+                    // ユーザーアバターを設定
+                    if (userAvatar) {
                         if (userData.profileImageUrl) {
-                            const avatarImg = document.createElement('img');
-                            avatarImg.src = userData.profileImageUrl;
-                            avatarImg.alt = userData.displayName || 'ユーザー';
-                            userAvatar.innerHTML = '';
-                            userAvatar.appendChild(avatarImg);
+                            // 画像URLがある場合は画像を表示
+                            userAvatar.innerHTML = `<img src="${userData.profileImageUrl}" alt="${userData.displayName || 'ユーザー'}">`;
+                        } else {
+                            // 画像URLがない場合はイニシャル表示
+                            const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                            userAvatar.innerHTML = `<span id="user-initial">${initial}</span>`;
                         }
                     }
                 } else {
@@ -1936,9 +2239,74 @@
             }
         }
 
+        // パンくずリスト更新
+        function updateBreadcrumb() {
+            // パンくずリストをクリア
+            breadcrumbContainer.innerHTML = '';
+            
+            // ホームリンク
+            const homeLink = document.createElement('a');
+            homeLink.href = "index.html";
+            homeLink.textContent = "ホーム";
+            breadcrumbContainer.appendChild(homeLink);
+            
+            // 区切り
+            const divider1 = document.createElement('i');
+            divider1.className = "fas fa-chevron-right";
+            breadcrumbContainer.appendChild(divider1);
+            
+            // 資料管理リンク
+            const docItem = document.createElement('span');
+            docItem.className = "breadcrumb-item";
+            docItem.textContent = "資料管理";
+            docItem.addEventListener('click', () => {
+                currentFolder = 'root';
+                folderHistory = [];
+                loadFiles();
+                updateBreadcrumb();
+            });
+            breadcrumbContainer.appendChild(docItem);
+            
+            // フォルダ階層を表示
+            if (currentFolder !== 'root' && folderHistory.length > 0) {
+                for (let i = 0; i < folderHistory.length; i++) {
+                    const folder = folderHistory[i];
+                    
+                    // 区切り
+                    const divider = document.createElement('i');
+                    divider.className = "fas fa-chevron-right";
+                    breadcrumbContainer.appendChild(divider);
+                    
+                    // フォルダリンク（最後のアイテムはアクティブ）
+                    const folderItem = document.createElement('span');
+                    folderItem.className = "breadcrumb-item";
+                    if (i === folderHistory.length - 1) {
+                        folderItem.classList.add('active');
+                    }
+                    folderItem.textContent = folderNameMap[folder] || folder;
+                    
+                    // クリックイベントで対応するフォルダへ移動
+                    if (i < folderHistory.length - 1) {
+                        folderItem.style.cursor = 'pointer';
+                        folderItem.addEventListener('click', () => {
+                            currentFolder = folder;
+                            folderHistory = folderHistory.slice(0, i + 1);
+                            loadFiles();
+                            updateBreadcrumb();
+                        });
+                    }
+                    
+                    breadcrumbContainer.appendChild(folderItem);
+                }
+            }
+        }
+
         // ファイル一覧の読み込み
         async function loadFiles() {
             try {
+                // ファイルプレビューを非表示、ファイル一覧を表示
+                hideFilePreview();
+                
                 // ローディング表示を確実に表示
                 showLoading();
                 
@@ -1956,26 +2324,38 @@
                 
                 try {
                     // 個人用ファイル取得
-                    const userFilesRef = db.collection('files').where('userId', '==', currentUser.uid);
+                    const userFilesRef = db.collection('files');
                     
                     // ゴミ箱かどうかでフィルタリング
                     const trashedFilesRef = userFilesRef.where('trashed', '==', currentView === 'trashed');
                     
-                    // 親フォルダでフィルタリング
+                    // ファイル一覧取得
                     const filesSnapshot = await trashedFilesRef.get();
                     
                     // クライアント側でフィルタリング
                     filesSnapshot.forEach(doc => {
                         const fileData = { id: doc.id, ...doc.data() };
                         
-                        // 親フォルダと表示モードで絞り込み
-                        if ((fileData.parentFolder === currentFolder || 
-                            (currentFolder === 'root' && fileData.parentFolder === 'root')) &&
-                           (currentView === 'trashed' || // ゴミ箱表示の場合はすべて表示
-                            currentView === 'personal' && fileData.visibility === 'personal' ||
-                            currentView === 'shared' && fileData.visibility === 'shared' ||
-                            currentView === 'public' && fileData.visibility === 'public')) {
-                            
+                        // 表示モードと親フォルダで絞り込み
+                        const isVisible = 
+                            // 個人用表示の場合は自分のファイルのみ
+                            (currentView === 'personal' && fileData.userId === currentUser.uid && fileData.visibility === 'personal') ||
+                            // 指定共有表示の場合は自分のファイルか自分に共有されているファイル
+                            (currentView === 'shared' && (
+                                (fileData.userId === currentUser.uid && fileData.visibility === 'shared') ||
+                                (fileData.visibility === 'shared' && fileData.sharedWith && fileData.sharedWith.includes(currentUser.uid))
+                            )) ||
+                            // 全体共有表示の場合は公開されているファイル
+                            (currentView === 'public' && fileData.visibility === 'public') ||
+                            // ゴミ箱表示の場合は自分のファイルのみ
+                            (currentView === 'trashed' && fileData.userId === currentUser.uid);
+                        
+                        // 親フォルダの一致確認
+                        const isInCurrentFolder = 
+                            fileData.parentFolder === currentFolder || 
+                            (currentFolder === 'root' && fileData.parentFolder === 'root');
+                        
+                        if (isVisible && isInCurrentFolder) {
                             // ファイルタイプでフィルタリング
                             if (currentFileType === 'all' || currentFileType === fileData.fileType) {
                                 // 検索クエリでフィルタリング
@@ -1986,95 +2366,44 @@
                         }
                     });
                     
-                    // フォルダも同様に取得
-                    const userFoldersRef = db.collection('folders').where('userId', '==', currentUser.uid);
-                    const trashedFoldersRef = userFoldersRef.where('trashed', '==', currentView === 'trashed');
+                    // フォルダ一覧取得
+                    const foldersRef = db.collection('folders');
+                    const trashedFoldersRef = foldersRef.where('trashed', '==', currentView === 'trashed');
                     const foldersSnapshot = await trashedFoldersRef.get();
                     
+                    // フォルダのフィルタリング
                     foldersSnapshot.forEach(doc => {
                         const folderData = { id: doc.id, ...doc.data(), isFolder: true };
                         
-                        // 親フォルダと表示モードで絞り込み
-                        if ((folderData.parentFolder === currentFolder || 
-                            (currentFolder === 'root' && folderData.parentFolder === 'root')) &&
-                           (currentView === 'trashed' || // ゴミ箱表示の場合はすべて表示
-                            currentView === 'personal' && folderData.visibility === 'personal' ||
-                            currentView === 'shared' && folderData.visibility === 'shared' ||
-                            currentView === 'public' && folderData.visibility === 'public')) {
-                            
+                        // 表示モードでフィルタリング
+                        const isVisible = 
+                            // 個人用表示の場合は自分のフォルダのみ
+                            (currentView === 'personal' && folderData.userId === currentUser.uid && folderData.visibility === 'personal') ||
+                            // 指定共有表示の場合は自分のフォルダか自分に共有されているフォルダ
+                            (currentView === 'shared' && (
+                                (folderData.userId === currentUser.uid && folderData.visibility === 'shared') ||
+                                (folderData.visibility === 'shared' && folderData.sharedWith && folderData.sharedWith.includes(currentUser.uid))
+                            )) ||
+                            // 全体共有表示の場合は公開されているフォルダ
+                            (currentView === 'public' && folderData.visibility === 'public') ||
+                            // ゴミ箱表示の場合は自分のフォルダのみ
+                            (currentView === 'trashed' && folderData.userId === currentUser.uid);
+                        
+                        // 親フォルダの一致確認
+                        const isInCurrentFolder = 
+                            folderData.parentFolder === currentFolder || 
+                            (currentFolder === 'root' && folderData.parentFolder === 'root');
+                        
+                        if (isVisible && isInCurrentFolder) {
                             // 検索クエリでフィルタリング
                             if (!searchQuery || folderData.name.toLowerCase().includes(searchQuery)) {
                                 foldersArray.push(folderData);
+                                
+                                // フォルダ名をマッピングに追加
+                                folderNameMap[folderData.id] = folderData.name;
                             }
                         }
                     });
-                    
-                    // 共有/公開ファイルの取得（自分の所有でないもの）
-                    if (currentView === 'shared' || currentView === 'public') {
-                        const visibility = currentView; // 'shared' または 'public'
-                        
-                        const sharedFilesRef = db.collection('files')
-                            .where('visibility', '==', visibility)
-                            .where('trashed', '==', false);
-                        
-                        const sharedFilesSnapshot = await sharedFilesRef.get();
-                        
-                        sharedFilesSnapshot.forEach(doc => {
-                            const fileData = { id: doc.id, ...doc.data() };
-                            
-                            // 自分のファイルは既に取得済みなのでスキップ
-                            if (fileData.userId === currentUser.uid) return;
-                            
-                            // 共有設定のチェック
-                            if (visibility === 'shared' && 
-                                (!fileData.sharedWith || !fileData.sharedWith.includes(currentUser.uid))) {
-                                return; // 共有対象でなければスキップ
-                            }
-                            
-                            // 親フォルダでフィルタリング
-                            if (fileData.parentFolder === currentFolder ||
-                                (currentFolder === 'root' && fileData.parentFolder === 'root')) {
-                                
-                                // ファイルタイプでフィルタリング
-                                if (currentFileType === 'all' || currentFileType === fileData.fileType) {
-                                    // 検索クエリでフィルタリング
-                                    if (!searchQuery || fileData.name.toLowerCase().includes(searchQuery)) {
-                                        filesArray.push(fileData);
-                                    }
-                                }
-                            }
-                        });
-                        
-                        // 共有/公開フォルダも同様に取得
-                        const sharedFoldersRef = db.collection('folders')
-                            .where('visibility', '==', visibility)
-                            .where('trashed', '==', false);
-                        
-                        const sharedFoldersSnapshot = await sharedFoldersRef.get();
-                        
-                        sharedFoldersSnapshot.forEach(doc => {
-                            const folderData = { id: doc.id, ...doc.data(), isFolder: true };
-                            
-                            // 自分のフォルダはスキップ
-                            if (folderData.userId === currentUser.uid) return;
-                            
-                            // 共有設定のチェック
-                            if (visibility === 'shared' && 
-                                (!folderData.sharedWith || !folderData.sharedWith.includes(currentUser.uid))) {
-                                return; // 共有対象でなければスキップ
-                            }
-                            
-                            // 親フォルダでフィルタリング
-                            if (folderData.parentFolder === currentFolder ||
-                                (currentFolder === 'root' && folderData.parentFolder === 'root')) {
-                                
-                                // 検索クエリでフィルタリング
-                                if (!searchQuery || folderData.name.toLowerCase().includes(searchQuery)) {
-                                    foldersArray.push(folderData);
-                                }
-                            }
-                        });
-                    }
                 } catch (error) {
                     console.error("クエリエラー:", error);
                     showToast('データの取得中にエラーが発生しました', 'error');
@@ -2093,19 +2422,19 @@
                     // 同じタイプならソート条件で比較
                     switch (sortOption) {
                         case 'name-asc':
-                            return a.name.localeCompare(b.name);
+                            return a.name.localeCompare(b.name, 'ja');
                         case 'name-desc':
-                            return b.name.localeCompare(a.name);
+                            return b.name.localeCompare(a.name, 'ja');
                         case 'date-desc':
-                            return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+                            return new Date(b.updatedAt?.seconds * 1000 || 0) - new Date(a.updatedAt?.seconds * 1000 || 0);
                         case 'date-asc':
-                            return new Date(a.updatedAt || 0) - new Date(b.updatedAt || 0);
+                            return new Date(a.updatedAt?.seconds * 1000 || 0) - new Date(b.updatedAt?.seconds * 1000 || 0);
                         case 'size-desc':
                             return (b.size || 0) - (a.size || 0);
                         case 'size-asc':
                             return (a.size || 0) - (b.size || 0);
                         default:
-                            return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+                            return new Date(b.updatedAt?.seconds * 1000 || 0) - new Date(a.updatedAt?.seconds * 1000 || 0);
                     }
                 });
                 
@@ -2125,6 +2454,9 @@
                         fileListContainer.appendChild(createFileListItem(item));
                     });
                 }
+                
+                // パンくずリスト更新
+                updateBreadcrumb();
             } catch (error) {
                 console.error("ファイル一覧取得エラー:", error);
                 showToast('ファイル一覧の取得中にエラーが発生しました', 'error');
@@ -2164,6 +2496,9 @@
                     foldersSnapshot.forEach(doc => {
                         const folder = { id: doc.id, ...doc.data() };
                         
+                        // フォルダ名をマッピングに追加
+                        folderNameMap[folder.id] = folder.name;
+                        
                         // サイドバー用
                         const folderItem = document.createElement('li');
                         folderItem.className = currentFolder === folder.id ? 'sidebar-item active' : 'sidebar-item';
@@ -2190,6 +2525,51 @@
                         moveOption.textContent = folder.name;
                         moveDestination.appendChild(moveOption);
                     });
+                    
+                    // 共有フォルダも表示
+                    const sharedFoldersQuery = db.collection('folders')
+                        .where('visibility', 'in', ['shared', 'public'])
+                        .where('trashed', '==', false);
+                    
+                    const sharedFoldersSnapshot = await sharedFoldersQuery.get();
+                    
+                    sharedFoldersSnapshot.forEach(doc => {
+                        const folder = { id: doc.id, ...doc.data() };
+                        
+                        // 自分のフォルダはスキップ（既に追加済み）
+                        if (folder.userId === currentUser.uid) return;
+                        
+                        // 指定共有の場合は、自分に共有されていることを確認
+                        if (folder.visibility === 'shared' && 
+                            (!folder.sharedWith || !folder.sharedWith.includes(currentUser.uid))) {
+                            return;
+                        }
+                        
+                        // フォルダ名をマッピングに追加
+                        folderNameMap[folder.id] = folder.name;
+                        
+                        // 共有フォルダをリストに追加
+                        const folderItem = document.createElement('li');
+                        folderItem.className = currentFolder === folder.id ? 'sidebar-item active' : 'sidebar-item';
+                        folderItem.setAttribute('data-folder', folder.id);
+                        
+                        let shareIcon = '';
+                        if (folder.visibility === 'shared') {
+                            shareIcon = '<i class="fas fa-share-alt ml-1" style="color: var(--info); font-size: 0.75rem;"></i>';
+                        } else if (folder.visibility === 'public') {
+                            shareIcon = '<i class="fas fa-globe ml-1" style="color: var(--success); font-size: 0.75rem;"></i>';
+                        }
+                        
+                        folderItem.innerHTML = `<i class="fas fa-folder"></i> ${folder.name} ${shareIcon}`;
+                        folderItem.addEventListener('click', () => changeFolder(folder.id));
+                        folderListContainer.appendChild(folderItem);
+                        
+                        // 移動モーダルにも追加
+                        const moveOption = document.createElement('option');
+                        moveOption.value = folder.id;
+                        moveOption.textContent = `${folder.name} (${folder.visibility === 'shared' ? '共有' : '公開'})`;
+                        moveDestination.appendChild(moveOption);
+                    });
                 } catch (error) {
                     console.error("フォルダデータ取得エラー:", error);
                     showToast('フォルダの読み込みに失敗しました', 'warning');
@@ -2203,10 +2583,8 @@
         // ユーザー一覧の取得（共有設定用）
         async function loadUsers() {
             try {
-                // 共有ユーザー選択リストをクリア
-                shareUsers.innerHTML = '';
-                folderUsers.innerHTML = '';
-                shareSettingsUsersSelect.innerHTML = '';
+                // 共有ユーザーリストをクリア
+                sharedUsers = [];
                 
                 try {
                     // ユーザー一覧を取得（インデックスの問題を回避するため、単純なクエリに変更）
@@ -2216,25 +2594,14 @@
                         const user = doc.data();
                         
                         // 自分以外のユーザーをリストに追加
-                        if (user.uid === currentUser.uid) return;
-                        
-                        // アップロード時の共有設定用
-                        const uploadOption = document.createElement('option');
-                        uploadOption.value = user.uid;
-                        uploadOption.textContent = user.displayName || user.email || 'ユーザー';
-                        shareUsers.appendChild(uploadOption);
-                        
-                        // フォルダ共有設定用
-                        const folderOption = document.createElement('option');
-                        folderOption.value = user.uid;
-                        folderOption.textContent = user.displayName || user.email || 'ユーザー';
-                        folderUsers.appendChild(folderOption);
-                        
-                        // 共有設定変更用
-                        const shareOption = document.createElement('option');
-                        shareOption.value = user.uid;
-                        shareOption.textContent = user.displayName || user.email || 'ユーザー';
-                        shareSettingsUsersSelect.appendChild(shareOption);
+                        if (user.uid !== currentUser.uid) {
+                            sharedUsers.push({
+                                uid: user.uid,
+                                displayName: user.displayName || user.email || 'ユーザー',
+                                email: user.email || '',
+                                profileImageUrl: user.profileImageUrl || ''
+                            });
+                        }
                     });
                 } catch (error) {
                     console.error("ユーザーデータ取得エラー:", error);
@@ -2488,6 +2855,121 @@
             return header;
         }
 
+        // ファイルプレビュー表示
+        function showFilePreview(file) {
+            // 現在のファイルを保存
+            currentPreviewFile = file;
+            
+            // プレビューコンテナの表示
+            fileListContainer.style.display = 'none';
+            fileViewContainer.style.display = 'flex';
+            backNavigation.style.display = 'flex';
+            
+            // プレビュー内容をクリア
+            filePreview.innerHTML = '';
+            fileInfo.innerHTML = '';
+            fileActions.innerHTML = '';
+            
+            // ファイル情報の表示
+            fileInfo.innerHTML = `
+                <h2>${file.name}</h2>
+                <div class="mt-2">
+                    <p><strong>タイプ:</strong> ${getFileTypeLabel(file.fileType)}</p>
+                    <p><strong>サイズ:</strong> ${formatFileSize(file.size || 0)}</p>
+                    <p><strong>アップロード日:</strong> ${file.createdAt ? new Date(file.createdAt.seconds * 1000).toLocaleString('ja-JP') : '-'}</p>
+                    <p><strong>最終更新日:</strong> ${file.updatedAt ? new Date(file.updatedAt.seconds * 1000).toLocaleString('ja-JP') : '-'}</p>
+                    <p><strong>所有者:</strong> ${file.ownerName || '自分'}</p>
+                    <p><strong>共有状態:</strong> ${getVisibilityLabel(file.visibility)}</p>
+                </div>
+            `;
+            
+            // ファイルタイプに応じたプレビュー
+            if (file.fileType === 'image') {
+                // 画像プレビュー
+                filePreview.innerHTML = `
+                    <img src="${file.url}" alt="${file.name}" style="max-width: 100%; max-height: 400px; object-fit: contain;">
+                `;
+            } else if (file.fileType === 'pdf') {
+                // PDFプレビュー（iframeを使用）
+                filePreview.innerHTML = `
+                    <iframe src="${file.url}" style="width: 100%; height: 500px; border: 1px solid var(--border-color); border-radius: var(--radius);"></iframe>
+                `;
+            } else {
+                // その他のファイルはプレビュー不可
+                filePreview.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; background-color: var(--gray-100); border-radius: var(--radius);">
+                        <i class="fas fa-file" style="font-size: 3rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                        <p>このファイルはプレビューできません</p>
+                    </div>
+                `;
+            }
+            
+            // アクションボタン
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'btn btn-primary';
+            downloadBtn.innerHTML = '<i class="fas fa-download"></i> ダウンロード';
+            downloadBtn.addEventListener('click', () => downloadFile(file));
+            fileActions.appendChild(downloadBtn);
+            
+            // 画像ファイルの場合は活字化エディタで開くボタンを追加
+            if (file.fileType === 'image') {
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn btn-secondary ml-2';
+                editBtn.innerHTML = '<i class="fas fa-edit"></i> 活字化エディタで開く';
+                editBtn.addEventListener('click', () => openInEditor(file));
+                fileActions.appendChild(editBtn);
+            }
+            
+            // 共有ボタン
+            const shareBtn = document.createElement('button');
+            shareBtn.className = 'btn btn-outline ml-2';
+            shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> 共有';
+            shareBtn.addEventListener('click', () => showShareModal(file));
+            fileActions.appendChild(shareBtn);
+            
+            // 名前変更ボタン
+            const renameBtn = document.createElement('button');
+            renameBtn.className = 'btn btn-outline ml-2';
+            renameBtn.innerHTML = '<i class="fas fa-edit"></i> 名前変更';
+            renameBtn.addEventListener('click', () => showRenameModal(file));
+            fileActions.appendChild(renameBtn);
+            
+            // 削除ボタン
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-danger ml-2';
+            deleteBtn.innerHTML = '<i class="fas fa-trash"></i> 削除';
+            deleteBtn.addEventListener('click', () => showDeleteModal(file));
+            fileActions.appendChild(deleteBtn);
+        }
+
+        // ファイルプレビュー非表示
+        function hideFilePreview() {
+            fileListContainer.style.display = 'block';
+            fileViewContainer.style.display = 'none';
+            backNavigation.style.display = 'none';
+            currentPreviewFile = null;
+        }
+
+        // ファイルの種類ラベルを取得
+        function getFileTypeLabel(fileType) {
+            switch (fileType) {
+                case 'image': return '画像ファイル';
+                case 'pdf': return 'PDFファイル';
+                case 'document': return 'ドキュメント';
+                default: return 'その他のファイル';
+            }
+        }
+
+        // 共有状態ラベルを取得
+        function getVisibilityLabel(visibility) {
+            switch (visibility) {
+                case 'personal': return '個人用（自分のみ）';
+                case 'shared': return '指定共有';
+                case 'public': return '全体共有';
+                default: return '不明';
+            }
+        }
+
         // コンテキストメニュー（右クリックメニュー）表示
         function showContextMenu(x, y, file) {
             // メニュー内容のカスタマイズ
@@ -2520,20 +3002,33 @@
                             <i class="fas fa-download"></i> ダウンロード
                         </div>
                     `;
+                    
+                    // 画像ファイルの場合は活字化エディタで開くオプションを追加
+                    if (file.fileType === 'image') {
+                        contextMenu.innerHTML += `
+                            <div class="action-menu-item" data-action="open-editor">
+                                <i class="fas fa-edit"></i> 活字化エディタで開く
+                            </div>
+                        `;
+                    }
                 }
                 
-                // 共通メニュー項目（所有者のみ編集可能）
+                // 共通メニュー項目（すべてのユーザーが編集可能）
+                contextMenu.innerHTML += `
+                    <div class="action-menu-item" data-action="rename">
+                        <i class="fas fa-edit"></i> 名前変更
+                    </div>
+                    <div class="action-menu-item" data-action="share">
+                        <i class="fas fa-share-alt"></i> 共有設定
+                    </div>
+                    <div class="action-menu-item" data-action="move">
+                        <i class="fas fa-folder-minus"></i> 移動
+                    </div>
+                `;
+                
+                // 削除は所有者のみ
                 if (file.userId === currentUser.uid) {
                     contextMenu.innerHTML += `
-                        <div class="action-menu-item" data-action="rename">
-                            <i class="fas fa-edit"></i> 名前変更
-                        </div>
-                        <div class="action-menu-item" data-action="share">
-                            <i class="fas fa-share-alt"></i> 共有設定
-                        </div>
-                        <div class="action-menu-item" data-action="move">
-                            <i class="fas fa-folder-minus"></i> 移動
-                        </div>
                         <div class="action-menu-item" data-action="delete">
                             <i class="fas fa-trash"></i> 削除
                         </div>
@@ -2595,6 +3090,9 @@
                 case 'download':
                     downloadFile(activeFile);
                     break;
+                case 'open-editor':
+                    openInEditor(activeFile);
+                    break;
                 case 'rename':
                     showRenameModal(activeFile);
                     break;
@@ -2621,7 +3119,17 @@
         // フォルダ変更
         async function changeFolder(folderId) {
             try {
-                // 前のフォルダに戻るように履歴に追加する処理も可能
+                // 前のフォルダを履歴に追加
+                if (folderId !== currentFolder) {
+                    if (currentFolder !== 'root') {
+                        // 同じフォルダが連続で追加されないようにチェック
+                        if (folderHistory.length === 0 || folderHistory[folderHistory.length - 1] !== currentFolder) {
+                            folderHistory.push(currentFolder);
+                        }
+                    }
+                }
+                
+                // フォルダ変更
                 currentFolder = folderId;
                 
                 // サイドバーのアクティブ項目更新
@@ -2646,11 +3154,11 @@
         function openFile(file) {
             try {
                 if (file.fileType === 'image') {
-                    // 画像プレビュー表示
-                    showImagePreview(file);
+                    // 画像プレビュー表示（インラインプレビュー）
+                    showFilePreview(file);
                 } else if (file.fileType === 'pdf') {
-                    // PDF表示は新しいタブで開く
-                    window.open(file.url, '_blank');
+                    // PDFプレビュー表示（インラインプレビュー）
+                    showFilePreview(file);
                 } else {
                     // その他のファイルはダウンロード
                     downloadFile(file);
@@ -2661,8 +3169,8 @@
             }
         }
 
-        // 画像プレビュー表示
-        function showImagePreview(file) {
+        // 画像プレビューモーダル表示
+        function showImagePreviewModal(file) {
             if (!file || !file.url) {
                 showToast('画像URLが見つかりません', 'error');
                 return;
@@ -2673,8 +3181,22 @@
             previewImage.src = file.url;
             previewImage.alt = file.name;
             
+            // プレビュー中のファイルを保存
+            currentPreviewFile = file;
+            
             // モーダル表示
             imagePreviewModal.classList.add('show');
+        }
+
+        // 活字化エディタで開く
+        function openInEditor(file) {
+            if (!file || !file.url) {
+                showToast('ファイルURLが見つかりません', 'error');
+                return;
+            }
+            
+            // ファイルIDをURLパラメータとして渡す
+            window.location.href = `katsujieditor.html?file=${file.id}`;
         }
 
         // ファイルダウンロード
@@ -2726,18 +3248,8 @@
             // 共有設定に応じてUI表示
             updateShareModalUI();
             
-            // 共有ユーザー選択肢を生成（現在の共有ユーザーをプリセット）
-            if (file.visibility === 'shared' && file.sharedWith && file.sharedWith.length > 0) {
-                // 共有ユーザーを選択状態に
-                Array.from(shareSettingsUsersSelect.options).forEach(option => {
-                    option.selected = file.sharedWith.includes(option.value);
-                });
-            } else {
-                // 選択解除
-                Array.from(shareSettingsUsersSelect.options).forEach(option => {
-                    option.selected = false;
-                });
-            }
+            // 共有ユーザーリストを更新
+            updateSharedUsersList(shareSettingsUserList, file.sharedWith || []);
             
             // 公開リンク生成（公開ファイルの場合）
             if (file.visibility === 'public') {
@@ -2763,6 +3275,153 @@
             } else {
                 shareSettingsUsers.style.display = 'none';
                 shareLinkContainer.style.display = 'none';
+            }
+        }
+
+        // 共有ユーザーリスト更新
+        function updateSharedUsersList(container, selectedUserIds) {
+            // リストをクリア
+            container.innerHTML = '';
+            
+            // 選択されたユーザーを表示
+            if (selectedUserIds.length > 0) {
+                selectedUserIds.forEach(async userId => {
+                    try {
+                        // ユーザー情報を取得
+                        const userDoc = await db.collection('users').doc(userId).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            
+                            // ユーザーアイテム作成
+                            const userItem = document.createElement('div');
+                            userItem.className = 'shared-user-item';
+                            userItem.dataset.uid = userId;
+                            
+                            // ユーザーアバター
+                            let avatarHtml = '';
+                            if (userData.profileImageUrl) {
+                                avatarHtml = `<img src="${userData.profileImageUrl}" alt="${userData.displayName || 'ユーザー'}">`;
+                            } else {
+                                const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                                avatarHtml = initial;
+                            }
+                            
+                            userItem.innerHTML = `
+                                <div class="shared-user-avatar">${avatarHtml}</div>
+                                <div class="shared-user-info">
+                                    <div class="shared-user-name">${userData.displayName || 'ユーザー'}</div>
+                                    <div class="shared-user-email">${userData.email || ''}</div>
+                                </div>
+                                <div class="shared-user-role">
+                                    <span class="btn btn-sm btn-icon btn-outline" data-action="remove-user">
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                                </div>
+                            `;
+                            
+                            // 削除ボタンのイベントリスナー
+                            const removeBtn = userItem.querySelector('[data-action="remove-user"]');
+                            if (removeBtn) {
+                                removeBtn.addEventListener('click', () => {
+                                    userItem.remove();
+                                });
+                            }
+                            
+                            container.appendChild(userItem);
+                        }
+                    } catch (error) {
+                        console.error("ユーザー情報取得エラー:", error);
+                    }
+                });
+            } else {
+                // 選択されたユーザーがいない場合のメッセージ
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'p-3 text-center';
+                emptyMessage.textContent = 'ユーザーを追加してください';
+                container.appendChild(emptyMessage);
+            }
+        }
+
+        // ユーザー選択モーダルを表示
+        function showUserSelectModal(targetContainer) {
+            // ユーザー一覧を表示
+            updateUserSelectList();
+            
+            // モーダル表示
+            userSelectModal.classList.add('show');
+            
+            // 選択ボタンのイベントリスナー
+            userSelectSubmit.onclick = () => {
+                // 選択されたユーザーを取得
+                const selectedUsers = [];
+                document.querySelectorAll('#user-select-list .shared-user-item.selected').forEach(item => {
+                    selectedUsers.push(item.dataset.uid);
+                });
+                
+                // 選択されたユーザーを対象のコンテナに追加
+                if (selectedUsers.length > 0) {
+                    updateSharedUsersList(targetContainer, selectedUsers);
+                }
+                
+                // モーダルを閉じる
+                closeModal(userSelectModal);
+            };
+        }
+
+        // ユーザー選択リスト更新
+        function updateUserSelectList() {
+            // リストをクリア
+            userSelectList.innerHTML = '';
+            
+            // 検索クエリ
+            const searchQuery = userSelectSearch.value.toLowerCase();
+            
+            // フィルタリングされたユーザーリスト
+            const filteredUsers = sharedUsers.filter(user => {
+                const displayName = user.displayName.toLowerCase();
+                const email = (user.email || '').toLowerCase();
+                return !searchQuery || 
+                       displayName.includes(searchQuery) || 
+                       email.includes(searchQuery);
+            });
+            
+            if (filteredUsers.length > 0) {
+                filteredUsers.forEach(user => {
+                    // ユーザーアイテム作成
+                    const userItem = document.createElement('div');
+                    userItem.className = 'shared-user-item';
+                    userItem.dataset.uid = user.uid;
+                    
+                    // ユーザーアバター
+                    let avatarHtml = '';
+                    if (user.profileImageUrl) {
+                        avatarHtml = `<img src="${user.profileImageUrl}" alt="${user.displayName || 'ユーザー'}">`;
+                    } else {
+                        const initial = (user.displayName || 'U').charAt(0).toUpperCase();
+                        avatarHtml = initial;
+                    }
+                    
+                    userItem.innerHTML = `
+                        <div class="shared-user-avatar">${avatarHtml}</div>
+                        <div class="shared-user-info">
+                            <div class="shared-user-name">${user.displayName || 'ユーザー'}</div>
+                            <div class="shared-user-email">${user.email || ''}</div>
+                        </div>
+                    `;
+                    
+                    // クリックでトグル選択
+                    userItem.addEventListener('click', () => {
+                        userItem.classList.toggle('selected');
+                    });
+                    
+                    userSelectList.appendChild(userItem);
+                });
+            } else {
+                // 該当ユーザーがいない場合のメッセージ
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'p-3 text-center';
+                emptyMessage.textContent = '該当するユーザーがいません';
+                userSelectList.appendChild(emptyMessage);
             }
         }
 
@@ -2862,6 +3521,12 @@
                 // モーダルを閉じる
                 closeModal(renameModal);
                 
+                // 現在プレビュー中のファイルの場合はプレビューを更新
+                if (currentPreviewFile && currentPreviewFile.id === fileId) {
+                    currentPreviewFile.name = name;
+                    showFilePreview(currentPreviewFile);
+                }
+                
                 // ファイル一覧再読み込み
                 loadFiles();
             } catch (error) {
@@ -2887,7 +3552,13 @@
                 
                 // 選択されたユーザーIDを取得
                 if (visibility === 'shared') {
-                    const selectedUsers = Array.from(shareSettingsUsersSelect.selectedOptions).map(option => option.value);
+                    const selectedUsers = [];
+                    const userItems = shareSettingsUserList.querySelectorAll('.shared-user-item');
+                    userItems.forEach(item => {
+                        if (item.dataset.uid) {
+                            selectedUsers.push(item.dataset.uid);
+                        }
+                    });
                     updateData.sharedWith = selectedUsers;
                 } else {
                     // 個人用または公開の場合は共有ユーザーリストをクリア
@@ -2901,6 +3572,13 @@
                 // モーダルを閉じる
                 closeModal(shareModal);
                 
+                // 現在プレビュー中のファイルの場合はプレビューを更新
+                if (currentPreviewFile && currentPreviewFile.id === fileId) {
+                    currentPreviewFile.visibility = visibility;
+                    currentPreviewFile.sharedWith = updateData.sharedWith;
+                    showFilePreview(currentPreviewFile);
+                }
+                
                 // ファイル一覧再読み込み
                 loadFiles();
             } catch (error) {
@@ -2908,6 +3586,7 @@
                 showToast('共有設定を更新できませんでした', 'error');
             }
         }
+
         // ファイル移動処理
         async function moveFile() {
             const fileId = moveFileId.value;
@@ -2927,6 +3606,11 @@
                 
                 // モーダルを閉じる
                 closeModal(moveModal);
+                
+                // 現在プレビュー中のファイルの場合はプレビューを非表示にして一覧に戻る
+                if (currentPreviewFile && currentPreviewFile.id === fileId) {
+                    hideFilePreview();
+                }
                 
                 // ファイル一覧再読み込み
                 loadFiles();
@@ -2955,6 +3639,11 @@
                 
                 // モーダルを閉じる
                 closeModal(deleteModal);
+                
+                // 現在プレビュー中のファイルの場合はプレビューを非表示にして一覧に戻る
+                if (currentPreviewFile && currentPreviewFile.id === fileId) {
+                    hideFilePreview();
+                }
                 
                 // ファイル一覧再読み込み
                 loadFiles();
@@ -2996,6 +3685,11 @@
                 // モーダルを閉じる
                 closeModal(permanentDeleteModal);
                 
+                // 現在プレビュー中のファイルの場合はプレビューを非表示にして一覧に戻る
+                if (currentPreviewFile && currentPreviewFile.id === fileId) {
+                    hideFilePreview();
+                }
+                
                 // ファイル一覧再読み込み
                 loadFiles();
                 
@@ -3022,7 +3716,12 @@
                 // 選択されたユーザーIDを取得（共有設定の場合）
                 let sharedWith = [];
                 if (visibility === 'shared') {
-                    sharedWith = Array.from(folderUsers.selectedOptions).map(option => option.value);
+                    const userItems = folderSharedUserList.querySelectorAll('.shared-user-item');
+                    userItems.forEach(item => {
+                        if (item.dataset.uid) {
+                            sharedWith.push(item.dataset.uid);
+                        }
+                    });
                 }
                 
                 // フォルダ作成
@@ -3038,16 +3737,24 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
-                await db.collection('folders').add(folderData);
+                const docRef = await db.collection('folders').add(folderData);
+                
+                // フォルダ名をマッピングに追加
+                folderNameMap[docRef.id] = name;
                 
                 showToast(`フォルダ「${name}」を作成しました`, 'success');
                 
                 // モーダルを閉じる
                 closeModal(folderModal);
+                folderName.value = '';
                 
                 // フォルダとファイル一覧再読み込み
                 loadFolders();
-                loadFiles();
+                
+                // 現在のフォルダが作成先の親フォルダと同じ場合は一覧を更新
+                if (currentFolder === parent) {
+                    loadFiles();
+                }
             } catch (error) {
                 console.error("フォルダ作成エラー:", error);
                 showToast('フォルダを作成できませんでした', 'error');
@@ -3068,7 +3775,12 @@
             // 選択されたユーザーIDを取得（共有設定の場合）
             let sharedWith = [];
             if (visibility === 'shared') {
-                sharedWith = Array.from(shareUsers.selectedOptions).map(option => option.value);
+                const userItems = sharedUserList.querySelectorAll('.shared-user-item');
+                userItems.forEach(item => {
+                    if (item.dataset.uid) {
+                        sharedWith.push(item.dataset.uid);
+                    }
+                });
             }
             
             // プログレスコンテナ表示
@@ -3158,7 +3870,12 @@
                                     showToast(`${files.length}個のファイルをアップロードしました`, 'success');
                                     closeModal(uploadModal);
                                     resetUploadForm();
-                                    loadFiles();
+                                    
+                                    // 現在のフォルダが作成先と同じ場合は一覧を更新
+                                    if (currentFolder === folder) {
+                                        loadFiles();
+                                    }
+                                    
                                     fetchStorageUsage();
                                 }
                             } catch (error) {
@@ -3182,6 +3899,9 @@
             uploadProgressText.textContent = 'アップロード中 (0%)';
             uploadProgressSize.textContent = '0 KB / 0 KB';
             document.querySelector('.dropzone-text').textContent = 'ファイルをドラッグ＆ドロップするか、クリックして選択';
+            
+            // 共有ユーザーリストをクリア
+            sharedUserList.innerHTML = '';
         }
 
         // ローディング表示
@@ -3366,6 +4086,9 @@
                         files.length === 1 ? 
                         files[0].name :
                         `${files.length}個のファイルが選択されました`;
+                    
+                    // ファイル入力にドロップされたファイルをセット
+                    fileInput.files = files;
                 }
             });
             
@@ -3384,6 +4107,11 @@
             const savedViewMode = localStorage.getItem('fileViewMode') || 'grid';
             toggleViewMode(savedViewMode);
             
+            // 戻るボタン
+            backNavigation.addEventListener('click', () => {
+                hideFilePreview();
+            });
+            
             // 画像プレビューモーダルの閉じるボタン
             closePreviewBtn.addEventListener('click', () => {
                 imagePreviewModal.classList.remove('show');
@@ -3393,6 +4121,20 @@
             imagePreviewModal.addEventListener('click', (e) => {
                 if (e.target === imagePreviewModal) {
                     imagePreviewModal.classList.remove('show');
+                }
+            });
+            
+            // 活字化エディタで開くボタン
+            openEditorBtn.addEventListener('click', () => {
+                if (currentPreviewFile && currentPreviewFile.fileType === 'image') {
+                    openInEditor(currentPreviewFile);
+                }
+            });
+            
+            // ダウンロードボタン
+            downloadPreviewBtn.addEventListener('click', () => {
+                if (currentPreviewFile) {
+                    downloadFile(currentPreviewFile);
                 }
             });
             
@@ -3418,6 +4160,14 @@
                     
                     // 表示モード切替
                     currentView = tab.getAttribute('data-view');
+                    
+                    // タブ切替時はルートフォルダに戻る
+                    currentFolder = 'root';
+                    folderHistory = [];
+                    
+                    // ファイルプレビューを非表示
+                    hideFilePreview();
+                    
                     loadFiles();
                 });
             });
@@ -3488,6 +4238,36 @@
             });
             
             shareVisibility.addEventListener('change', updateShareModalUI);
+            
+            // ユーザー検索
+            sharedUserSearch.addEventListener('input', () => {
+                // 将来的に実装
+            });
+            
+            folderSharedUserSearch.addEventListener('input', () => {
+                // 将来的に実装
+            });
+            
+            shareSettingsUserSearch.addEventListener('input', () => {
+                // 将来的に実装
+            });
+            
+            userSelectSearch.addEventListener('input', () => {
+                updateUserSelectList();
+            });
+            
+            // ユーザー追加ボタン
+            addUserBtn.addEventListener('click', () => {
+                showUserSelectModal(sharedUserList);
+            });
+            
+            folderAddUserBtn.addEventListener('click', () => {
+                showUserSelectModal(folderSharedUserList);
+            });
+            
+            shareSettingsAddUserBtn.addEventListener('click', () => {
+                showUserSelectModal(shareSettingsUserList);
+            });
             
             // コピーリンクボタン
             copyLinkBtn.addEventListener('click', copyShareLink);
