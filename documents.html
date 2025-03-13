@@ -549,7 +549,7 @@
         
         .file-list-header {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            grid-template-columns: 40px 2fr 1fr 1fr 1fr auto;
             padding: 0.5rem;
             font-weight: 500;
             border-bottom: 1px solid var(--border-color);
@@ -558,7 +558,7 @@
         
         .file-list-item {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            grid-template-columns: 40px 2fr 1fr 1fr 1fr auto;
             padding: 0.75rem 0.5rem;
             border-bottom: 1px solid var(--border-color);
             align-items: center;
@@ -594,6 +594,15 @@
             border-color: var(--primary);
             transform: translateY(-2px);
             box-shadow: var(--shadow-sm);
+        }
+        
+        .file-card.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        [data-theme="dark"] .file-card.selected {
+            background-color: rgba(99, 102, 241, 0.2);
         }
         
         .file-icon {
@@ -699,6 +708,71 @@
         .file-card-action:hover {
             background-color: var(--primary);
             color: white;
+        }
+        
+        /* 追加: チェックボックススタイル */
+        .file-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            margin-right: 0.5rem;
+            background-color: white;
+        }
+        
+        [data-theme="dark"] .file-checkbox {
+            background-color: var(--gray-800);
+        }
+        
+        .file-checkbox.checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        
+        .file-list-item .file-checkbox {
+            margin-left: 0.25rem;
+        }
+        
+        .file-card .file-checkbox {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            z-index: 2;
+        }
+        
+        /* 選択操作バー */
+        .selection-bar {
+            display: none;
+            align-items: center;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 0.5rem 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        [data-theme="dark"] .selection-bar {
+            background-color: var(--gray-800);
+        }
+        
+        .selection-bar.show {
+            display: flex;
+        }
+        
+        .selection-count {
+            margin-right: 1rem;
+            font-weight: 500;
+        }
+        
+        .selection-actions {
+            display: flex;
+            gap: 0.5rem;
         }
         
         .action-menu {
@@ -1383,7 +1457,7 @@
             }
             
             .file-list-header, .file-list-item {
-                grid-template-columns: 2fr 1fr auto;
+                grid-template-columns: 40px 2fr 1fr auto;
             }
             
             .file-list-header .date-col, .file-list-item .date-col,
@@ -1514,6 +1588,25 @@
                 </div>
             </div>
             
+            <!-- 選択操作バー (選択時のみ表示) -->
+            <div class="selection-bar" id="selection-bar">
+                <div class="selection-count" id="selection-count">0 項目を選択中</div>
+                <div class="selection-actions">
+                    <button id="deselect-all-btn" class="btn btn-sm btn-outline">
+                        <i class="fas fa-times"></i> 選択解除
+                    </button>
+                    <button id="move-selected-btn" class="btn btn-sm btn-outline">
+                        <i class="fas fa-folder-minus"></i> 移動
+                    </button>
+                    <button id="share-selected-btn" class="btn btn-sm btn-outline">
+                        <i class="fas fa-share-alt"></i> 共有
+                    </button>
+                    <button id="delete-selected-btn" class="btn btn-sm btn-danger">
+                        <i class="fas fa-trash"></i> 削除
+                    </button>
+                </div>
+            </div>
+            
             <div class="file-manager-tabs">
                 <div class="file-tab active" data-view="personal">個人用</div>
                 <div class="file-tab" data-view="shared">指定共有</div>
@@ -1573,7 +1666,10 @@
                     <div id="file-list-container">
                         <div class="d-flex justify-between mb-3">
                             <div class="d-flex align-center">
-                                <button id="view-grid-btn" class="btn btn-sm btn-outline active">
+                                <div class="file-checkbox" id="select-all-checkbox" title="全て選択">
+                                    <i class="fas fa-check" style="display: none;"></i>
+                                </div>
+                                <button id="view-grid-btn" class="btn btn-sm btn-outline active ml-2">
                                     <i class="fas fa-th"></i>
                                 </button>
                                 <button id="view-list-btn" class="btn btn-sm btn-outline ml-1">
@@ -1601,6 +1697,11 @@
                         <!-- ファイル一覧（リストビュー） -->
                         <div id="file-list" class="file-list" style="display: none;">
                             <div class="file-list-header">
+                                <div>
+                                    <div class="file-checkbox" id="list-select-all-checkbox" title="全て選択">
+                                        <i class="fas fa-check" style="display: none;"></i>
+                                    </div>
+                                </div>
                                 <div>名前</div>
                                 <div class="owner-col">所有者</div>
                                 <div class="date-col">更新日</div>
@@ -1846,6 +1947,48 @@
             </div>
         </div>
         
+        <!-- 一括共有設定モーダル -->
+        <div id="batch-share-modal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">複数項目の共有設定</h3>
+                    <button class="modal-close" data-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="batch-share-info" class="mb-3">選択された項目を一括で共有設定します。</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">共有設定</label>
+                        <select id="batch-share-visibility" class="form-select">
+                            <option value="personal">個人用（自分のみ）</option>
+                            <option value="shared">指定共有（選択したユーザーと共有）</option>
+                            <option value="public">全体共有（全ユーザーに公開）</option>
+                        </select>
+                    </div>
+                    
+                    <div id="batch-share-users" class="form-group" style="display: none;">
+                        <label class="form-label">共有するユーザー</label>
+                        <div class="shared-user-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="batch-shared-user-search" placeholder="ユーザーを検索...">
+                        </div>
+                        <div class="shared-user-list" id="batch-shared-user-list">
+                            <!-- ユーザーリストが表示されます -->
+                        </div>
+                        <button class="add-user-btn" id="batch-share-add-user-btn">
+                            <i class="fas fa-plus"></i> ユーザーを追加
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
+                    <button id="batch-share-submit" class="btn btn-primary">適用</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- 移動モーダル -->
         <div id="move-modal" class="modal-overlay">
             <div class="modal">
@@ -1873,6 +2016,33 @@
             </div>
         </div>
         
+        <!-- 一括移動モーダル -->
+        <div id="batch-move-modal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">複数項目の移動</h3>
+                    <button class="modal-close" data-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="batch-move-info" class="mb-3">選択された項目を一括で移動します。</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">移動先フォルダ</label>
+                        <select id="batch-move-destination" class="form-select">
+                            <option value="root">ルート</option>
+                            <!-- 他のフォルダは動的に追加されます -->
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
+                    <button id="batch-move-submit" class="btn btn-primary">移動</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- 削除確認モーダル -->
         <div id="delete-modal" class="modal-overlay">
             <div class="modal">
@@ -1895,6 +2065,26 @@
             </div>
         </div>
         
+        <!-- 一括削除確認モーダル -->
+        <div id="batch-delete-modal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">一括削除の確認</h3>
+                    <button class="modal-close" data-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="batch-delete-message">選択した項目をゴミ箱に移動しますか？</p>
+                    <p class="mt-2" style="font-size: 0.875rem; color: var(--text-muted);">ゴミ箱から復元することができます。</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
+                    <button id="batch-delete-submit" class="btn btn-danger">削除</button>
+                </div>
+            </div>
+        </div>
+        
         <!-- 完全削除確認モーダル (ゴミ箱から) -->
         <div id="permanent-delete-modal" class="modal-overlay">
             <div class="modal">
@@ -1913,6 +2103,26 @@
                 <div class="modal-footer">
                     <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
                     <button id="permanent-delete-submit" class="btn btn-danger">完全に削除</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 一括完全削除確認モーダル -->
+        <div id="batch-permanent-delete-modal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3 class="modal-title">一括完全削除の確認</h3>
+                    <button class="modal-close" data-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="batch-permanent-delete-message">選択した項目を完全に削除しますか？</p>
+                    <p class="mt-2" style="font-size: 0.875rem; color: var(--danger);">この操作は取り消せません。</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
+                    <button id="batch-permanent-delete-submit" class="btn btn-danger">完全に削除</button>
                 </div>
             </div>
         </div>
@@ -1996,7 +2206,7 @@
         let currentUser = null;
         
         // 現在の表示
-        let currentView = 'personal'; // personal, shared, public, trashed
+        let currentView = 'personal'; // all, personal, shared, public, trashed
         let currentFileType = 'all'; // all, documents, images, pdfs, others
         let currentFolder = 'root'; // root または folder ID
         let currentViewMode = 'grid'; // grid または list
@@ -2013,6 +2223,9 @@
         
         // アクティブなファイル/フォルダ（右クリックメニューなどで使用）
         let activeFile = null;
+        
+        // 選択中のファイル/フォルダID配列
+        let selectedItems = [];
         
         // DOM要素の参照
         // サイドバー
@@ -2037,6 +2250,16 @@
         const emptyState = document.getElementById('empty-state');
         const loadingState = document.getElementById('loading-state');
         const emptyUploadBtn = document.getElementById('empty-upload-btn');
+        
+        // 選択関連
+        const selectionBar = document.getElementById('selection-bar');
+        const selectionCount = document.getElementById('selection-count');
+        const selectAllCheckbox = document.getElementById('select-all-checkbox');
+        const listSelectAllCheckbox = document.getElementById('list-select-all-checkbox');
+        const deselectAllBtn = document.getElementById('deselect-all-btn');
+        const moveSelectedBtn = document.getElementById('move-selected-btn');
+        const shareSelectedBtn = document.getElementById('share-selected-btn');
+        const deleteSelectedBtn = document.getElementById('delete-selected-btn');
         
         // ファイルプレビュー関連
         const fileViewContainer = document.getElementById('file-view-container');
@@ -2114,6 +2337,16 @@
         const shareFileType = document.getElementById('share-file-type');
         const shareSubmit = document.getElementById('share-submit');
         
+        // 一括共有モーダル
+        const batchShareModal = document.getElementById('batch-share-modal');
+        const batchShareInfo = document.getElementById('batch-share-info');
+        const batchShareVisibility = document.getElementById('batch-share-visibility');
+        const batchShareUsers = document.getElementById('batch-share-users');
+        const batchSharedUserList = document.getElementById('batch-shared-user-list');
+        const batchSharedUserSearch = document.getElementById('batch-shared-user-search');
+        const batchShareAddUserBtn = document.getElementById('batch-share-add-user-btn');
+        const batchShareSubmit = document.getElementById('batch-share-submit');
+        
         // ユーザー選択モーダル
         const userSelectModal = document.getElementById('user-select-modal');
         const userSelectList = document.getElementById('user-select-list');
@@ -2127,6 +2360,12 @@
         const moveFileType = document.getElementById('move-file-type');
         const moveSubmit = document.getElementById('move-submit');
         
+        // 一括移動モーダル
+        const batchMoveModal = document.getElementById('batch-move-modal');
+        const batchMoveInfo = document.getElementById('batch-move-info');
+        const batchMoveDestination = document.getElementById('batch-move-destination');
+        const batchMoveSubmit = document.getElementById('batch-move-submit');
+        
         // 削除モーダル
         const deleteModal = document.getElementById('delete-modal');
         const deleteMessage = document.getElementById('delete-message');
@@ -2134,12 +2373,22 @@
         const deleteFileType = document.getElementById('delete-file-type');
         const deleteSubmit = document.getElementById('delete-submit');
         
+        // 一括削除モーダル
+        const batchDeleteModal = document.getElementById('batch-delete-modal');
+        const batchDeleteMessage = document.getElementById('batch-delete-message');
+        const batchDeleteSubmit = document.getElementById('batch-delete-submit');
+        
         // 完全削除モーダル
         const permanentDeleteModal = document.getElementById('permanent-delete-modal');
         const permanentDeleteMessage = document.getElementById('permanent-delete-message');
         const permanentDeleteFileId = document.getElementById('permanent-delete-file-id');
         const permanentDeleteFileType = document.getElementById('permanent-delete-file-type');
         const permanentDeleteSubmit = document.getElementById('permanent-delete-submit');
+        
+        // 一括完全削除モーダル
+        const batchPermanentDeleteModal = document.getElementById('batch-permanent-delete-modal');
+        const batchPermanentDeleteMessage = document.getElementById('batch-permanent-delete-message');
+        const batchPermanentDeleteSubmit = document.getElementById('batch-permanent-delete-submit');
         
         // トースト通知
         const toastContainer = document.getElementById('toast-container');
@@ -2168,45 +2417,92 @@
                 console.error("初期設定エラー:", error);
             }
         }
-
-        // 認証状態の監視
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                // ユーザーがログインしている場合
-                console.log("ログイン中:", user.uid);
-                currentUser = user;
-                
-                // 初期設定を実行
-                setupInitialUser(user);
-                
-                // ユーザー情報を取得して表示
-                fetchUserData(user.uid);
-                
-                // 各種データ読み込み - エラーを個別に処理
-                loadFiles().catch(err => {
-                    console.error("ファイル読み込みエラー:", err);
-                    showToast('ファイルの読み込みに失敗しました', 'error');
-                    hideLoading();
-                    showEmptyState();
-                });
-                
-                loadFolders().catch(err => {
-                    console.error("フォルダ読み込みエラー:", err);
-                });
-                
-                loadUsers().catch(err => {
-                    console.error("ユーザー読み込みエラー:", err);
-                });
-                
-                fetchStorageUsage().catch(err => {
-                    console.error("使用量取得エラー:", err);
-                });
+        
+        // 選択状態の更新
+        function updateSelectionState() {
+            const count = selectedItems.length;
+            
+            // 選択数に応じて選択バーの表示/非表示を切り替え
+            if (count > 0) {
+                selectionBar.classList.add('show');
+                selectionCount.textContent = `${count} 項目を選択中`;
             } else {
-                // ログインしていない場合はログインページにリダイレクト
-                window.location.href = 'login.html';
+                selectionBar.classList.remove('show');
             }
-        });
-
+            
+            // 全選択チェックボックスの状態を更新
+            const totalItems = document.querySelectorAll('.file-card, .file-list-item:not(.file-list-header)').length;
+            const isAllSelected = count > 0 && count === totalItems;
+            
+            updateCheckboxState(selectAllCheckbox, isAllSelected);
+            updateCheckboxState(listSelectAllCheckbox, isAllSelected);
+        }
+        
+        // チェックボックス状態の更新
+        function updateCheckboxState(checkbox, checked) {
+            const checkIcon = checkbox.querySelector('i');
+            
+            if (checked) {
+                checkbox.classList.add('checked');
+                checkIcon.style.display = 'block';
+            } else {
+                checkbox.classList.remove('checked');
+                checkIcon.style.display = 'none';
+            }
+        }
+        
+        // アイテムの選択状態を切り替え
+        function toggleItemSelection(item, selected = null) {
+            const id = item.getAttribute('data-id');
+            const type = item.getAttribute('data-type');
+            const checkbox = item.querySelector('.file-checkbox');
+            
+            if (selected === null) {
+                // トグル動作
+                selected = !selectedItems.includes(id);
+            }
+            
+            if (selected) {
+                // 選択する
+                if (!selectedItems.includes(id)) {
+                    selectedItems.push(id);
+                }
+                item.classList.add('selected');
+                if (checkbox) {
+                    updateCheckboxState(checkbox, true);
+                }
+            } else {
+                // 選択解除
+                selectedItems = selectedItems.filter(itemId => itemId !== id);
+                item.classList.remove('selected');
+                if (checkbox) {
+                    updateCheckboxState(checkbox, false);
+                }
+            }
+            
+            updateSelectionState();
+        }
+        
+        // すべての選択を解除
+        function clearSelection() {
+            selectedItems = [];
+            
+            // すべてのアイテムの選択状態をリセット
+            document.querySelectorAll('.file-card, .file-list-item:not(.file-list-header)').forEach(item => {
+                item.classList.remove('selected');
+                const checkbox = item.querySelector('.file-checkbox');
+                if (checkbox) {
+                    updateCheckboxState(checkbox, false);
+                }
+            });
+            
+            // 全選択チェックボックスもリセット
+            updateCheckboxState(selectAllCheckbox, false);
+            updateCheckboxState(listSelectAllCheckbox, false);
+            
+            updateSelectionState();
+        }
+        
         // ユーザーデータの取得
         async function fetchUserData(userId) {
             try {
@@ -2238,7 +2534,7 @@
                 console.error("ユーザーデータ取得エラー:", error);
             }
         }
-
+        
         // パンくずリスト更新
         function updateBreadcrumb() {
             // パンくずリストをクリア
@@ -2301,70 +2597,113 @@
             }
         }
 
-        // ファイル一覧の読み込み
+        // 全て表示時のパンくずリスト更新
+        function updateBreadcrumbForAll() {
+            // パンくずリストをクリア
+            breadcrumbContainer.innerHTML = '';
+            
+            // ホームリンク
+            const homeLink = document.createElement('a');
+            homeLink.href = "index.html";
+            homeLink.textContent = "ホーム";
+            breadcrumbContainer.appendChild(homeLink);
+            
+            // 区切り
+            const divider1 = document.createElement('i');
+            divider1.className = "fas fa-chevron-right";
+            breadcrumbContainer.appendChild(divider1);
+            
+            // 資料管理リンク
+            const docItem = document.createElement('span');
+            docItem.className = "breadcrumb-item";
+            docItem.textContent = "資料管理";
+            breadcrumbContainer.appendChild(docItem);
+            
+            // 区切り
+            const divider2 = document.createElement('i');
+            divider2.className = "fas fa-chevron-right";
+            breadcrumbContainer.appendChild(divider2);
+            
+            // 全ての項目
+            const allItem = document.createElement('span');
+            allItem.className = "breadcrumb-item active";
+            allItem.textContent = "すべての項目";
+            breadcrumbContainer.appendChild(allItem);
+        }
+        
         async function loadFiles() {
-            try {
-                // ファイルプレビューを非表示、ファイル一覧を表示
-                hideFilePreview();
+    try {
+        // ファイルプレビューを非表示、ファイル一覧を表示
+        hideFilePreview();
+        
+        // ローディング表示を確実に表示
+        showLoading();
+        
+        // 既存のファイル表示をクリア
+        fileGridContainer.innerHTML = '';
+        fileListContainer.innerHTML = '';
+        fileListContainer.appendChild(createListHeader());
+        
+        // 選択もクリア
+        clearSelection();
+        
+        // 検索クエリ取得
+        const searchQuery = fileSearchInput.value.toLowerCase();
+        
+        // 基本的なクエリで、現在のフォルダのファイルを取得
+        let filesArray = [];
+        let foldersArray = [];
+        
+        try {
+            // ファイル取得
+            const userFilesRef = db.collection('files');
+            
+            // ゴミ箱かどうかでフィルタリング
+            const trashedFilesRef = userFilesRef.where('trashed', '==', currentView === 'trashed');
+            
+            // ファイル一覧取得
+            const filesSnapshot = await trashedFilesRef.get();
+            
+            // クライアント側でフィルタリング
+            filesSnapshot.forEach(doc => {
+                const fileData = { id: doc.id, ...doc.data() };
                 
-                // ローディング表示を確実に表示
-                showLoading();
+                // 表示モードでフィルタリング
+                const isVisible = 
+                    // 全て表示の場合は自分に関連するすべてのファイル
+                    (currentView === 'all' && (
+                        fileData.userId === currentUser.uid || 
+                        (fileData.visibility === 'shared' && fileData.sharedWith && fileData.sharedWith.includes(currentUser.uid)) ||
+                        fileData.visibility === 'public'
+                    )) ||
+                    // 個人用表示の場合は自分のファイルのみ
+                    (currentView === 'personal' && fileData.userId === currentUser.uid && fileData.visibility === 'personal') ||
+                    // 指定共有表示の場合は自分のファイルか自分に共有されているファイル
+                    (currentView === 'shared' && (
+                        (fileData.userId === currentUser.uid && fileData.visibility === 'shared') ||
+                        (fileData.visibility === 'shared' && fileData.sharedWith && fileData.sharedWith.includes(currentUser.uid))
+                    )) ||
+                    // 全体共有表示の場合は公開されているファイル
+                    (currentView === 'public' && fileData.visibility === 'public') ||
+                    // ゴミ箱表示の場合は自分のファイルのみ
+                    (currentView === 'trashed' && fileData.userId === currentUser.uid);
                 
-                // 既存のファイル表示をクリア
-                fileGridContainer.innerHTML = '';
-                fileListContainer.innerHTML = '';
-                fileListContainer.appendChild(createListHeader());
+                // フォルダでのフィルタリング（全て表示の場合はフォルダでフィルタリングしない）
+                const isInCurrentFolder = 
+                    currentView === 'all' || 
+                    fileData.parentFolder === currentFolder || 
+                    (currentFolder === 'root' && fileData.parentFolder === 'root');
                 
-                // 検索クエリ取得
-                const searchQuery = fileSearchInput.value.toLowerCase();
-                
-                // 基本的なクエリで、現在のフォルダのファイルを取得
-                let filesArray = [];
-                let foldersArray = [];
-                
-                try {
-                    // 個人用ファイル取得
-                    const userFilesRef = db.collection('files');
-                    
-                    // ゴミ箱かどうかでフィルタリング
-                    const trashedFilesRef = userFilesRef.where('trashed', '==', currentView === 'trashed');
-                    
-                    // ファイル一覧取得
-                    const filesSnapshot = await trashedFilesRef.get();
-                    
-                    // クライアント側でフィルタリング
-                    filesSnapshot.forEach(doc => {
-                        const fileData = { id: doc.id, ...doc.data() };
-                        
-                        // 表示モードと親フォルダで絞り込み
-                        const isVisible = 
-                            // 個人用表示の場合は自分のファイルのみ
-                            (currentView === 'personal' && fileData.userId === currentUser.uid && fileData.visibility === 'personal') ||
-                            // 指定共有表示の場合は自分のファイルか自分に共有されているファイル
-                            (currentView === 'shared' && (
-                                (fileData.userId === currentUser.uid && fileData.visibility === 'shared') ||
-                                (fileData.visibility === 'shared' && fileData.sharedWith && fileData.sharedWith.includes(currentUser.uid))
-                            )) ||
-                            // 全体共有表示の場合は公開されているファイル
-                            (currentView === 'public' && fileData.visibility === 'public') ||
-                            // ゴミ箱表示の場合は自分のファイルのみ
-                            (currentView === 'trashed' && fileData.userId === currentUser.uid);
-                        
-                        // 親フォルダの一致確認
-                        const isInCurrentFolder = 
-                            fileData.parentFolder === currentFolder || 
-                            (currentFolder === 'root' && fileData.parentFolder === 'root');
-                        
-                        if (isVisible && isInCurrentFolder) {
-                            // ファイルタイプでフィルタリング
-                            if (currentFileType === 'all' || currentFileType === fileData.fileType) {
-                                // 検索クエリでフィルタリング
-                                if (!searchQuery || fileData.name.toLowerCase().includes(searchQuery)) {
-                                    filesArray.push(fileData);
-                                }
-                            }
+                if (isVisible && isInCurrentFolder) {
+                    // ファイルタイプでフィルタリング
+                    if (currentFileType === 'all' || currentFileType === fileData.fileType) {
+                        // 検索クエリでフィルタリング
+                        if (!searchQuery || fileData.name.toLowerCase().includes(searchQuery)) {
+                            filesArray.push(fileData);
                         }
-                    });
+                    }
+                }
+            });
                     
                     // フォルダ一覧取得
                     const foldersRef = db.collection('folders');
@@ -2377,6 +2716,12 @@
                         
                         // 表示モードでフィルタリング
                         const isVisible = 
+                            // 全て表示の場合は自分に関連するすべてのフォルダ
+                            (currentView === 'all' && (
+                                folderData.userId === currentUser.uid || 
+                                (folderData.visibility === 'shared' && folderData.sharedWith && folderData.sharedWith.includes(currentUser.uid)) ||
+                                folderData.visibility === 'public'
+                            )) ||
                             // 個人用表示の場合は自分のフォルダのみ
                             (currentView === 'personal' && folderData.userId === currentUser.uid && folderData.visibility === 'personal') ||
                             // 指定共有表示の場合は自分のフォルダか自分に共有されているフォルダ
@@ -2389,8 +2734,9 @@
                             // ゴミ箱表示の場合は自分のフォルダのみ
                             (currentView === 'trashed' && folderData.userId === currentUser.uid);
                         
-                        // 親フォルダの一致確認
+                        // 全て表示以外では親フォルダでフィルタリング
                         const isInCurrentFolder = 
+                            currentView === 'all' || 
                             folderData.parentFolder === currentFolder || 
                             (currentFolder === 'root' && folderData.parentFolder === 'root');
                         
@@ -2455,8 +2801,12 @@
                     });
                 }
                 
-                // パンくずリスト更新
-                updateBreadcrumb();
+                // パンくずリスト更新（全て表示の場合はフォルダ階層を表示しない）
+                if (currentView !== 'all') {
+                    updateBreadcrumb();
+                } else {
+                    updateBreadcrumbForAll();
+                }
             } catch (error) {
                 console.error("ファイル一覧取得エラー:", error);
                 showToast('ファイル一覧の取得中にエラーが発生しました', 'error');
@@ -2464,7 +2814,6 @@
                 showEmptyState();
             }
         }
-
         // フォルダ一覧の取得（サイドバー用）
         async function loadFolders() {
             try {
@@ -2483,6 +2832,7 @@
                 uploadFolder.innerHTML = '<option value="root">ルート</option>';
                 parentFolder.innerHTML = '<option value="root">ルート</option>';
                 moveDestination.innerHTML = '<option value="root">ルート</option>';
+                batchMoveDestination.innerHTML = '<option value="root">ルート</option>';
                 
                 try {
                     // ユーザーのフォルダを取得
@@ -2524,6 +2874,12 @@
                         moveOption.value = folder.id;
                         moveOption.textContent = folder.name;
                         moveDestination.appendChild(moveOption);
+                        
+                        // 一括移動モーダル用
+                        const batchMoveOption = document.createElement('option');
+                        batchMoveOption.value = folder.id;
+                        batchMoveOption.textContent = folder.name;
+                        batchMoveDestination.appendChild(batchMoveOption);
                     });
                     
                     // 共有フォルダも表示
@@ -2569,6 +2925,12 @@
                         moveOption.value = folder.id;
                         moveOption.textContent = `${folder.name} (${folder.visibility === 'shared' ? '共有' : '公開'})`;
                         moveDestination.appendChild(moveOption);
+                        
+                        // 一括移動モーダルにも追加
+                        const batchMoveOption = document.createElement('option');
+                        batchMoveOption.value = folder.id;
+                        batchMoveOption.textContent = `${folder.name} (${folder.visibility === 'shared' ? '共有' : '公開'})`;
+                        batchMoveDestination.appendChild(batchMoveOption);
                     });
                 } catch (error) {
                     console.error("フォルダデータ取得エラー:", error);
@@ -2661,12 +3023,23 @@
             }
         }
 
-        // ファイルカードの作成（グリッドビュー用）
+        // ファイルカードの作成（グリッドビュー用）- 更新版
         function createFileCard(file) {
             const card = document.createElement('div');
             card.className = 'file-card';
             card.setAttribute('data-id', file.id);
             card.setAttribute('data-type', file.isFolder ? 'folder' : 'file');
+            
+            // 選択チェックボックス
+            const checkbox = document.createElement('div');
+            checkbox.className = 'file-checkbox';
+            checkbox.innerHTML = '<i class="fas fa-check" style="display: none;"></i>';
+            
+            // チェックボックスクリックイベント
+            checkbox.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleItemSelection(card);
+            });
             
             // アイコンまたはサムネイル
             let iconHtml = '';
@@ -2723,18 +3096,35 @@
                 </div>
             `;
             
+            // チェックボックスを追加
+            card.appendChild(checkbox);
+            
+            // 選択状態かチェック
+            if (selectedItems.includes(file.id)) {
+                card.classList.add('selected');
+                updateCheckboxState(checkbox, true);
+            }
+            
             // イベントリスナー
             card.addEventListener('click', (e) => {
-                if (!e.target.closest('.file-card-action')) {
-                    // フォルダの場合は開く
-                    if (file.isFolder) {
-                        changeFolder(file.id);
-                    } else {
-                        // ファイルの場合はプレビューまたはダウンロード
-                        openFile(file);
+        if (!e.target.closest('.file-checkbox') && !e.target.closest('.file-card-action')) {
+            // フォルダの場合は開く
+            if (file.isFolder) {
+                // 全てタブでもフォルダを正しく開くために親フォルダの履歴を設定
+                if (currentView === 'all') {
+                    // 全てタブからフォルダを開く場合は、そのフォルダの親階層を再構築
+                    folderHistory = [];
+                    if (file.parentFolder && file.parentFolder !== 'root') {
+                        folderHistory.push(file.parentFolder);
                     }
                 }
-            });
+                changeFolder(file.id);
+            } else {
+                // ファイルの場合はプレビューまたはダウンロード
+                openFile(file);
+            }
+        }
+    });
             
             // 右クリックメニュー
             card.addEventListener('contextmenu', (e) => {
@@ -2757,12 +3147,26 @@
             return card;
         }
 
-        // ファイルリスト行の作成（リストビュー用）
+        // ファイルリスト行の作成（リストビュー用）- 更新版
         function createFileListItem(file) {
             const item = document.createElement('div');
             item.className = 'file-list-item';
             item.setAttribute('data-id', file.id);
             item.setAttribute('data-type', file.isFolder ? 'folder' : 'file');
+            
+            // 選択チェックボックス
+            const checkboxCell = document.createElement('div');
+            const checkbox = document.createElement('div');
+            checkbox.className = 'file-checkbox';
+            checkbox.innerHTML = '<i class="fas fa-check" style="display: none;"></i>';
+            
+            // チェックボックスクリックイベント
+            checkbox.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleItemSelection(item);
+            });
+            
+            checkboxCell.appendChild(checkbox);
             
             // アイコン選択
             let iconClass = 'fa-file';
@@ -2794,31 +3198,63 @@
                 shareIcon = '<i class="fas fa-globe ml-1" style="color: var(--success);"></i>';
             }
             
-            // HTML作成
-            item.innerHTML = `
-                <div><i class="fas ${iconClass} mr-2"></i> ${file.name} ${shareIcon}</div>
-                <div class="owner-col">${file.ownerName || '自分'}</div>
-                <div class="date-col">${formattedDate}</div>
-                <div class="size-col">${file.isFolder ? '-' : formatFileSize(file.size || 0)}</div>
-                <div>
-                    <span class="btn btn-sm btn-icon btn-outline" data-action="more">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </span>
-                </div>
+            // 各セル作成
+            const nameCell = document.createElement('div');
+            nameCell.innerHTML = `<i class="fas ${iconClass} mr-2"></i> ${file.name} ${shareIcon}`;
+            
+            const ownerCell = document.createElement('div');
+            ownerCell.className = 'owner-col';
+            ownerCell.textContent = file.ownerName || '自分';
+            
+            const dateCell = document.createElement('div');
+            dateCell.className = 'date-col';
+            dateCell.textContent = formattedDate;
+            
+            const sizeCell = document.createElement('div');
+            sizeCell.className = 'size-col';
+            sizeCell.textContent = file.isFolder ? '-' : formatFileSize(file.size || 0);
+            
+            const actionsCell = document.createElement('div');
+            actionsCell.innerHTML = `
+                <span class="btn btn-sm btn-icon btn-outline" data-action="more">
+                    <i class="fas fa-ellipsis-v"></i>
+                </span>
             `;
+            
+            // 各セルを行に追加
+            item.appendChild(checkboxCell);
+            item.appendChild(nameCell);
+            item.appendChild(ownerCell);
+            item.appendChild(dateCell);
+            item.appendChild(sizeCell);
+            item.appendChild(actionsCell);
+            
+            // 選択状態かチェック
+            if (selectedItems.includes(file.id)) {
+                item.classList.add('selected');
+                updateCheckboxState(checkbox, true);
+            }
             
             // イベントリスナー
             item.addEventListener('click', (e) => {
-                if (!e.target.closest('[data-action]')) {
-                    // フォルダの場合は開く
-                    if (file.isFolder) {
-                        changeFolder(file.id);
-                    } else {
-                        // ファイルの場合はプレビューまたはダウンロード
-                        openFile(file);
+        if (!e.target.closest('.file-checkbox') && !e.target.closest('[data-action]')) {
+            // フォルダの場合は開く
+            if (file.isFolder) {
+                // 全てタブでもフォルダを正しく開くために親フォルダの履歴を設定
+                if (currentView === 'all') {
+                    // 全てタブからフォルダを開く場合は、そのフォルダの親階層を再構築
+                    folderHistory = [];
+                    if (file.parentFolder && file.parentFolder !== 'root') {
+                        folderHistory.push(file.parentFolder);
                     }
                 }
-            });
+                changeFolder(file.id);
+            } else {
+                // ファイルの場合はプレビューまたはダウンロード
+                openFile(file);
+            }
+        }
+    });
             
             // 右クリックメニュー
             item.addEventListener('contextmenu', (e) => {
@@ -2841,20 +3277,45 @@
             return item;
         }
 
-        // リストビューのヘッダー行作成
+        // リストビューのヘッダー行作成 - 更新版
         function createListHeader() {
             const header = document.createElement('div');
             header.className = 'file-list-header';
-            header.innerHTML = `
-                <div>名前</div>
-                <div class="owner-col">所有者</div>
-                <div class="date-col">更新日</div>
-                <div class="size-col">サイズ</div>
-                <div></div>
-            `;
+            
+            // 全選択チェックボックス
+            const checkboxCell = document.createElement('div');
+            checkboxCell.appendChild(listSelectAllCheckbox);
+            
+            // 各ヘッダーセル
+            const nameCell = document.createElement('div');
+            nameCell.textContent = '名前';
+            
+            const ownerCell = document.createElement('div');
+            ownerCell.className = 'owner-col';
+            ownerCell.textContent = '所有者';
+            
+            const dateCell = document.createElement('div');
+            dateCell.className = 'date-col';
+            dateCell.textContent = '更新日';
+            
+            const sizeCell = document.createElement('div');
+            sizeCell.className = 'size-col';
+            sizeCell.textContent = 'サイズ';
+            
+            const actionsCell = document.createElement('div');
+            actionsCell.textContent = '';
+            
+            // 各ヘッダーセルを行に追加
+            header.appendChild(checkboxCell);
+            header.appendChild(nameCell);
+            header.appendChild(ownerCell);
+            header.appendChild(dateCell);
+            header.appendChild(sizeCell);
+            header.appendChild(actionsCell);
+            
             return header;
         }
-
+        
         // ファイルプレビュー表示
         function showFilePreview(file) {
             // 現在のファイルを保存
@@ -2970,205 +3431,6 @@
             }
         }
 
-        // コンテキストメニュー（右クリックメニュー）表示
-        function showContextMenu(x, y, file) {
-            // メニュー内容のカスタマイズ
-            contextMenu.innerHTML = '';
-            
-            if (currentView === 'trashed') {
-                // ゴミ箱内のファイル用メニュー
-                contextMenu.innerHTML = `
-                    <div class="action-menu-item" data-action="restore">
-                        <i class="fas fa-trash-restore"></i> 復元する
-                    </div>
-                    <div class="action-menu-item" data-action="delete-permanent">
-                        <i class="fas fa-trash-alt"></i> 完全に削除
-                    </div>
-                `;
-            } else {
-                // 通常のファイル用メニュー
-                if (file.isFolder) {
-                    contextMenu.innerHTML += `
-                        <div class="action-menu-item" data-action="open">
-                            <i class="fas fa-folder-open"></i> 開く
-                        </div>
-                    `;
-                } else {
-                    contextMenu.innerHTML += `
-                        <div class="action-menu-item" data-action="open">
-                            <i class="fas fa-external-link-alt"></i> 開く
-                        </div>
-                        <div class="action-menu-item" data-action="download">
-                            <i class="fas fa-download"></i> ダウンロード
-                        </div>
-                    `;
-                    
-                    // 画像ファイルの場合は活字化エディタで開くオプションを追加
-                    if (file.fileType === 'image') {
-                        contextMenu.innerHTML += `
-                            <div class="action-menu-item" data-action="open-editor">
-                                <i class="fas fa-edit"></i> 活字化エディタで開く
-                            </div>
-                        `;
-                    }
-                }
-                
-                // 共通メニュー項目（すべてのユーザーが編集可能）
-                contextMenu.innerHTML += `
-                    <div class="action-menu-item" data-action="rename">
-                        <i class="fas fa-edit"></i> 名前変更
-                    </div>
-                    <div class="action-menu-item" data-action="share">
-                        <i class="fas fa-share-alt"></i> 共有設定
-                    </div>
-                    <div class="action-menu-item" data-action="move">
-                        <i class="fas fa-folder-minus"></i> 移動
-                    </div>
-                `;
-                
-                // 削除は所有者のみ
-                if (file.userId === currentUser.uid) {
-                    contextMenu.innerHTML += `
-                        <div class="action-menu-item" data-action="delete">
-                            <i class="fas fa-trash"></i> 削除
-                        </div>
-                    `;
-                }
-            }
-            
-            // イベントリスナー設定
-            const actionItems = contextMenu.querySelectorAll('.action-menu-item');
-            actionItems.forEach(item => {
-                item.addEventListener('click', handleContextMenuAction);
-            });
-            
-            // メニュー位置調整
-            const menuWidth = 180;
-            const menuHeight = contextMenu.scrollHeight;
-            const windowWidth = window.innerWidth;
-            const windowHeight = window.innerHeight;
-            
-            // 画面右端を超える場合
-            if (x + menuWidth > windowWidth) {
-                x = windowWidth - menuWidth - 10;
-            }
-            
-            // 画面下端を超える場合
-            if (y + menuHeight > windowHeight) {
-                y = windowHeight - menuHeight - 10;
-            }
-            
-            // メニュー表示
-            contextMenu.style.top = `${y}px`;
-            contextMenu.style.left = `${x}px`;
-            contextMenu.classList.add('show');
-            
-            // ドキュメントのクリックイベントで非表示に
-            document.addEventListener('click', hideContextMenu);
-        }
-
-        // コンテキストメニュー非表示
-        function hideContextMenu() {
-            contextMenu.classList.remove('show');
-            document.removeEventListener('click', hideContextMenu);
-        }
-
-        // コンテキストメニューアクションハンドラ
-        function handleContextMenuAction(e) {
-            const action = e.currentTarget.getAttribute('data-action');
-            
-            if (!activeFile) return;
-            
-            switch (action) {
-                case 'open':
-                    if (activeFile.isFolder) {
-                        changeFolder(activeFile.id);
-                    } else {
-                        openFile(activeFile);
-                    }
-                    break;
-                case 'download':
-                    downloadFile(activeFile);
-                    break;
-                case 'open-editor':
-                    openInEditor(activeFile);
-                    break;
-                case 'rename':
-                    showRenameModal(activeFile);
-                    break;
-                case 'share':
-                    showShareModal(activeFile);
-                    break;
-                case 'move':
-                    showMoveModal(activeFile);
-                    break;
-                case 'delete':
-                    showDeleteModal(activeFile);
-                    break;
-                case 'restore':
-                    restoreFromTrash(activeFile);
-                    break;
-                case 'delete-permanent':
-                    showPermanentDeleteModal(activeFile);
-                    break;
-            }
-            
-            hideContextMenu();
-        }
-
-        // フォルダ変更
-        async function changeFolder(folderId) {
-            try {
-                // 前のフォルダを履歴に追加
-                if (folderId !== currentFolder) {
-                    if (currentFolder !== 'root') {
-                        // 同じフォルダが連続で追加されないようにチェック
-                        if (folderHistory.length === 0 || folderHistory[folderHistory.length - 1] !== currentFolder) {
-                            folderHistory.push(currentFolder);
-                        }
-                    }
-                }
-                
-                // フォルダ変更
-                currentFolder = folderId;
-                
-                // サイドバーのアクティブ項目更新
-                document.querySelectorAll('#folder-list .sidebar-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                
-                const activeItem = document.querySelector(`#folder-list [data-folder="${folderId}"]`);
-                if (activeItem) {
-                    activeItem.classList.add('active');
-                }
-                
-                // ファイル一覧再読み込み
-                await loadFiles();
-            } catch (error) {
-                console.error("フォルダ変更エラー:", error);
-                showToast('フォルダを開けませんでした', 'error');
-            }
-        }
-
-        // ファイルを開く
-        function openFile(file) {
-            try {
-                if (file.fileType === 'image') {
-                    // 画像プレビュー表示（インラインプレビュー）
-                    showFilePreview(file);
-                } else if (file.fileType === 'pdf') {
-                    // PDFプレビュー表示（インラインプレビュー）
-                    showFilePreview(file);
-                } else {
-                    // その他のファイルはダウンロード
-                    downloadFile(file);
-                }
-            } catch (error) {
-                console.error("ファイルを開くエラー:", error);
-                showToast('ファイルを開けませんでした', 'error');
-            }
-        }
-
         // 画像プレビューモーダル表示
         function showImagePreviewModal(file) {
             if (!file || !file.url) {
@@ -3226,6 +3488,59 @@
                 showToast('ダウンロードできませんでした', 'error');
             }
         }
+
+        // フォルダ変更
+        async function changeFolder(folderId) {
+            try {
+                // 前のフォルダを履歴に追加
+                if (folderId !== currentFolder) {
+                    if (currentFolder !== 'root') {
+                        // 同じフォルダが連続で追加されないようにチェック
+                        if (folderHistory.length === 0 || folderHistory[folderHistory.length - 1] !== currentFolder) {
+                            folderHistory.push(currentFolder);
+                        }
+                    }
+                }
+                
+                // フォルダ変更
+                currentFolder = folderId;
+                
+                // サイドバーのアクティブ項目更新
+                document.querySelectorAll('#folder-list .sidebar-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                const activeItem = document.querySelector(`#folder-list [data-folder="${folderId}"]`);
+                if (activeItem) {
+                    activeItem.classList.add('active');
+                }
+                
+                // ファイル一覧再読み込み
+                await loadFiles();
+            } catch (error) {
+                console.error("フォルダ変更エラー:", error);
+                showToast('フォルダを開けませんでした', 'error');
+            }
+        }
+
+        // ファイルを開く
+        function openFile(file) {
+    try {
+        if (file.fileType === 'image') {
+            // 画像プレビュー表示（インラインプレビュー）
+            showFilePreview(file);
+        } else if (file.fileType === 'pdf') {
+            // PDFプレビュー表示（インラインプレビュー）
+            showFilePreview(file);
+        } else {
+            // その他のファイルはダウンロード
+            downloadFile(file);
+        }
+    } catch (error) {
+        console.error("ファイルを開くエラー:", error);
+        showToast('ファイルを開けませんでした', 'error');
+    }
+}
 
         // 名前変更モーダル表示
         function showRenameModal(file) {
@@ -3476,24 +3791,216 @@
             permanentDeleteModal.classList.add('show');
         }
 
-        // ゴミ箱から復元
-        async function restoreFromTrash(file) {
-            try {
-                const docRef = file.isFolder
-                    ? db.collection('folders').doc(file.id)
-                    : db.collection('files').doc(file.id);
-                
-                await docRef.update({
-                    trashed: false,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                showToast(`「${file.name}」を復元しました`, 'success');
-                loadFiles();
-            } catch (error) {
-                console.error("復元エラー:", error);
-                showToast('復元できませんでした', 'error');
+        // 一括削除確認ダイアログ表示
+        function showBatchDeleteModal() {
+            if (selectedItems.length === 0) {
+                showToast('選択されたアイテムがありません', 'warning');
+                return;
             }
+            
+            // 件数表示
+            const countStr = `${selectedItems.length}個の項目`;
+            
+            if (currentView === 'trashed') {
+                // ゴミ箱からの完全削除
+                batchPermanentDeleteMessage.textContent = `${countStr}を完全に削除しますか？この操作は取り消せません。`;
+                batchPermanentDeleteModal.classList.add('show');
+            } else {
+                // ゴミ箱への移動
+                batchDeleteMessage.textContent = `${countStr}をゴミ箱に移動しますか？`;
+                batchDeleteModal.classList.add('show');
+            }
+        }
+
+        // 一括移動ダイアログ表示
+        function showBatchMoveModal() {
+            if (selectedItems.length === 0) {
+                showToast('選択されたアイテムがありません', 'warning');
+                return;
+            }
+            
+            // 件数表示
+            batchMoveInfo.textContent = `${selectedItems.length}個の項目を一括で移動します。`;
+            
+            // フォルダを移動対象から除外
+            const folderIds = [];
+            selectedItems.forEach(itemId => {
+                const item = document.querySelector(`.file-card[data-id="${itemId}"], .file-list-item[data-id="${itemId}"]`);
+                if (item && item.getAttribute('data-type') === 'folder') {
+                    folderIds.push(itemId);
+                }
+            });
+            
+            // 選択したフォルダは移動先から除外
+            Array.from(batchMoveDestination.options).forEach(option => {
+                option.disabled = folderIds.includes(option.value);
+            });
+            
+            // モーダル表示
+            batchMoveModal.classList.add('show');
+        }
+
+        // 一括共有設定ダイアログ表示
+        function showBatchShareModal() {
+            if (selectedItems.length === 0) {
+                showToast('選択されたアイテムがありません', 'warning');
+                return;
+            }
+            
+            // 件数表示
+            batchShareInfo.textContent = `${selectedItems.length}個の項目を一括で共有設定します。`;
+            
+            // 初期設定をリセット
+            batchShareVisibility.value = 'personal';
+            batchShareUsers.style.display = 'none';
+            batchSharedUserList.innerHTML = '';
+            
+            // モーダル表示
+            batchShareModal.classList.add('show');
+        }
+
+        // コンテキストメニュー（右クリックメニュー）表示 - 更新版
+        function showContextMenu(x, y, file) {
+            // メニュー内容のカスタマイズ
+            contextMenu.innerHTML = '';
+            
+            if (currentView === 'trashed') {
+                // ゴミ箱内のファイル用メニュー
+                contextMenu.innerHTML = `
+                    <div class="action-menu-item" data-action="restore">
+                        <i class="fas fa-trash-restore"></i> 復元する
+                    </div>
+                    <div class="action-menu-item" data-action="delete-permanent">
+                        <i class="fas fa-trash-alt"></i> 完全に削除
+                    </div>
+                `;
+            } else {
+                // 通常のファイル用メニュー
+                if (file.isFolder) {
+                    contextMenu.innerHTML += `
+                        <div class="action-menu-item" data-action="open">
+                            <i class="fas fa-folder-open"></i> 開く
+                        </div>
+                    `;
+                } else {
+                    contextMenu.innerHTML += `
+                        <div class="action-menu-item" data-action="open">
+                            <i class="fas fa-external-link-alt"></i> 開く
+                        </div>
+                        <div class="action-menu-item" data-action="download">
+                            <i class="fas fa-download"></i> ダウンロード
+                        </div>
+                    `;
+                    
+                    // 画像ファイルの場合は活字化エディタで開くオプションを追加
+                    if (file.fileType === 'image') {
+                        contextMenu.innerHTML += `
+                            <div class="action-menu-item" data-action="open-editor">
+                                <i class="fas fa-edit"></i> 活字化エディタで開く
+                            </div>
+                        `;
+                    }
+                }
+                
+                // 共通メニュー項目
+                contextMenu.innerHTML += `
+                    <div class="action-menu-item" data-action="rename">
+                        <i class="fas fa-edit"></i> 名前変更
+                    </div>
+                    <div class="action-menu-item" data-action="share">
+                        <i class="fas fa-share-alt"></i> 共有設定
+                    </div>
+                    <div class="action-menu-item" data-action="move">
+                        <i class="fas fa-folder-minus"></i> 移動
+                    </div>
+                `;
+                
+                // 削除メニュー（全てのユーザーが削除可能）
+                contextMenu.innerHTML += `
+                    <div class="action-menu-item" data-action="delete">
+                        <i class="fas fa-trash"></i> 削除
+                    </div>
+                `;
+            }
+            
+            // イベントリスナー設定
+            const actionItems = contextMenu.querySelectorAll('.action-menu-item');
+            actionItems.forEach(item => {
+                item.addEventListener('click', handleContextMenuAction);
+            });
+            
+            // メニュー位置調整
+            const menuWidth = 180;
+            const menuHeight = contextMenu.scrollHeight;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // 画面右端を超える場合
+            if (x + menuWidth > windowWidth) {
+                x = windowWidth - menuWidth - 10;
+            }
+            
+            // 画面下端を超える場合
+            if (y + menuHeight > windowHeight) {
+                y = windowHeight - menuHeight - 10;
+            }
+            
+            // メニュー表示
+            contextMenu.style.top = `${y}px`;
+            contextMenu.style.left = `${x}px`;
+            contextMenu.classList.add('show');
+            
+            // ドキュメントのクリックイベントで非表示に
+            document.addEventListener('click', hideContextMenu);
+        }
+
+        // コンテキストメニュー非表示
+        function hideContextMenu() {
+            contextMenu.classList.remove('show');
+            document.removeEventListener('click', hideContextMenu);
+        }
+
+        // コンテキストメニューアクションハンドラ - 更新版
+        function handleContextMenuAction(e) {
+            const action = e.currentTarget.getAttribute('data-action');
+            
+            if (!activeFile) return;
+            
+            switch (action) {
+                case 'open':
+                    if (activeFile.isFolder) {
+                        changeFolder(activeFile.id);
+                    } else {
+                        openFile(activeFile);
+                    }
+                    break;
+                case 'download':
+                    downloadFile(activeFile);
+                    break;
+                case 'open-editor':
+                    openInEditor(activeFile);
+                    break;
+                case 'rename':
+                    showRenameModal(activeFile);
+                    break;
+                case 'share':
+                    showShareModal(activeFile);
+                    break;
+                case 'move':
+                    showMoveModal(activeFile);
+                    break;
+                case 'delete':
+                    showDeleteModal(activeFile);
+                    break;
+                case 'restore':
+                    restoreFromTrash(activeFile);
+                    break;
+                case 'delete-permanent':
+                    showPermanentDeleteModal(activeFile);
+                    break;
+            }
+            
+            hideContextMenu();
         }
 
         // ファイル名変更処理
@@ -3589,38 +4096,175 @@
 
         // ファイル移動処理
         async function moveFile() {
-            const fileId = moveFileId.value;
-            const fileType = moveFileType.value;
-            const destination = moveDestination.value;
+    const fileId = moveFileId.value;
+    const fileType = moveFileType.value;
+    const destination = moveDestination.value;
+    
+    try {
+        // 移動先フォルダの共有設定を取得
+        let destVisibility = 'personal'; // デフォルト
+        let destSharedWith = [];
+        
+        if (destination !== 'root') {
+            // 移動先がルートフォルダでない場合はフォルダの共有設定を取得
+            const destFolderDoc = await db.collection('folders').doc(destination).get();
             
+            if (destFolderDoc.exists) {
+                const destFolderData = destFolderDoc.data();
+                destVisibility = destFolderData.visibility || 'personal';
+                destSharedWith = destFolderData.sharedWith || [];
+            }
+        }
+        
+        const collection = fileType === 'folder' ? 'folders' : 'files';
+        const docRef = db.collection(collection).doc(fileId);
+        
+        // 移動先フォルダの共有設定を適用
+        await docRef.update({
+            parentFolder: destination,
+            visibility: destVisibility,
+            sharedWith: destSharedWith,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast('ファイルを移動しました', 'success');
+        
+        // モーダルを閉じる
+        closeModal(moveModal);
+        
+        // 現在プレビュー中のファイルの場合はプレビューを非表示にして一覧に戻る
+        if (currentPreviewFile && currentPreviewFile.id === fileId) {
+            hideFilePreview();
+        }
+        
+        // ファイル一覧再読み込み
+        loadFiles();
+    } catch (error) {
+        console.error("ファイル移動エラー:", error);
+        showToast('ファイルを移動できませんでした', 'error');
+    }
+}
+
+        // 一括移動処理
+        async function batchMove(destinationFolder) {
+    try {
+        if (selectedItems.length === 0) {
+            showToast('選択されたアイテムがありません', 'warning');
+            return;
+        }
+        
+        // 移動先フォルダの共有設定を取得
+        let destVisibility = 'personal'; // デフォルト
+        let destSharedWith = [];
+        
+        if (destinationFolder !== 'root') {
+            const destFolderDoc = await db.collection('folders').doc(destinationFolder).get();
+            
+            if (destFolderDoc.exists) {
+                const destFolderData = destFolderDoc.data();
+                destVisibility = destFolderData.visibility || 'personal';
+                destSharedWith = destFolderData.sharedWith || [];
+            }
+        }
+        
+        // すべての選択アイテムを移動
+        const movePromises = [];
+        
+        for (const itemId of selectedItems) {
+            // 選択されたアイテムが何かを判断
+            const fileItem = document.querySelector(`.file-card[data-id="${itemId}"], .file-list-item[data-id="${itemId}"]`);
+            if (!fileItem) continue;
+            
+            const itemType = fileItem.getAttribute('data-type');
+            const collection = itemType === 'folder' ? 'folders' : 'files';
+            
+            // 自分自身を自分の中に移動できないように
+            if (itemType === 'folder' && itemId === destinationFolder) {
+                continue;
+            }
+            
+            // 移動処理 - 共有設定も更新
+            const docRef = db.collection(collection).doc(itemId);
+            movePromises.push(docRef.update({
+                parentFolder: destinationFolder,
+                visibility: destVisibility,
+                sharedWith: destSharedWith,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            }));
+        }
+        
+        // すべての移動処理を実行
+        await Promise.all(movePromises);
+        
+        showToast(`${movePromises.length}個のアイテムを移動しました`, 'success');
+        
+        // 選択をクリア
+        clearSelection();
+        
+        // 現在プレビュー中のファイルの場合はプレビューを非表示にして一覧に戻る
+        if (currentPreviewFile && selectedItems.includes(currentPreviewFile.id)) {
+            hideFilePreview();
+        }
+        
+        // ファイル一覧再読み込み
+        loadFiles();
+    } catch (error) {
+        console.error("一括移動エラー:", error);
+        showToast('一部のアイテムを移動できませんでした', 'error');
+    }
+}
+        // 一括共有設定処理
+        async function batchShare(visibility, sharedWith = []) {
             try {
-                const collection = fileType === 'folder' ? 'folders' : 'files';
-                const docRef = db.collection(collection).doc(fileId);
+                if (selectedItems.length === 0) {
+                    showToast('選択されたアイテムがありません', 'warning');
+                    return;
+                }
                 
-                await docRef.update({
-                    parentFolder: destination,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                // すべての選択アイテムを共有設定変更
+                const sharePromises = [];
                 
-                showToast('ファイルを移動しました', 'success');
+                for (const itemId of selectedItems) {
+                    // 選択されたアイテムが何かを判断
+                    const fileItem = document.querySelector(`.file-card[data-id="${itemId}"], .file-list-item[data-id="${itemId}"]`);
+                    if (!fileItem) continue;
+                    
+                    const itemType = fileItem.getAttribute('data-type');
+                    const collection = itemType === 'folder' ? 'folders' : 'files';
+                    
+                    // 共有設定更新
+                    const docRef = db.collection(collection).doc(itemId);
+                    sharePromises.push(docRef.update({
+                        visibility: visibility,
+                        sharedWith: visibility === 'shared' ? sharedWith : [],
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }));
+                }
                 
-                // モーダルを閉じる
-                closeModal(moveModal);
+                // すべての共有設定処理を実行
+                await Promise.all(sharePromises);
                 
-                // 現在プレビュー中のファイルの場合はプレビューを非表示にして一覧に戻る
-                if (currentPreviewFile && currentPreviewFile.id === fileId) {
-                    hideFilePreview();
+                showToast(`${sharePromises.length}個のアイテムの共有設定を更新しました`, 'success');
+                
+                // 選択をクリア
+                clearSelection();
+                
+                // 現在プレビュー中のファイルの場合はプレビューを更新
+                if (currentPreviewFile && selectedItems.includes(currentPreviewFile.id)) {
+                    currentPreviewFile.visibility = visibility;
+                    currentPreviewFile.sharedWith = visibility === 'shared' ? sharedWith : [];
+                    showFilePreview(currentPreviewFile);
                 }
                 
                 // ファイル一覧再読み込み
                 loadFiles();
             } catch (error) {
-                console.error("ファイル移動エラー:", error);
-                showToast('ファイルを移動できませんでした', 'error');
+                console.error("一括共有設定エラー:", error);
+                showToast('一部のアイテムの共有設定を更新できませんでした', 'error');
             }
         }
 
-        // ゴミ箱へ移動（論理削除）
+        // ゴミ箱へ移動（論理削除）- フォルダも削除可能に更新
         async function moveToTrash() {
             const fileId = deleteFileId.value;
             const fileType = deleteFileType.value;
@@ -3653,7 +4297,7 @@
             }
         }
 
-        // 完全削除（物理削除）
+        // 完全削除（物理削除）- フォルダも削除可能に更新
         async function permanentDelete() {
             const fileId = permanentDeleteFileId.value;
             const fileType = permanentDeleteFileType.value;
@@ -3698,6 +4342,131 @@
             } catch (error) {
                 console.error("完全削除エラー:", error);
                 showToast('削除できませんでした', 'error');
+            }
+        }
+
+        // 一括削除処理
+        async function batchDelete() {
+            try {
+                if (selectedItems.length === 0) {
+                    showToast('選択されたアイテムがありません', 'warning');
+                    return;
+                }
+                
+                // ゴミ箱への移動か完全削除かを判断
+                const isPermanentDelete = currentView === 'trashed';
+                const updateData = isPermanentDelete ? null : {
+                    trashed: true,
+                    trashedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // すべての選択アイテムを取得
+                let deletePromises = [];
+                
+                // ファイルとフォルダを区別して処理
+                for (const itemId of selectedItems) {
+                    // 選択されたアイテムが何かを判断
+                    const fileItem = document.querySelector(`.file-card[data-id="${itemId}"], .file-list-item[data-id="${itemId}"]`);
+                    if (!fileItem) continue;
+                    
+                    const itemType = fileItem.getAttribute('data-type');
+                    const collection = itemType === 'folder' ? 'folders' : 'files';
+                    const docRef = db.collection(collection).doc(itemId);
+                    
+                    if (isPermanentDelete) {
+                        // 完全削除の場合
+                        if (itemType === 'file') {
+                            // ファイルの場合はストレージからも削除
+                            try {
+                                const fileDoc = await docRef.get();
+                                const file = fileDoc.data();
+                                
+                                if (file && file.storagePath) {
+                                    // ストレージからファイル削除を試みる
+                                    deletePromises.push(storage.ref(file.storagePath).delete().catch(err => {
+                                        console.warn("ストレージ削除エラー:", err);
+                                        // エラーがあっても処理を続行
+                                    }));
+                                }
+                            } catch (error) {
+                                console.warn("ファイル情報取得エラー:", error);
+                            }
+                        }
+                        
+                        // Firestoreからドキュメント削除
+                        deletePromises.push(docRef.delete());
+                        
+                    } else {
+                        // ゴミ箱に移動する場合
+                        deletePromises.push(docRef.update(updateData));
+                    }
+                }
+                
+                // すべての削除処理を実行
+                await Promise.all(deletePromises);
+                
+                const actionText = isPermanentDelete ? '完全に削除' : 'ゴミ箱に移動';
+                showToast(`${selectedItems.length}個のアイテムを${actionText}しました`, 'success');
+                
+                // 選択をクリア
+                clearSelection();
+                
+                // 現在プレビュー中のファイルの場合はプレビューを非表示にして一覧に戻る
+                if (currentPreviewFile && selectedItems.includes(currentPreviewFile.id)) {
+                    hideFilePreview();
+                }
+                
+                // ファイル一覧再読み込み
+                loadFiles();
+                
+                // ストレージ使用量更新
+                if (isPermanentDelete) {
+                    fetchStorageUsage();
+                }
+            } catch (error) {
+                console.error("一括削除エラー:", error);
+                showToast('一部のアイテムを処理できませんでした', 'error');
+            }
+        }
+
+        // 全選択・解除の処理
+        function toggleSelectAll(selectAll = null) {
+            // すべてのアイテムを取得
+            const allItems = document.querySelectorAll('.file-card, .file-list-item:not(.file-list-header)');
+            
+            if (selectAll === null) {
+                // トグル動作（何か選択されていなければすべて選択、すべて選択されていれば解除）
+                selectAll = !(selectedItems.length > 0 && selectedItems.length === allItems.length);
+            }
+            
+            // すべてのアイテムを選択/解除
+            allItems.forEach(item => {
+                toggleItemSelection(item, selectAll);
+            });
+            
+            // チェックボックス状態更新
+            updateCheckboxState(selectAllCheckbox, selectAll);
+            updateCheckboxState(listSelectAllCheckbox, selectAll);
+        }
+
+        // ゴミ箱から復元
+        async function restoreFromTrash(file) {
+            try {
+                const docRef = file.isFolder
+                    ? db.collection('folders').doc(file.id)
+                    : db.collection('files').doc(file.id);
+                
+                await docRef.update({
+                    trashed: false,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showToast(`「${file.name}」を復元しました`, 'success');
+                loadFiles();
+            } catch (error) {
+                console.error("復元エラー:", error);
+                showToast('復元できませんでした', 'error');
             }
         }
 
@@ -4098,6 +4867,44 @@
             });
         }
 
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // ユーザーがログインしている場合
+                console.log("ログイン中:", user.uid);
+                currentUser = user;
+                
+                // 初期設定を実行
+                setupInitialUser(user);
+                
+                // ユーザー情報を取得して表示
+                fetchUserData(user.uid);
+                
+                // 各種データ読み込み - エラーを個別に処理
+                loadFiles().catch(err => {
+                    console.error("ファイル読み込みエラー:", err);
+                    showToast('ファイルの読み込みに失敗しました', 'error');
+                    hideLoading();
+                    showEmptyState();
+                });
+                
+                loadFolders().catch(err => {
+                    console.error("フォルダ読み込みエラー:", err);
+                });
+                
+                loadUsers().catch(err => {
+                    console.error("ユーザー読み込みエラー:", err);
+                });
+                
+                fetchStorageUsage().catch(err => {
+                    console.error("使用量取得エラー:", err);
+                });
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+
         // イベントリスナー登録
         document.addEventListener('DOMContentLoaded', () => {
             // テーマ初期化
@@ -4191,6 +4998,23 @@
                 }
             });
             
+            // 選択関連のイベントリスナー
+            // 全選択チェックボックス
+            selectAllCheckbox.addEventListener('click', () => toggleSelectAll());
+            listSelectAllCheckbox.addEventListener('click', () => toggleSelectAll());
+            
+            // 選択解除ボタン
+            deselectAllBtn.addEventListener('click', clearSelection);
+            
+            // 一括移動ボタン
+            moveSelectedBtn.addEventListener('click', showBatchMoveModal);
+            
+            // 一括共有ボタン
+            shareSelectedBtn.addEventListener('click', showBatchShareModal);
+            
+            // 一括削除ボタン
+            deleteSelectedBtn.addEventListener('click', showBatchDeleteModal);
+            
             // ビュー切替ボタン
             viewGridBtn.addEventListener('click', () => toggleViewMode('grid'));
             viewListBtn.addEventListener('click', () => toggleViewMode('list'));
@@ -4239,6 +5063,14 @@
             
             shareVisibility.addEventListener('change', updateShareModalUI);
             
+            batchShareVisibility.addEventListener('change', () => {
+                if (batchShareVisibility.value === 'shared') {
+                    batchShareUsers.style.display = 'block';
+                } else {
+                    batchShareUsers.style.display = 'none';
+                }
+            });
+            
             // ユーザー検索
             sharedUserSearch.addEventListener('input', () => {
                 // 将来的に実装
@@ -4249,6 +5081,10 @@
             });
             
             shareSettingsUserSearch.addEventListener('input', () => {
+                // 将来的に実装
+            });
+            
+            batchSharedUserSearch.addEventListener('input', () => {
                 // 将来的に実装
             });
             
@@ -4267,6 +5103,10 @@
             
             shareSettingsAddUserBtn.addEventListener('click', () => {
                 showUserSelectModal(shareSettingsUserList);
+            });
+            
+            batchShareAddUserBtn.addEventListener('click', () => {
+                showUserSelectModal(batchSharedUserList);
             });
             
             // コピーリンクボタン
@@ -4302,14 +5142,52 @@
             // 共有設定更新実行
             shareSubmit.addEventListener('click', updateShareSettings);
             
+            // 一括共有設定実行
+            batchShareSubmit.addEventListener('click', () => {
+                const visibility = batchShareVisibility.value;
+                let sharedWith = [];
+                
+                if (visibility === 'shared') {
+                    // 選択されたユーザーIDを取得
+                    const userItems = batchSharedUserList.querySelectorAll('.shared-user-item');
+                    userItems.forEach(item => {
+                        if (item.dataset.uid) {
+                            sharedWith.push(item.dataset.uid);
+                        }
+                    });
+                }
+                
+                batchShare(visibility, sharedWith);
+                closeModal(batchShareModal);
+            });
+            
             // ファイル移動実行
             moveSubmit.addEventListener('click', moveFile);
+            
+            // 一括移動実行
+            batchMoveSubmit.addEventListener('click', () => {
+                const destination = batchMoveDestination.value;
+                batchMove(destination);
+                closeModal(batchMoveModal);
+            });
             
             // 削除実行
             deleteSubmit.addEventListener('click', moveToTrash);
             
+            // 一括削除実行
+            batchDeleteSubmit.addEventListener('click', () => {
+                batchDelete();
+                closeModal(batchDeleteModal);
+            });
+            
             // 完全削除実行
             permanentDeleteSubmit.addEventListener('click', permanentDelete);
+            
+            // 一括完全削除実行
+            batchPermanentDeleteSubmit.addEventListener('click', () => {
+                batchDelete();
+                closeModal(batchPermanentDeleteModal);
+            });
             
             // モーダルを閉じるボタン
             document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
