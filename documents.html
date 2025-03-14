@@ -536,10 +536,11 @@
         }
         
         .file-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 1rem;
-        }
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    padding: 0.5rem;
+}
         
         .file-list {
             display: flex;
@@ -573,178 +574,313 @@
             background-color: rgba(255, 255, 255, 0.02);
         }
         
-        .file-card {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 1rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-            transition: all var(--transition-normal);
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-            max-width: 200px;
-            width: 100%;
-            margin: 0 auto;
-            height: auto;
-        }
+       /* モダンなファイルカードデザイン */
+.file-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.5rem;
+    padding: 0.5rem;
+}
+
+.file-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    overflow: hidden;
+    height: 100%;
+    max-width: 100%;
+    margin: 0;
+    border: none;
+}
+
+[data-theme="dark"] .file-card {
+    background-color: var(--gray-800);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.file-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+.file-card.selected {
+    box-shadow: 0 0 0 2px var(--primary), 0 8px 20px rgba(0, 0, 0, 0.1);
+    background-color: var(--primary-light);
+}
+
+[data-theme="dark"] .file-card.selected {
+    background-color: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 0 0 2px var(--primary), 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ファイルイメージコンテナ */
+.file-card-media {
+    position: relative;
+    width: 100%;
+    height: 130px;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+    background-color: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+[data-theme="dark"] .file-card-media {
+    background-color: var(--gray-700);
+}
+
+/* イメージファイルの場合 */
+.file-image {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    margin-bottom: 0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.file-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* アイコン表示 */
+.file-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 1.25rem;
+    margin: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.folder-icon {
+    background: linear-gradient(135deg, var(--warning-light) 0%, #ffedc9 100%);
+    color: var(--warning);
+}
+
+.pdf-icon {
+    background: linear-gradient(135deg, var(--danger-light) 0%, #ffe5e5 100%);
+    color: var(--danger);
+}
+
+.doc-icon {
+    background: linear-gradient(135deg, var(--info-light) 0%, #e0f2ff 100%);
+    color: var(--info);
+}
+
+.image-icon {
+    background: linear-gradient(135deg, var(--success-light) 0%, #d1fae5 100%);
+    color: var(--success);
+}
+
+/* カードコンテンツ部分 */
+.file-card-content {
+    display: flex;
+    flex-direction: column;
+    padding: 0.75rem;
+    flex: 1;
+}
+
+.file-card-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    margin-bottom: 0.25rem;
+    min-height: auto;
+    max-height: 2.8em;
+}
+
+[data-theme="dark"] .file-card-name {
+    color: var(--gray-100);
+}
+
+.file-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+.file-card-date {
+    margin: 0;
+}
+
+.file-type-badge {
+    padding: 0.125rem 0.375rem;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.file-type-image {
+    background-color: var(--success-light);
+    color: var(--success);
+}
+
+.file-type-pdf {
+    background-color: var(--danger-light);
+    color: var(--danger);
+}
+
+.file-type-document {
+    background-color: var(--info-light);
+    color: var(--info);
+}
+
+.file-type-folder {
+    background-color: var(--warning-light);
+    color: var(--warning);
+}
+
+/* アクションボタン */
+.file-card-actions {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: none;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 0.25rem;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+[data-theme="dark"] .file-card-actions {
+    background-color: rgba(30, 41, 59, 0.8);
+}
+
+.file-card:hover .file-card-actions {
+    display: flex;
+}
+
+.file-card-action {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    margin-left: 0.125rem;
+    cursor: pointer;
+    color: var(--gray-700);
+    transition: all 0.2s ease;
+}
+
+.file-card-action:hover {
+    background-color: var(--primary);
+    color: white;
+}
+
+[data-theme="dark"] .file-card-action {
+    color: var(--gray-300);
+}
+
+/* チェックボックス */
+.file-checkbox {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 20px;
+    border: 2px solid white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    z-index: 5;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.2s ease;
+}
+
+.file-card:hover .file-checkbox {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.file-checkbox.checked {
+    opacity: 1;
+    transform: scale(1);
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* 共有インジケーター */
+.share-indicator {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 0.125rem 0.375rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.7rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+    z-index: 4;
+}
+
+[data-theme="dark"] .share-indicator {
+    background-color: rgba(30, 41, 59, 0.8);
+}
+
+.file-card:hover .share-indicator {
+    display: none;
+}
+
+.share-indicator-icon {
+    margin-right: 0.25rem;
+    font-size: 0.75rem;
+}
+
+/* 所有者表示 */
+.file-owner {
+    display: flex;
+    align-items: center;
+    margin-top: 0.25rem;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.file-owner i {
+    font-size: 0.7rem;
+    margin-right: 0.25rem;
+}
+
         
-        .file-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .file-card.selected {
-            border-color: var(--primary);
-            background-color: var(--primary-light);
-        }
-        
-        [data-theme="dark"] .file-card.selected {
-            background-color: rgba(99, 102, 241, 0.2);
-        }
-        
-        .file-icon {
-            width: 3rem;
-            height: 3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 0.5rem;
-            border-radius: var(--radius);
-            background-color: var(--primary-light);
-            color: var(--primary);
-            font-size: 1.5rem;
-        }
-        
-        .file-image {
-            width: 100%;
-            height: 140px !important;
-            max-height: 140px !important;
-            margin-bottom: 0.5rem;
-            border-radius: var(--radius);
-            background-position: center;
-            background-size: cover;
-            background-repeat: no-repeat;
-            overflow: hidden;
-            position: relative;
-        }
-        
-        .file-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-        }
-        
-        .folder-icon {
-            background-color: var(--warning-light);
-            color: var(--warning);
-        }
-        
-        .pdf-icon {
-            background-color: var(--danger-light);
-            color: var(--danger);
-        }
-        
-        .doc-icon {
-            background-color: var(--info-light);
-            color: var(--info);
-        }
-        
-        .image-icon {
-            background-color: var(--success-light);
-            color: var(--success);
-        }
-        
-        .file-card-name {
-            font-size: 0.875rem;
-            font-weight: 500;
-            text-align: center;
-            width: 100%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        
-        .file-card-date {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-        
-        .file-card-actions {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-            display: none;
-        }
-        
-        .file-card:hover .file-card-actions {
-            display: flex;
-        }
-        
-        .file-card-action {
-            width: 1.75rem;
-            height: 1.75rem;
-            border-radius: 50%;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            margin-left: 0.25rem;
-            cursor: pointer;
-            box-shadow: var(--shadow-sm);
-            color: var(--text-color);
-            transition: background-color var(--transition-normal), color var(--transition-normal);
-        }
-        
-        [data-theme="dark"] .file-card-action {
-            background-color: var(--gray-700);
-        }
-        
-        .file-card-action:hover {
-            background-color: var(--primary);
-            color: white;
-        }
-        
-        /* チェックボックススタイル */
-        .file-checkbox {
-            width: 1.25rem;
-            height: 1.25rem;
-            border-radius: var(--radius-sm);
-            border: 2px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            margin-right: 0.5rem;
-            background-color: white;
-        }
-        
-        [data-theme="dark"] .file-checkbox {
-            background-color: var(--gray-800);
-        }
-        
-        .file-checkbox.checked {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-        
-        .file-list-item .file-checkbox {
-            margin-left: 0.25rem;
-        }
-        
-        .file-card .file-checkbox {
-            position: absolute;
-            top: 0.5rem;
-            left: 0.5rem;
-            z-index: 2;
-        }
         
         /* 選択操作バー */
         .selection-bar {
@@ -1024,10 +1160,27 @@
             align-items: center;
             padding: 0.5rem 0.75rem;
             border-bottom: 1px solid var(--border-color);
+            transition: background-color var(--transition-normal);
         }
         
         .shared-user-item:last-child {
             border-bottom: none;
+        }
+        
+        .shared-user-item:hover {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .shared-user-item:hover {
+            background-color: var(--gray-700);
+        }
+        
+        .shared-user-item.selected {
+            background-color: var(--primary-light);
+        }
+        
+        [data-theme="dark"] .shared-user-item.selected {
+            background-color: rgba(99, 102, 241, 0.2);
         }
         
         .shared-user-avatar {
@@ -1066,6 +1219,31 @@
         .shared-user-role {
             margin-left: auto;
             padding-left: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .shared-user-checkbox {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            background-color: white;
+        }
+        
+        [data-theme="dark"] .shared-user-checkbox {
+            background-color: var(--gray-800);
+        }
+        
+        .shared-user-checkbox.checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
         }
         
         .shared-user-search {
@@ -1079,6 +1257,7 @@
             border-radius: var(--radius);
             border: 1px solid var(--border-color);
             background-color: transparent;
+            color: var(--text-color);
         }
         
         .shared-user-search i {
@@ -1087,6 +1266,59 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
+        }
+        
+        .user-select-container {
+            position: relative;
+        }
+        
+        .selected-users-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-top: 0.5rem;
+        }
+        
+        .selected-user-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+        }
+        
+        [data-theme="dark"] .selected-user-tag {
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        .selected-user-tag i {
+            margin-left: 0.25rem;
+            cursor: pointer;
+        }
+        
+        .user-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+        
+        [data-theme="dark"] .user-select-dropdown {
+            background-color: var(--gray-800);
+        }
+        
+        .user-select-dropdown.show {
+            display: block;
         }
         
         .add-user-btn {
@@ -1404,6 +1636,32 @@
             margin-right: 0.5rem;
         }
         
+        /* 共有インジケーター */
+        .share-indicator {
+            display: inline-flex;
+            align-items: center;
+            margin-left: 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .share-indicator-icon {
+            margin-right: 0.25rem;
+        }
+        
+        .share-indicator-text {
+            font-size: 0.7rem;
+            font-weight: normal;
+        }
+        
+        .file-permissions-info {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: var(--info-light);
+            border-radius: var(--radius);
+            color: var(--info);
+            font-size: 0.875rem;
+        }
+        
         /* レスポンシブデザイン */
         @media (max-width: 1024px) {
             .file-manager-body {
@@ -1506,15 +1764,15 @@
     <!-- サイドバー -->
     <aside class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <a href="index.html" class="logo">
-                <img src="assets/katsujiRingX.png" alt="KatsujiRingX Logo">
+            <a href="mainpage.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
                 <span>KatsujiRingX</span>
             </a>
         </div>
         
         <div class="sidebar-menu">
             <p class="menu-label">メインメニュー</p>
-            <a href="dashboard.html" class="menu-item">
+            <a href="mainpage.html" class="menu-item">
                 <i class="fas fa-home"></i> ダッシュボード
             </a>
             <a href="katsujieditor.html" class="menu-item">
@@ -1641,15 +1899,6 @@
                             <li class="sidebar-item active" data-type="all">
                                 <i class="fas fa-th-large"></i> すべてのファイル
                             </li>
-                            <li class="sidebar-item" data-type="image">
-                                <i class="fas fa-image"></i> 画像
-                            </li>
-                            <li class="sidebar-item" data-type="document">
-                                <i class="fas fa-file-alt"></i> ドキュメント
-                            </li>
-                            <li class="sidebar-item" data-type="pdf">
-                                <i class="fas fa-file-pdf"></i> PDF
-                            </li>
                         </ul>
                     </div>
                     
@@ -1673,7 +1922,7 @@
                         </div>
                         <div class="storage-text">
                             <span id="storage-used">0 KB</span>
-                            <span id="storage-total">1 GB</span>
+                            <span id="storage-total">無制限</span>
                         </div>
                     </div>
                 </div>
@@ -1688,7 +1937,11 @@
                         <!-- ファイルプレビューエリア -->
                         <div id="file-preview" class="mb-3"></div>
                         <div id="file-info" class="mb-3"></div>
-                        <div id="file-actions" class="d-flex gap-2"></div>
+                        <div id="file-permissions-info" class="file-permissions-info" style="display: none;">
+                            <i class="fas fa-info-circle mr-2"></i>
+                            <span id="file-permissions-text">このファイルは共有されています。</span>
+                        </div>
+                        <div id="file-actions" class="d-flex gap-2 mt-3"></div>
                     </div>
                 
                     <div id="file-list-container">
@@ -1821,12 +2074,14 @@
                             <i class="fas fa-search"></i>
                             <input type="text" id="shared-user-search" placeholder="ユーザーを検索...">
                         </div>
+                        
+                        <div class="selected-users-display" id="upload-selected-users">
+                            <!-- 選択されたユーザータグがここに表示されます -->
+                        </div>
+                        
                         <div class="shared-user-list" id="shared-user-list">
                             <!-- ユーザーリストが表示されます -->
                         </div>
-                        <button class="add-user-btn" id="add-user-btn">
-                            <i class="fas fa-plus"></i> ユーザーを追加
-                        </button>
                     </div>
                     
                     <div id="upload-progress-container" style="display: none;">
@@ -1884,12 +2139,14 @@
                             <i class="fas fa-search"></i>
                             <input type="text" id="folder-shared-user-search" placeholder="ユーザーを検索...">
                         </div>
+                        
+                        <div class="selected-users-display" id="folder-selected-users">
+                            <!-- 選択されたユーザータグがここに表示されます -->
+                        </div>
+                        
                         <div class="shared-user-list" id="folder-shared-user-list">
                             <!-- ユーザーリストが表示されます -->
                         </div>
-                        <button class="add-user-btn" id="folder-add-user-btn">
-                            <i class="fas fa-plus"></i> ユーザーを追加
-                        </button>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -1950,12 +2207,14 @@
                             <i class="fas fa-search"></i>
                             <input type="text" id="share-settings-user-search" placeholder="ユーザーを検索...">
                         </div>
+                        
+                        <div class="selected-users-display" id="share-selected-users">
+                            <!-- 選択されたユーザータグがここに表示されます -->
+                        </div>
+                        
                         <div class="shared-user-list" id="share-settings-user-list">
                             <!-- ユーザーリストが表示されます -->
                         </div>
-                        <button class="add-user-btn" id="share-settings-add-user-btn">
-                            <i class="fas fa-plus"></i> ユーザーを追加
-                        </button>
                     </div>
                     
                     <div id="share-link-container" class="form-group" style="display: none;">
@@ -1965,6 +2224,16 @@
                             <button id="copy-link-btn" class="btn btn-outline ml-2">
                                 <i class="fas fa-copy"></i>
                             </button>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mt-3" id="share-permissions-info">
+                        <div class="file-permissions-info">
+                            <strong>共有設定について:</strong>
+                            <ul class="mt-2" style="padding-left: 1.5rem;">
+                                <li>指定共有: 選択したユーザーとファイルを共有します。共有されたユーザーは閲覧、編集、移動などの操作が可能です。</li>
+                                <li>全体共有: すべてのユーザーがこのファイルを閲覧、編集できます。</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -2002,42 +2271,19 @@
                             <i class="fas fa-search"></i>
                             <input type="text" id="batch-shared-user-search" placeholder="ユーザーを検索...">
                         </div>
+                        
+                        <div class="selected-users-display" id="batch-selected-users">
+                            <!-- 選択されたユーザータグがここに表示されます -->
+                        </div>
+                        
                         <div class="shared-user-list" id="batch-shared-user-list">
                             <!-- ユーザーリストが表示されます -->
                         </div>
-                        <button class="add-user-btn" id="batch-share-add-user-btn">
-                            <i class="fas fa-plus"></i> ユーザーを追加
-                        </button>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
                     <button id="batch-share-submit" class="btn btn-primary">適用</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- ユーザー選択モーダル -->
-        <div id="user-select-modal" class="modal-overlay">
-            <div class="modal">
-                <div class="modal-header">
-                    <h3 class="modal-title">共有するユーザーを選択</h3>
-                    <button class="modal-close" data-dismiss="modal">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="shared-user-search mb-3">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="user-select-search" placeholder="ユーザーを検索...">
-                    </div>
-                    <div id="user-select-list" class="shared-user-list" style="max-height: 300px;">
-                        <!-- ユーザー一覧が表示されます -->
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-outline" data-dismiss="modal">キャンセル</button>
-                    <button id="user-select-submit" class="btn btn-primary">選択</button>
                 </div>
             </div>
         </div>
@@ -2127,8 +2373,7 @@
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <p id="batch-delete-message">選択した項目をゴミ箱に移動しますか？</p>
+                <div class="modal-body"><p id="batch-delete-message">選択した項目をゴミ箱に移動しますか？</p>
                     <p class="mt-2" style="font-size: 0.875rem; color: var(--text-muted);">ゴミ箱から復元することができます。</p>
                 </div>
                 <div class="modal-footer">
@@ -2234,7 +2479,7 @@ auth.languageCode = 'ja';
 let currentUser = null;
 
 // 現在の表示
-let currentView = 'personal'; // all, personal, shared, public, trashed
+let currentView = 'personal'; // personal, shared, public, trashed
 let currentFileType = 'all'; // all, documents, images, pdfs, others
 let currentFolder = 'root'; // root または folder ID
 let currentViewMode = 'grid'; // grid または list
@@ -2255,14 +2500,17 @@ let activeFile = null;
 // 選択中のファイル/フォルダID配列
 let selectedItems = [];
 
-// ユーザー権限チェック関数
+// 選択されたユーザーのIDセット
+let selectedUserIds = new Set();
+
+// ユーザー権限チェック関数 - 改善版
 function canUserEdit(item) {
     // 所有者の場合は完全な権限
     if (item.userId === currentUser.uid) {
         return true;
     }
     
-    // 全体共有の場合は誰でも操作可能（ただし、所有者以外は編集のみ可能で削除などは不可）
+    // 全体共有の場合は誰でも編集可能（全操作許可）
     if (item.visibility === 'public') {
         return true;
     }
@@ -2694,9 +2942,212 @@ async function loadUsers() {
                 });
             }
         });
+        
+        // 共有ユーザーリストの更新
+        updateUserList(sharedUserList, 'upload');
+        updateUserList(folderSharedUserList, 'folder');
+        updateUserList(shareSettingsUserList, 'share');
+        updateUserList(batchSharedUserList, 'batch');
     } catch (error) {
         console.error("ユーザー一覧取得エラー:", error);
         showToast('ユーザー一覧を取得できませんでした', 'warning');
+    }
+}
+
+// ユーザーリスト表示更新
+function updateUserList(container, context, filterText = '') {
+    if (!container) return;
+    
+    // リストをクリア
+    container.innerHTML = '';
+    
+    // 検索フィルター適用
+    const filteredUsers = sharedUsers.filter(user => {
+        const searchText = filterText.toLowerCase();
+        return (
+            !searchText || 
+            user.displayName.toLowerCase().includes(searchText) || 
+            (user.email && user.email.toLowerCase().includes(searchText))
+        );
+    });
+    
+    if (filteredUsers.length === 0) {
+        const emptyMessage = document.createElement('div');
+        emptyMessage.className = 'p-3 text-center';
+        emptyMessage.textContent = filterText ? '該当するユーザーがいません' : 'ユーザーが見つかりません';
+        container.appendChild(emptyMessage);
+        return;
+    }
+    
+    // ユーザーリスト作成
+    filteredUsers.forEach(user => {
+        const userItem = document.createElement('div');
+        userItem.className = 'shared-user-item';
+        userItem.dataset.uid = user.uid;
+        
+        // ユーザーアバター
+        let avatarContent;
+        if (user.profileImageUrl) {
+            avatarContent = `<img src="${user.profileImageUrl}" alt="${user.displayName}">`;
+        } else {
+            const initial = user.displayName.charAt(0).toUpperCase();
+            avatarContent = initial;
+        }
+        
+        // 選択済みかどうかをチェック
+        const isSelected = selectedUserIds.has(user.uid);
+        
+        // チェックボックスを表示
+        userItem.innerHTML = `
+            <div class="shared-user-avatar">${avatarContent}</div>
+            <div class="shared-user-info">
+                <div class="shared-user-name">${user.displayName}</div>
+                <div class="shared-user-email">${user.email || ''}</div>
+            </div>
+            <div class="shared-user-role">
+                <div class="shared-user-checkbox ${isSelected ? 'checked' : ''}">
+                    <i class="fas fa-check" style="${isSelected ? '' : 'display: none;'}"></i>
+                </div>
+            </div>
+        `;
+        
+        // クリックイベント - ユーザー選択切替
+        userItem.addEventListener('click', () => {
+            const checkbox = userItem.querySelector('.shared-user-checkbox');
+            const checkIcon = checkbox.querySelector('i');
+            const isNowSelected = !selectedUserIds.has(user.uid);
+            
+            // ユーザー選択を切り替え
+            if (isNowSelected) {
+                selectedUserIds.add(user.uid);
+                checkbox.classList.add('checked');
+                checkIcon.style.display = '';
+                
+                // 選択表示を更新
+                addSelectedUserTag(user, context);
+            } else {
+                selectedUserIds.delete(user.uid);
+                checkbox.classList.remove('checked');
+                checkIcon.style.display = 'none';
+                
+                // 選択表示を更新
+                removeSelectedUserTag(user.uid, context);
+            }
+        });
+        
+        container.appendChild(userItem);
+    });
+}
+
+// 選択済みユーザーのタグを追加
+function addSelectedUserTag(user, context) {
+    const containerId = getSelectedUsersContainerId(context);
+    if (!containerId) return;
+    
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // すでに存在するか確認
+    if (document.querySelector(`.selected-user-tag[data-uid="${user.uid}"]`)) {
+        return;
+    }
+    
+    // 選択タグを作成
+    const tag = document.createElement('div');
+    tag.className = 'selected-user-tag';
+    tag.dataset.uid = user.uid;
+    tag.innerHTML = `
+        ${user.displayName}
+        <i class="fas fa-times" data-remove="${user.uid}"></i>
+    `;
+    
+    // 削除ボタンのクリックイベント
+    tag.querySelector('i').addEventListener('click', (e) => {
+        e.stopPropagation();
+        const userId = e.target.dataset.remove;
+        selectedUserIds.delete(userId);
+        
+        // タグを削除
+        tag.remove();
+        
+        // チェックボックスの状態を更新
+        const checkbox = document.querySelector(`.shared-user-item[data-uid="${userId}"] .shared-user-checkbox`);
+        if (checkbox) {
+            checkbox.classList.remove('checked');
+            checkbox.querySelector('i').style.display = 'none';
+        }
+    });
+    
+    container.appendChild(tag);
+}
+
+// 選択済みユーザーのタグを削除
+function removeSelectedUserTag(userId, context) {
+    const containerId = getSelectedUsersContainerId(context);
+    if (!containerId) return;
+    
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const tag = container.querySelector(`.selected-user-tag[data-uid="${userId}"]`);
+    if (tag) {
+        tag.remove();
+    }
+}
+
+// コンテキストに応じた選択ユーザー表示コンテナのIDを取得
+function getSelectedUsersContainerId(context) {
+    switch (context) {
+        case 'upload': return 'upload-selected-users';
+        case 'folder': return 'folder-selected-users';
+        case 'share': return 'share-selected-users';
+        case 'batch': return 'batch-selected-users';
+        default: return '';
+    }
+}
+
+// ファイルの共有ユーザーを選択済みにセット
+function setSelectedUsers(userIds) {
+    // 前の選択をクリア
+    selectedUserIds.clear();
+    
+    // 選択をセット
+    if (userIds && userIds.length > 0) {
+        userIds.forEach(id => selectedUserIds.add(id));
+    }
+    
+    // 選択表示を更新
+    const containerIds = [
+        'upload-selected-users',
+        'folder-selected-users',
+        'share-selected-users',
+        'batch-selected-users'
+    ];
+    
+    containerIds.forEach(id => {
+        const container = document.getElementById(id);
+        if (container) {
+            container.innerHTML = '';
+        }
+    });
+    
+    // 各ユーザーのタグとチェックボックスを更新
+    if (userIds && userIds.length > 0) {
+        userIds.forEach(id => {
+            const user = sharedUsers.find(u => u.uid === id);
+            if (user) {
+                addSelectedUserTag(user, 'upload');
+                addSelectedUserTag(user, 'folder');
+                addSelectedUserTag(user, 'share');
+                addSelectedUserTag(user, 'batch');
+                
+                // チェックボックスの状態も更新
+                document.querySelectorAll(`.shared-user-item[data-uid="${id}"] .shared-user-checkbox`).forEach(checkbox => {
+                    checkbox.classList.add('checked');
+                    checkbox.querySelector('i').style.display = '';
+                });
+            }
+        });
     }
 }
 
@@ -2798,25 +3249,43 @@ function createFileCard(file) {
     const updatedAt = file.updatedAt ? new Date(file.updatedAt.seconds * 1000) : new Date();
     const formattedDate = updatedAt.toLocaleDateString('ja-JP');
     
-    // 共有アイコン
-    let shareIcon = '';
+    // 共有インジケータ
+    let shareIndicator = '';
     if (file.visibility === 'shared') {
-        shareIcon = '<i class="fas fa-share-alt ml-1" style="color: var(--info);"></i>';
+        shareIndicator = `
+            <div class="share-indicator">
+                <i class="fas fa-share-alt share-indicator-icon" style="color: var(--info);"></i>
+                <span class="share-indicator-text">指定共有</span>
+            </div>
+        `;
     } else if (file.visibility === 'public') {
-        shareIcon = '<i class="fas fa-globe ml-1" style="color: var(--success);"></i>';
+        shareIndicator = `
+            <div class="share-indicator">
+                <i class="fas fa-globe share-indicator-icon" style="color: var(--success);"></i>
+                <span class="share-indicator-text">全体共有</span>
+            </div>
+        `;
     }
     
-    // 所有者アイコン（他人のファイルの場合）
-    let ownerIcon = '';
+    // 所有者表示
+    let ownerIndicator = '';
     if (file.userId !== currentUser.uid) {
-        ownerIcon = '<i class="fas fa-user-friends ml-1" style="color: var(--text-muted); font-size: 0.75rem;"></i>';
+        const ownerName = file.ownerName || '他のユーザー';
+        ownerIndicator = `
+            <div class="mt-1" style="font-size: 0.7rem; color: var(--text-muted);">
+                <i class="fas fa-user mr-1"></i> ${ownerName}
+            </div>
+        `;
     }
     
     // HTML作成
     card.innerHTML = `
         ${iconHtml}
-        <div class="file-card-name" title="${file.name}">${file.name}${shareIcon}${ownerIcon}</div>
-        <div class="file-card-date">${formattedDate}</div>
+        <div>
+            <div class="file-card-name" title="${file.name}">${file.name}${shareIndicator}</div>
+            <div class="file-card-date">${formattedDate}</div>
+            ${ownerIndicator}
+        </div>
         <div class="file-card-actions">
             <span class="file-card-action" data-action="more"><i class="fas fa-ellipsis-v"></i></span>
         </div>
@@ -2908,17 +3377,27 @@ function createFileListItem(file) {
     const updatedAt = file.updatedAt ? new Date(file.updatedAt.seconds * 1000) : new Date();
     const formattedDate = updatedAt.toLocaleDateString('ja-JP');
     
-    // 共有アイコン
-    let shareIcon = '';
+    // 共有インジケータ
+    let shareIndicator = '';
     if (file.visibility === 'shared') {
-        shareIcon = '<i class="fas fa-share-alt ml-1" style="color: var(--info);"></i>';
+        shareIndicator = `
+            <span class="ml-2" style="color: var(--info); font-size: 0.8rem;">
+                <i class="fas fa-share-alt"></i>
+                <span style="font-size: 0.7rem; font-weight: normal;">指定共有</span>
+            </span>
+        `;
     } else if (file.visibility === 'public') {
-        shareIcon = '<i class="fas fa-globe ml-1" style="color: var(--success);"></i>';
+        shareIndicator = `
+            <span class="ml-2" style="color: var(--success); font-size: 0.8rem;">
+                <i class="fas fa-globe"></i>
+                <span style="font-size: 0.7rem; font-weight: normal;">全体共有</span>
+            </span>
+        `;
     }
     
     // 各セル作成
     const nameCell = document.createElement('div');
-    nameCell.innerHTML = `<i class="fas ${iconClass} mr-2"></i> ${file.name} ${shareIcon}`;
+    nameCell.innerHTML = `<i class="fas ${iconClass} mr-2"></i> ${file.name} ${shareIndicator}`;
     
     // 所有者セルに所有者情報表示
     const ownerCell = document.createElement('div');
@@ -3128,7 +3607,7 @@ async function changeFolder(folderId) {
         }
         
         // フォルダのアクセス権を確認して、UIの表示制御
-        updateFolderPermissionUI(folderId);
+        await updateFolderPermissionUI(folderId);
         
         // ファイル一覧再読み込み
         await loadFiles();
@@ -3209,6 +3688,29 @@ function showFilePreview(file) {
     fileInfo.innerHTML = '';
     fileActions.innerHTML = '';
     
+    // 権限情報表示
+    const filePermissionsInfo = document.getElementById('file-permissions-info');
+    if (file.userId === currentUser.uid) {
+        // 自分のファイル
+        filePermissionsInfo.style.display = 'none';
+    } else {
+        // 他人のファイル
+        filePermissionsInfo.style.display = 'block';
+        const permissionsText = document.getElementById('file-permissions-text');
+        
+        if (file.visibility === 'public') {
+            permissionsText.innerHTML = 'このファイルは全体共有されています。<br>元のファイルの所有者は <strong>' + (file.ownerName || '他のユーザー') + '</strong> です。';
+            filePermissionsInfo.className = 'file-permissions-info';
+            filePermissionsInfo.style.backgroundColor = 'var(--success-light)';
+            filePermissionsInfo.style.color = 'var(--success)';
+        } else if (file.visibility === 'shared') {
+            permissionsText.innerHTML = 'このファイルはあなたと共有されています。<br>元のファイルの所有者は <strong>' + (file.ownerName || '他のユーザー') + '</strong> です。';
+            filePermissionsInfo.className = 'file-permissions-info';
+            filePermissionsInfo.style.backgroundColor = 'var(--info-light)';
+            filePermissionsInfo.style.color = 'var(--info)';
+        }
+    }
+    
     // ファイル情報の表示
     fileInfo.innerHTML = `
         <h2>${file.name}</h2>
@@ -3259,7 +3761,7 @@ function showFilePreview(file) {
         fileActions.appendChild(editBtn);
     }
     
-    // 編集権限がある場合のみ表示するボタン
+    // 編集権限があるユーザーに表示するボタン
     if (canEdit) {
         // 共有ボタン
         const shareBtn = document.createElement('button');
@@ -3640,14 +4142,25 @@ function checkBatchOperationPermissions() {
             name: item.querySelector('.file-card-name, [title]')?.textContent || 'ファイル'
         };
         
-        // 編集権限の簡易チェック（他のユーザーのアイコンがあれば自分以外のもの）
-        const isOwner = !item.querySelector('.fa-user-friends'); 
-        const hasShareIcon = item.querySelector('.fa-share-alt, .fa-globe');
-        
-        // 自分のファイルか共有設定があれば編集可能と判断
-        const canEdit = isOwner || hasShareIcon;
-        
-        if (!canEdit) {
+        // 編集権限の簡易チェック
+        // 権限確認の改善 - ファイルの詳細データを取得して権限チェック
+        try {
+            const collection = itemData.type === 'folder' ? 'folders' : 'files';
+            const docRef = db.collection(collection).doc(itemId);
+            
+            // Firestore から直接ドキュメントを取得
+            docRef.get().then(doc => {
+                if (doc.exists) {
+                    const fileData = doc.data();
+                    const canEdit = canUserEdit({...fileData, id: doc.id});
+                    
+                    if (!canEdit) {
+                        nonEditableItems.push(itemData);
+                    }
+                }
+            });
+        } catch (error) {
+            console.warn(`権限チェックエラー (${itemId}):`, error);
             nonEditableItems.push(itemData);
         }
     }
@@ -3688,8 +4201,16 @@ function showShareModal(file) {
     // 共有設定に応じてUI表示
     updateShareModalUI();
     
+    // 選択リセット
+    selectedUserIds.clear();
+    
+    // 共有ユーザーが設定されていたら、それを選択状態に
+    if (file.visibility === 'shared' && file.sharedWith && file.sharedWith.length > 0) {
+        setSelectedUsers(file.sharedWith);
+    }
+    
     // 共有ユーザーリストを更新
-    updateSharedUsersList(shareSettingsUserList, file.sharedWith || []);
+    updateUserList(shareSettingsUserList, 'share');
     
     // 公開リンク生成（公開ファイルの場合）
     if (file.visibility === 'public') {
@@ -3715,159 +4236,6 @@ function updateShareModalUI() {
     } else {
         shareSettingsUsers.style.display = 'none';
         shareLinkContainer.style.display = 'none';
-    }
-}
-
-// 共有ユーザーリスト更新
-async function updateSharedUsersList(container, selectedUserIds) {
-    // リストをクリア
-    container.innerHTML = '';
-    
-    // 選択されたユーザーがいない場合
-    if (!selectedUserIds || selectedUserIds.length === 0) {
-        const emptyMessage = document.createElement('div');
-        emptyMessage.className = 'p-3 text-center';
-        emptyMessage.textContent = 'ユーザーを追加してください';
-        container.appendChild(emptyMessage);
-        return;
-    }
-    
-    // 選択されたユーザーを表示
-    const userPromises = selectedUserIds.map(userId => 
-        db.collection('users').doc(userId).get()
-    );
-    
-    try {
-        const userDocs = await Promise.all(userPromises);
-        
-        userDocs.forEach(doc => {
-            if (doc.exists) {
-                const userData = doc.data();
-                
-                // ユーザーアイテム作成
-                const userItem = document.createElement('div');
-                userItem.className = 'shared-user-item';
-                userItem.dataset.uid = userData.uid;
-                
-                // ユーザーアバター
-                let avatarHtml = '';
-                if (userData.profileImageUrl) {
-                    avatarHtml = `<img src="${userData.profileImageUrl}" alt="${userData.displayName || 'ユーザー'}">`;
-                } else {
-                    const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
-                    avatarHtml = initial;
-                }
-                
-                userItem.innerHTML = `
-                    <div class="shared-user-avatar">${avatarHtml}</div>
-                    <div class="shared-user-info">
-                        <div class="shared-user-name">${userData.displayName || 'ユーザー'}</div>
-                        <div class="shared-user-email">${userData.email || ''}</div>
-                    </div>
-                    <div class="shared-user-role">
-                        <span class="btn btn-sm btn-icon btn-outline" data-action="remove-user">
-                            <i class="fas fa-times"></i>
-                        </span>
-                    </div>
-                `;
-                
-                // 削除ボタンのイベントリスナー
-                const removeBtn = userItem.querySelector('[data-action="remove-user"]');
-                if (removeBtn) {
-                    removeBtn.addEventListener('click', () => {
-                        userItem.remove();
-                    });
-                }
-                
-                container.appendChild(userItem);
-            }
-        });
-    } catch (error) {
-        console.error("ユーザー情報取得エラー:", error);
-        showToast('ユーザー情報の取得に失敗しました', 'error');
-    }
-}
-
-// ユーザー選択モーダルを表示
-function showUserSelectModal(targetContainer) {
-    // ユーザー一覧を表示
-    updateUserSelectList();
-    
-    // モーダル表示
-    userSelectModal.classList.add('show');
-    
-    // 選択ボタンのイベントリスナー
-    userSelectSubmit.onclick = () => {
-        // 選択されたユーザーを取得
-        const selectedUsers = [];
-        document.querySelectorAll('#user-select-list .shared-user-item.selected').forEach(item => {
-            selectedUsers.push(item.dataset.uid);
-        });
-        
-        // 選択されたユーザーを対象のコンテナに追加
-        if (selectedUsers.length > 0) {
-            updateSharedUsersList(targetContainer, selectedUsers);
-        }
-        
-        // モーダルを閉じる
-        closeModal(userSelectModal);
-    };
-}
-
-// ユーザー選択リスト更新
-function updateUserSelectList() {
-    // リストをクリア
-    userSelectList.innerHTML = '';
-    
-    // 検索クエリ
-    const searchQuery = userSelectSearch.value.toLowerCase();
-    
-    // フィルタリングされたユーザーリスト
-    const filteredUsers = sharedUsers.filter(user => {
-        const displayName = user.displayName.toLowerCase();
-        const email = (user.email || '').toLowerCase();
-        return !searchQuery || 
-               displayName.includes(searchQuery) || 
-               email.includes(searchQuery);
-    });
-    
-    if (filteredUsers.length > 0) {
-        filteredUsers.forEach(user => {
-            // ユーザーアイテム作成
-            const userItem = document.createElement('div');
-            userItem.className = 'shared-user-item';
-            userItem.dataset.uid = user.uid;
-            
-            // ユーザーアバター
-            let avatarHtml = '';
-            if (user.profileImageUrl) {
-                avatarHtml = `<img src="${user.profileImageUrl}" alt="${user.displayName || 'ユーザー'}">`;
-            } else {
-                const initial = (user.displayName || 'U').charAt(0).toUpperCase();
-                avatarHtml = initial;
-            }
-            
-            userItem.innerHTML = `
-                <div class="shared-user-avatar">${avatarHtml}</div>
-                <div class="shared-user-info">
-                    <div class="shared-user-name">${user.displayName || 'ユーザー'}</div>
-                    <div class="shared-user-email">${user.email || ''}</div>
-                </div>
-            `;
-            
-            // クリックでトグル選択
-            userItem.addEventListener('click', () => {
-                userItem.classList.toggle('selected');
-            });
-            
-            userSelectList.appendChild(userItem);
-        });
-    } else {
-        // 該当ユーザーがいない場合のメッセージ
-        const emptyMessage = document.createElement('div');
-        emptyMessage.className = 'p-3 text-center';
-        emptyMessage.textContent = '該当するユーザーがいません';
-        userSelectList.appendChild(emptyMessage);
     }
 }
 
@@ -3968,7 +4336,13 @@ function showBatchShareModal() {
     // 初期設定をリセット
     batchShareVisibility.value = 'personal';
     batchShareUsers.style.display = 'none';
-    batchSharedUserList.innerHTML = '';
+    
+    // 選択リセット
+    selectedUserIds.clear();
+    document.getElementById('batch-selected-users').innerHTML = '';
+    
+    // ユーザーリスト更新
+    updateUserList(batchSharedUserList, 'batch');
     
     // モーダル表示
     batchShareModal.classList.add('show');
@@ -4140,15 +4514,11 @@ async function updateShareSettings() {
         };
         
         // 選択されたユーザーIDを取得
+        // 共有設定変更処理（続き）
+        // 選択されたユーザーIDを取得
         if (visibility === 'shared') {
-            const selectedUsers = [];
-            const userItems = shareSettingsUserList.querySelectorAll('.shared-user-item');
-            userItems.forEach(item => {
-                if (item.dataset.uid) {
-                    selectedUsers.push(item.dataset.uid);
-                }
-            });
-            updateData.sharedWith = selectedUsers;
+            const sharedWith = Array.from(selectedUserIds);
+            updateData.sharedWith = sharedWith;
         } else {
             // 個人用または公開の場合は共有ユーザーリストをクリア
             updateData.sharedWith = [];
@@ -4265,6 +4635,8 @@ async function batchMove() {
                 destSharedWith = destFolderData.sharedWith || [];
             }
         }
+
+        
         
         // すべての選択アイテムを移動
         const movePromises = [];
@@ -4348,15 +4720,9 @@ async function batchShare() {
         // 共有ユーザーリスト取得
         let sharedWith = [];
         if (visibility === 'shared') {
-            const userItems = batchSharedUserList.querySelectorAll('.shared-user-item');
-            userItems.forEach(item => {
-                if (item.dataset.uid) {
-                    sharedWith.push(item.dataset.uid);
-                }
-            });
+            sharedWith = Array.from(selectedUserIds);
         }
         
-       // 一括共有設定処理の続き
         // すべての選択アイテムを共有設定変更
         const sharePromises = [];
         let processedCount = 0;
@@ -4707,12 +5073,7 @@ async function createFolder() {
         // 選択されたユーザーIDを取得（共有設定の場合）
         let sharedWith = [];
         if (visibility === 'shared') {
-            const userItems = folderSharedUserList.querySelectorAll('.shared-user-item');
-            userItems.forEach(item => {
-                if (item.dataset.uid) {
-                    sharedWith.push(item.dataset.uid);
-                }
-            });
+            sharedWith = Array.from(selectedUserIds);
         }
         
         // フォルダ作成
@@ -4766,12 +5127,7 @@ async function uploadFiles(files) {
     // 選択されたユーザーIDを取得（共有設定の場合）
     let sharedWith = [];
     if (visibility === 'shared') {
-        const userItems = sharedUserList.querySelectorAll('.shared-user-item');
-        userItems.forEach(item => {
-            if (item.dataset.uid) {
-                sharedWith.push(item.dataset.uid);
-            }
-        });
+        sharedWith = Array.from(selectedUserIds);
     }
     
     // プログレスコンテナ表示
@@ -4899,8 +5255,10 @@ function resetUploadForm() {
     uploadProgressSize.textContent = '0 KB / 0 KB';
     document.querySelector('.dropzone-text').textContent = 'ファイルをドラッグ＆ドロップするか、クリックして選択';
     
-    // 共有ユーザーリストをクリア
-    sharedUserList.innerHTML = '';
+    // 共有ユーザーリストの選択をクリア
+    selectedUserIds.clear();
+    document.getElementById('upload-selected-users').innerHTML = '';
+    document.getElementById('folder-selected-users').innerHTML = '';
 }
 
 // ローディング表示
@@ -5150,7 +5508,6 @@ const batchDeleteModal = document.getElementById('batch-delete-modal');
 const permanentDeleteModal = document.getElementById('permanent-delete-modal');
 const batchPermanentDeleteModal = document.getElementById('batch-permanent-delete-modal');
 const imagePreviewModal = document.getElementById('image-preview-modal');
-const userSelectModal = document.getElementById('user-select-modal');
 
 // フォーム要素
 const uploadFolder = document.getElementById('upload-folder');
@@ -5213,10 +5570,6 @@ const batchShareUsers = document.getElementById('batch-share-users');
 const batchSharedUserList = document.getElementById('batch-shared-user-list');
 const batchShareSubmit = document.getElementById('batch-share-submit');
 
-const userSelectList = document.getElementById('user-select-list');
-const userSelectSearch = document.getElementById('user-select-search');
-const userSelectSubmit = document.getElementById('user-select-submit');
-
 const previewImage = document.getElementById('preview-image');
 const openEditorBtn = document.getElementById('open-editor-btn');
 const downloadPreviewBtn = document.getElementById('download-preview-btn');
@@ -5239,10 +5592,11 @@ const storageTotal = document.getElementById('storage-total');
 const uploadBtn = document.getElementById('upload-btn');
 const newFolderBtn = document.getElementById('new-folder-btn');
 
-const addUserBtn = document.getElementById('add-user-btn');
-const folderAddUserBtn = document.getElementById('folder-add-user-btn');
-const shareSettingsAddUserBtn = document.getElementById('share-settings-add-user-btn');
-const batchShareAddUserBtn = document.getElementById('batch-share-add-user-btn');
+// 共有/ユーザー検索関連
+const sharedUserSearch = document.getElementById('shared-user-search');
+const folderSharedUserSearch = document.getElementById('folder-shared-user-search');
+const shareSettingsUserSearch = document.getElementById('share-settings-user-search');
+const batchSharedUserSearch = document.getElementById('batch-shared-user-search');
 
 // イベントリスナー登録
 document.addEventListener('DOMContentLoaded', () => {
@@ -5457,34 +5811,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // ユーザー検索
-    if (userSelectSearch) {
-        userSelectSearch.addEventListener('input', () => {
-            updateUserSelectList();
+    if (sharedUserSearch) {
+        sharedUserSearch.addEventListener('input', () => {
+            updateUserList(sharedUserList, 'upload', sharedUserSearch.value);
         });
     }
     
-    // ユーザー追加ボタン
-    if (addUserBtn) {
-        addUserBtn.addEventListener('click', () => {
-            showUserSelectModal(sharedUserList);
+    if (folderSharedUserSearch) {
+        folderSharedUserSearch.addEventListener('input', () => {
+            updateUserList(folderSharedUserList, 'folder', folderSharedUserSearch.value);
         });
     }
     
-    if (folderAddUserBtn) {
-        folderAddUserBtn.addEventListener('click', () => {
-            showUserSelectModal(folderSharedUserList);
+    if (shareSettingsUserSearch) {
+        shareSettingsUserSearch.addEventListener('input', () => {
+            updateUserList(shareSettingsUserList, 'share', shareSettingsUserSearch.value);
         });
     }
     
-    if (shareSettingsAddUserBtn) {
-        shareSettingsAddUserBtn.addEventListener('click', () => {
-            showUserSelectModal(shareSettingsUserList);
-        });
-    }
-    
-    if (batchShareAddUserBtn) {
-        batchShareAddUserBtn.addEventListener('click', () => {
-            showUserSelectModal(batchSharedUserList);
+    if (batchSharedUserSearch) {
+        batchSharedUserSearch.addEventListener('input', () => {
+            updateUserList(batchSharedUserList, 'batch', batchSharedUserSearch.value);
         });
     }
     
