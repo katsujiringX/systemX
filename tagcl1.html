@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デジタルアーカイブ関連記事 | KatsujiRingX</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 既存のスタイルシートからの継承 */
+        :root {
+            --primary-color: #3a5fc1;
+            --primary-dark: #2a4aa9;
+            --primary-light: #eef2ff;
+            --background-color: #f9fafb;
+            --surface-color: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-tertiary: #9ca3af;
+            --border-color: #e5e7eb;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .tag-cloud {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .tag-cloud a {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .tag-cloud a:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .article-card {
+            background-color: var(--surface-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .article-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .article-content {
+            padding: 1.5rem;
+        }
+
+        .article-category {
+            color: var(--primary-color);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .article-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .article-excerpt {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+
+        .read-more {
+            color: var(--primary-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .read-more i {
+            margin-left: 0.5rem;
+        }
+
+        .categories-section, .popular-tags-section {
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 5rem;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), #ff6b4a);
+        }
+
+        .categories-list, .tags-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .category-item, .tag-item {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            text-decoration: none;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .category-item:hover, .tag-item:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .category-count {
+            margin-left: 0.25rem;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <h1>デジタルアーカイブ関連記事</h1>
+        </header>
+
+
+        <section class="articles-section">
+            <div class="articles-grid">
+                <article class="article-card">
+                    <img src="minnaTexthub.png" alt="みんなの活字化広場の紹介" class="article-image">
+                    <div class="article-content">
+                        <div class="article-category">サービス紹介</div>
+                        <h2 class="article-title">みんなの活字化広場の紹介</h2>
+                        <p class="article-excerpt">「みんなの活字化広場」は、古文書のデジタル化と保存を、市民・学生参加によって実現する革新的なプラットフォームでした。そのDNAを継承するKatsujiRingXについて詳しく解説します。</p>
+                        <div class="article-meta">
+                            <span class="article-date">2025年4月1日</span>
+                            <a href="blogpostno2.html" class="read-more">続きを読む <i class="fas fa-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+       
+</body>
+</html>

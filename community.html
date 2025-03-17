@@ -1,0 +1,4042 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
+    <title>コミュニティ広場 | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+            
+            /* コミュニティ専用のカラー */
+            --community-gradient: linear-gradient(135deg, var(--primary), #6366f1);
+            --community-bg: rgba(99, 102, 241, 0.03);
+            --community-accent: #8b5cf6;
+            --community-accent-light: #f5f3ff;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            
+            /* ダークモード用コミュニティカラー */
+            --community-bg: rgba(99, 102, 241, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+            overflow: hidden; /* 全体のスクロールを無効化 */
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            height: 100vh;
+            transition: margin var(--transition-normal);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* コンテンツはスクロールしない */
+        }
+        
+        .page-header {
+            padding: 1.5rem 1.5rem 0;
+            flex-shrink: 0;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
+        
+        /* スクロールする投稿エリア */
+        .community-scroll-container {
+            flex: 1;
+            overflow-y: auto; /* ここがスクロール可能に */
+            padding: 0 1.5rem 1.5rem;
+        }
+        
+        /* コミュニティレイアウト */
+        .community-container {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.5rem;
+            height: 100%;
+            min-height: 0;
+        }
+        
+        /* 投稿作成フォーム */
+        .post-creation-card {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        [data-theme="dark"] .post-creation-card {
+            background-color: #1e293b;
+        }
+        
+        .post-creation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .post-creation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .post-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            margin-right: 1rem;
+            overflow: hidden;
+        }
+        
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .post-input-container {
+            flex: 1;
+        }
+        
+        .post-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            resize: none;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans JP', sans-serif;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        .post-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .post-attachments {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .attachment-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .attachment-btn:hover {
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        .post-submit {
+            padding: 0.5rem 1.25rem;
+            background: var(--community-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .post-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+        
+        .post-submit i {
+            font-size: 0.875rem;
+        }
+        
+        /* タブメニュー */
+        .posts-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .post-tab {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            position: relative;
+            transition: color var(--transition-normal);
+        }
+        
+        .post-tab.active {
+            color: var(--primary);
+        }
+        
+        .post-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+        
+        /* 投稿カード */
+        .post-card {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        [data-theme="dark"] .post-card {
+            background-color: #1e293b;
+        }
+        
+        .post-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .post-header {
+            display: flex;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .post-user-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            margin-right: 1rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .post-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .post-user-info {
+            flex: 1;
+        }
+        
+        .post-user-name {
+            font-weight: 600;
+            color: var(--text-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .post-user-name:hover {
+            color: var(--primary);
+        }
+        
+        .verified-badge {
+            color: var(--primary);
+            font-size: 0.875rem;
+        }
+        
+        .post-timestamp {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        .post-menu {
+            margin-left: 1rem;
+            cursor: pointer;
+            color: var(--text-muted);
+            width: 1.5rem;
+            height: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .post-menu:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .post-body {
+            padding: 1.5rem;
+        }
+        
+        .post-content {
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+        }
+        
+        .post-image {
+            width: 100%;
+            max-height: 300px; /* 画像の最大高さを制限 */
+            object-fit: contain; /* アスペクト比を保持しながら表示 */
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+        
+        .post-actions-bar {
+            display: flex;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .post-action {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .post-action:last-child {
+            border-right: none;
+        }
+        
+        .post-action:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .post-action.liked {
+            color: var(--primary);
+        }
+        
+        .post-action-count {
+            font-size: 0.875rem;
+        }
+        
+        /* コメントセクション */
+        .post-comments {
+            padding: 0 1.5rem 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .comment-list {
+            margin-top: 1rem;
+        }
+        
+        .comment-item {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .comment-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            margin-right: 1rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .comment-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .comment-content {
+            flex: 1;
+            background-color: var(--bg-color);
+            border-radius: var(--radius);
+            padding: 0.75rem 1rem;
+        }
+        
+        .comment-author {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .comment-text {
+            font-size: 0.875rem;
+        }
+        
+        .comment-actions {
+            display: flex;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            gap: 1rem;
+            color: var(--text-muted);
+        }
+        
+        .comment-action {
+            cursor: pointer;
+        }
+        
+        .comment-action:hover {
+            color: var(--primary);
+        }
+        
+        .comment-form {
+            display: flex;
+            margin-top: 1rem;
+        }
+        
+        .comment-input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius) 0 0 var(--radius);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .comment-submit {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            padding: 0 1rem;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .comment-submit:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* サイドバー */
+        .community-sidebar {
+            position: sticky;
+            top: 0;
+        }
+        
+        .sidebar-card {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .sidebar-card {
+            background-color: #1e293b;
+        }
+        
+        .sidebar-card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+        
+        .sidebar-card-body {
+            padding: 1.5rem;
+        }
+        
+        /* トレンドトピック */
+        .trend-list {
+            list-style: none;
+        }
+        
+        .trend-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .trend-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .trend-item a {
+            display: block;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color var(--transition-normal);
+        }
+        
+        .trend-item a:hover {
+            color: var(--primary);
+        }
+        
+        .trend-item a:hover .trend-hashtag {
+            color: var(--primary);
+        }
+        
+        .trend-hashtag {
+            font-weight: 600;
+            color: var(--community-accent);
+            transition: color var(--transition-normal);
+        }
+        
+        .trend-count {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* おすすめユーザー */
+        .user-suggestion-list {
+            list-style: none;
+        }
+        
+        .user-suggestion-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-suggestion-item:hover {
+            background-color: var(--primary-light);
+        }
+        
+        .user-suggestion-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .suggestion-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            margin-right: 1rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        
+        .suggestion-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .suggestion-info {
+            flex: 1;
+        }
+        
+        .suggestion-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .suggestion-username {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .follow-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .follow-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .follow-btn.following {
+            background-color: var(--text-muted);
+        }
+        
+        /* プロフィールカード */
+        .profile-card {
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .profile-avatar {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            overflow: hidden;
+        }
+        
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+        
+        .profile-username {
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+        
+        .profile-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .profile-bio {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-color);
+        }
+        
+        .profile-edit-btn {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .profile-edit-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* 近未来的な要素 */
+        .futuristic-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.125rem 0.5rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--community-accent));
+            color: white;
+            vertical-align: middle;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 5px rgba(99, 102, 241, 0.3);
+        }
+        
+        /* 空の状態表示 */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .empty-state-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            max-width: 24rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* トースト通知 */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+        
+        /* ポストメニュー */
+        .post-menu-dropdown {
+            position: absolute;
+            right: 0;
+            top: 2.5rem;
+            width: 180px;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            z-index: 10;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            display: none;
+        }
+        
+        [data-theme="dark"] .post-menu-dropdown {
+            background-color: #1e293b;
+        }
+        
+        .post-menu-dropdown.active {
+            display: block;
+        }
+        
+        .post-menu-item {
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .post-menu-item:hover {
+            background-color: var(--bg-color);
+        }
+        
+        .post-menu-item.delete {
+            color: var(--danger);
+        }
+        
+        /* 投稿編集モード */
+        .post-edit-form {
+            padding: 1rem;
+            display: none;
+        }
+        
+        .post-edit-form.active {
+            display: block;
+        }
+        
+        .post-edit-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            resize: vertical;
+            min-height: 100px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Noto Sans JP', sans-serif;
+            margin-bottom: 1rem;
+        }
+        
+        .post-edit-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .post-edit-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+        
+        .post-edit-cancel {
+            padding: 0.5rem 1rem;
+            background-color: var(--gray-200);
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .post-edit-cancel:hover {
+            background-color: var(--gray-300);
+        }
+        
+        .post-edit-save {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .post-edit-save:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* ユーザープロフィールモーダル */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .user-profile-modal {
+            background-color: white;
+            border-radius: var(--radius-lg);
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        
+        [data-theme="dark"] .user-profile-modal {
+            background-color: #1e293b;
+        }
+        
+        .modal-overlay.active .user-profile-modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            background-color: var(--gray-200);
+            color: var(--text-color);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .modal-user-profile {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-user-avatar {
+            width: 6rem;
+            height: 6rem;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-weight: 600;
+            margin: 0 auto 1rem;
+            overflow: hidden;
+            font-size: 2rem;
+        }
+        
+        .modal-user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .modal-user-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+        
+        .modal-user-bio {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+        
+        .modal-user-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-stat-item {
+            text-align: center;
+        }
+        
+        .modal-stat-value {
+            font-weight: 600;
+            font-size: 1.25rem;
+        }
+        
+        .modal-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .modal-user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            text-align: left;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+        
+        .modal-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .modal-info-icon {
+            color: var(--primary);
+            width: 1.5rem;
+            text-align: center;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .modal-action-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: var(--radius-full);
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .modal-follow-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+        
+        .modal-follow-btn:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .modal-follow-btn.following {
+            background-color: var(--text-muted);
+        }
+        
+        .modal-message-btn {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+        
+        .modal-message-btn:hover {
+            background-color: var(--primary-light);
+        }
+        
+        /* ローディングスピナー */
+        .loading-spinner {
+            display: inline-block;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid rgba(99, 102, 241, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 0;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .community-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .community-sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .post-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .post-attachments {
+                order: 2;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .post-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .post-user-avatar {
+                margin-bottom: 0.5rem;
+            }
+            
+            .post-menu {
+                position: absolute;
+                top: 1rem;
+                right: 1rem;
+            }
+            
+            .post-header {
+                position: relative;
+            }
+            
+            .post-actions-bar {
+                flex-wrap: wrap;
+            }
+            
+            .post-action {
+                flex: 1 0 50%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .post-action:nth-child(odd) {
+                border-right: 1px solid var(--border-color);
+            }
+            
+            .post-action:nth-last-child(-n+2) {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="index.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="katsujieditor.html" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="booklink.html" class="menu-item">
+                <i class="fas fa-book"></i> 完成本を見る
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item active">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" style="display: inline-block; padding: 0.5rem 1rem; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: var(--radius); text-decoration: none; text-align: center; margin-top: 1rem; width: 100%;">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ダッシュボード</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>コミュニティ広場</span>
+            </div>
+            <h1 class="page-title">コミュニティ広場 <span class="futuristic-badge">BETA</span></h1>
+        </div>
+        
+        <!-- スクロールするコンテンツエリア -->
+        <div class="community-scroll-container">
+            <div class="community-container">
+                <div class="main-feed">
+                    <!-- 投稿作成フォーム -->
+                    <div class="post-creation-card">
+                        <div class="post-creation-header">
+                            <div class="post-avatar" id="post-user-avatar">
+                                <span id="post-user-initial">U</span>
+                            </div>
+                            <div class="post-input-container">
+                                <textarea id="post-input" class="post-input" rows="3" placeholder="何をシェアしますか？"></textarea>
+                            </div>
+                        </div>
+                        <div class="post-actions">
+                            <div class="post-attachments">
+                                <button class="attachment-btn" title="画像を追加" id="image-upload-btn">
+                                    <i class="fas fa-image"></i>
+                                </button>
+                                <input type="file" id="image-upload" style="display: none;" accept="image/*">
+                                <button class="attachment-btn" title="PDFを添付" id="pdf-upload-btn">
+                                    <i class="fas fa-file-pdf"></i>
+                                </button>
+                                <input type="file" id="pdf-upload" style="display: none;" accept="application/pdf">
+                                <button class="attachment-btn" title="トピックタグ" id="tag-btn">
+                                    <i class="fas fa-hashtag"></i>
+                                </button>
+                            </div>
+                            <button class="post-submit" id="post-submit-btn">
+                                <i class="fas fa-paper-plane"></i> 投稿する
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- タブメニュー -->
+                    <div class="posts-tabs">
+                        <div class="post-tab active" data-tab="all">すべての投稿</div>
+                        <div class="post-tab" data-tab="following">フォロー中</div>
+                    </div>
+                    
+                    <!-- 投稿一覧（動的に生成） -->
+                    <div id="posts-container">
+                        <!-- ローディング表示 -->
+                        <div class="loading-container">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- サイドバー -->
+                <div class="community-sidebar">
+                    <!-- プロフィールカード -->
+                    <div class="sidebar-card">
+                        <div class="profile-card" id="user-profile-card">
+                            <div class="profile-avatar" id="profile-avatar">
+                                <span id="profile-initial">U</span>
+                            </div>
+                            <h3 class="profile-name" id="profile-name">ユーザー名</h3>
+                            <div class="profile-username" id="profile-email">user@example.com</div>
+                            <div class="profile-stats">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="profile-posts">0</div>
+                                    <div class="stat-label">投稿</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="profile-followers">0</div>
+                                    <div class="stat-label">フォロワー</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="profile-following">0</div>
+                                    <div class="stat-label">フォロー中</div>
+                                </div>
+                            </div>
+                            <button class="profile-edit-btn" id="profile-edit-btn">
+                                <i class="fas fa-edit"></i> プロフィール編集
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- トレンドトピック (初期状態では表示しない) -->
+                    <div id="trends-container" style="display: none;">
+                        <div class="sidebar-card">
+                            <div class="sidebar-card-header">
+                                トレンドトピック
+                            </div>
+                            <div class="sidebar-card-body">
+                                <ul class="trend-list" id="trend-list">
+                                    <!-- 動的に生成 -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ユーザープロフィールモーダル -->
+    <div class="modal-overlay" id="user-profile-modal-overlay">
+        <div class="user-profile-modal">
+            <div class="modal-header">
+                <h3 class="modal-title">ユーザープロフィール</h3>
+                <button class="modal-close" id="modal-close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-loading" class="loading-container">
+                    <div class="loading-spinner"></div>
+                </div>
+                <div id="modal-content" style="display: none;">
+                    <div class="modal-user-profile">
+                        <div class="modal-user-avatar" id="modal-user-avatar">
+                            <span id="modal-user-initial">U</span>
+                        </div>
+                        <h2 class="modal-user-name" id="modal-user-name">
+                            ユーザー名
+                            <span id="modal-verified-badge" style="display: none;">
+                                <i class="fas fa-check-circle verified-badge"></i>
+                            </span>
+                        </h2>
+                        <div class="modal-user-bio" id="modal-user-bio">
+                            ユーザープロフィール文がここに表示されます。
+                        </div>
+                        <div class="modal-user-stats">
+                            <div class="modal-stat-item">
+                                <div class="modal-stat-value" id="modal-user-posts">0</div>
+                                <div class="modal-stat-label">投稿</div>
+                            </div>
+                            <div class="modal-stat-item">
+                                <div class="modal-stat-value" id="modal-user-followers">0</div>
+                                <div class="modal-stat-label">フォロワー</div>
+                            </div>
+                            <div class="modal-stat-item">
+                                <div class="modal-stat-value" id="modal-user-following">0</div>
+                                <div class="modal-stat-label">フォロー中</div>
+                            </div>
+                        </div>
+                        <div class="modal-user-info">
+                            <div class="modal-info-item">
+                                <span class="modal-info-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </span>
+                                <span id="modal-user-email">user@example.com</span>
+                            </div>
+                            <div class="modal-info-item" id="modal-user-specialty-container">
+                                <span class="modal-info-icon">
+                                    <i class="fas fa-briefcase"></i>
+                                </span>
+                                <span id="modal-user-specialty">専門分野</span>
+                            </div>
+                            <div class="modal-info-item">
+                                <span class="modal-info-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                                <span id="modal-user-joined">2023年に参加</span>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <button class="modal-action-btn modal-follow-btn" id="modal-follow-btn" data-user-id="">
+                                フォローする
+                            </button>
+                            <button class="modal-action-btn modal-message-btn">
+                                <i class="fas fa-envelope"></i> メッセージ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScripts -->
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // 日本語ロケールの設定
+        auth.languageCode = 'ja';
+
+        // DOM要素の参照
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const userInitial = document.getElementById('user-initial');
+        const userAvatar = document.getElementById('user-avatar');
+        const postUserInitial = document.getElementById('post-user-initial');
+        const postUserAvatar = document.getElementById('post-user-avatar');
+        const postInput = document.getElementById('post-input');
+        const postSubmitBtn = document.getElementById('post-submit-btn');
+        const imageUploadBtn = document.getElementById('image-upload-btn');
+        const imageUpload = document.getElementById('image-upload');
+        const pdfUploadBtn = document.getElementById('pdf-upload-btn');
+        const pdfUpload = document.getElementById('pdf-upload');
+        const tagBtn = document.getElementById('tag-btn');
+        const postsContainer = document.getElementById('posts-container');
+        const trendsContainer = document.getElementById('trends-container');
+        const trendList = document.getElementById('trend-list');
+        const suggestionsContainer = document.getElementById('suggestions-container');
+        const userSuggestionList = document.getElementById('user-suggestion-list');
+        const postTabs = document.querySelectorAll('.post-tab');
+        const logoutBtn = document.getElementById('logout-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        // プロフィール要素の参照
+        const profileAvatar = document.getElementById('profile-avatar');
+        const profileInitial = document.getElementById('profile-initial');
+        const profileName = document.getElementById('profile-name');
+        const profileEmail = document.getElementById('profile-email');
+        const profilePosts = document.getElementById('profile-posts');
+        const profileFollowers = document.getElementById('profile-followers');
+        const profileFollowing = document.getElementById('profile-following');
+        const profileEditBtn = document.getElementById('profile-edit-btn');
+
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // ユーザーがログインしている場合
+                console.log("ログイン中:", user.uid);
+                
+                // 初期表示名の即時反映（暫定表示）
+                const initialDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                if (sidebarUserName) {
+                    sidebarUserName.textContent = initialDisplayName;
+                }
+                
+                // ユーザーの初期アバター表示
+                if (userInitial && user.displayName) {
+                    const initial = user.displayName.charAt(0).toUpperCase();
+                    userInitial.textContent = initial;
+                    
+                    if (user.photoURL) {
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = user.photoURL;
+                        avatarImg.alt = user.displayName;
+                        userAvatar.innerHTML = '';
+                        userAvatar.appendChild(avatarImg);
+                    }
+                }
+                
+                // 投稿フォームのアバター設定
+                if (postUserInitial && user.displayName) {
+                    const initial = user.displayName.charAt(0).toUpperCase();
+                    postUserInitial.textContent = initial;
+                    
+                    if (user.photoURL) {
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = user.photoURL;
+                        avatarImg.alt = user.displayName;
+                        postUserAvatar.innerHTML = '';
+                        postUserAvatar.appendChild(avatarImg);
+                    }
+                }
+                
+                // 完全なユーザーデータ取得
+                fetchUserData(user.uid);
+                
+                // 投稿データの取得
+                fetchPosts();
+                
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ユーザーデータの取得
+        async function fetchUserData(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                const currentUser = auth.currentUser;
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    // Firebase Authentication からの最新ユーザー名があれば更新
+                    if (currentUser && currentUser.displayName && 
+                        currentUser.displayName !== userData.displayName) {
+                        await db.collection('users').doc(userId).update({
+                            displayName: currentUser.displayName
+                        });
+                        userData.displayName = currentUser.displayName;
+                    }
+                    
+                    // ユーザー名を表示
+                    if (sidebarUserName) {
+                        sidebarUserName.textContent = userData.displayName || 'ゲスト';
+                    }
+                    
+                    // ユーザーアバター設定
+                    if (userInitial) {
+                        const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                        userInitial.textContent = initial;
+                        
+                        // Firebase Authentication のプロフィール画像を優先
+                        const profileImageUrl = (currentUser && currentUser.photoURL) || userData.profileImageUrl;
+                        if (profileImageUrl) {
+                            const avatarImg = document.createElement('img');
+                            avatarImg.src = profileImageUrl;
+                            avatarImg.alt = userData.displayName || 'ユーザー';
+                            userAvatar.innerHTML = '';
+                            userAvatar.appendChild(avatarImg);
+                        }
+                    }
+                    
+                    // 投稿フォームのアバター設定
+                    if (postUserInitial) {
+                        const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                        postUserInitial.textContent = initial;
+                        
+                        // Firebase Authentication のプロフィール画像を優先
+                        const profileImageUrl = (currentUser && currentUser.photoURL) || userData.profileImageUrl;
+                        if (profileImageUrl) {
+                            const avatarImg = document.createElement('img');
+                            avatarImg.src = profileImageUrl;
+                            avatarImg.alt = userData.displayName || 'ユーザー';
+                            postUserAvatar.innerHTML = '';
+                            postUserAvatar.appendChild(avatarImg);
+                        }
+                    }
+                    
+                    // プロフィールカードの更新
+                    updateProfileCard(userData, currentUser);
+                    
+                } else {
+                    console.log("ユーザーデータが見つかりません");
+                    // ユーザーデータがない場合は新規作成
+                    await createUserProfile(auth.currentUser);
+                }
+            } catch (error) {
+                console.error("ユーザーデータ取得エラー:", error);
+            }
+        }
+
+        // プロフィールカードの更新
+        function updateProfileCard(userData, currentUser) {
+            if (profileName) {
+                profileName.textContent = userData.displayName || 'ユーザー名';
+            }
+            
+            if (profileEmail) {
+                profileEmail.textContent = currentUser.email || userData.email || '';
+            }
+            
+            if (profilePosts) {
+                profilePosts.textContent = userData.communityPosts || 0;
+            }
+            
+            if (profileFollowers) {
+                profileFollowers.textContent = userData.followers ? userData.followers.length : 0;
+            }
+            
+            if (profileFollowing) {
+                profileFollowing.textContent = userData.following ? userData.following.length : 0;
+            }
+            
+            if (profileInitial) {
+                const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                profileInitial.textContent = initial;
+                
+                // プロフィール画像
+                const profileImageUrl = (currentUser && currentUser.photoURL) || userData.profileImageUrl;
+                if (profileImageUrl && profileAvatar) {
+                    profileAvatar.innerHTML = '';
+                    const avatarImg = document.createElement('img');
+                    avatarImg.src = profileImageUrl;
+                    avatarImg.alt = userData.displayName || 'ユーザー';
+                    profileAvatar.appendChild(avatarImg);
+                }
+            }
+            
+            // プロフィール編集ボタンのイベントリスナー
+            if (profileEditBtn) {
+                profileEditBtn.addEventListener('click', () => {
+                    window.location.href = 'profile.html';
+                });
+            }
+        }
+
+        // 新規ユーザープロファイルの作成
+        async function createUserProfile(user) {
+            try {
+                // ユーザー名を Authentication から取得
+                // displayName が null の場合は、メールアドレスの @ より前の部分を使用
+                let displayName = user.displayName;
+                if (!displayName && user.email) {
+                    displayName = user.email.split('@')[0];
+                } else if (!displayName) {
+                    displayName = '新規ユーザー';
+                }
+                
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: displayName,
+                    profileImageUrl: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    documentCount: 0,
+                    points: 0,
+                    communityPosts: 0,
+                    level: 1,
+                    followers: [],
+                    following: [],
+                    isVerified: false
+                };
+                
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log("ユーザープロファイル作成完了");
+                
+                // コミュニティ参加アクティビティログの作成
+                await db.collection('activities').add({
+                    userId: user.uid,
+                    type: 'community_joined',
+                    title: 'コミュニティ参加',
+                    description: 'コミュニティ広場に参加しました。',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // ミッション完了処理
+                await checkAndCompleteMission(user.uid, 'community_join');
+                
+                // プロフィールカードの更新
+                updateProfileCard(userData, user);
+            } catch (error) {
+                console.error("ユーザープロファイル作成エラー:", error);
+            }
+        }
+
+        // ミッション完了チェック
+        async function checkAndCompleteMission(userId, missionType) {
+            try {
+                // 今日の日付
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                // ミッション検索
+                const missionsSnapshot = await db.collection('missions')
+                    .where('userId', '==', userId)
+                    .where('type', '==', missionType)
+                    .where('completed', '==', false)
+                    .get();
+                
+                if (!missionsSnapshot.empty) {
+                    const batch = db.batch();
+                    
+                    missionsSnapshot.forEach(doc => {
+                        // ミッション完了に更新
+                        batch.update(doc.ref, { 
+                            completed: true,
+                            completedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    });
+                    
+                    // バッチ処理実行
+                    await batch.commit();
+                    console.log("ミッション完了!");
+                    
+                    // ポイント追加
+                    const userRef = db.collection('users').doc(userId);
+                    await userRef.update({
+                        points: firebase.firestore.FieldValue.increment(50)
+                    });
+                    
+                    // アクティビティ追加
+                    await db.collection('activities').add({
+                        userId: userId,
+                        type: 'mission_completed',
+                        title: 'ミッション達成',
+                        description: 'コミュニティに参加するミッションを達成しました！',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error("ミッション完了処理エラー:", error);
+            }
+        }
+
+        // 投稿データの取得
+        async function fetchPosts(filter = 'all') {
+            try {
+                // データの取得前に準備
+                postsContainer.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div></div>';
+                
+                // コレクション参照
+                let postsRef = db.collection('posts');
+                
+                // フィルタリング
+                if (filter === 'following') {
+                    // 現在のユーザーが取得できている場合のみフィルタリング
+                    const currentUser = auth.currentUser;
+                    if (currentUser) {
+                        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            const following = userData.following || [];
+                            // following配列にユーザーIDが含まれる投稿を取得
+                            if (following.length > 0) {
+                                postsRef = postsRef.where('userId', 'in', following);
+                            } else {
+                                // フォロー中のユーザーがいない場合は空の結果を表示
+                                postsContainer.innerHTML = `
+                                    <div class="empty-state">
+                                        <i class="fas fa-users empty-state-icon"></i>
+                                        <h3 class="empty-state-title">フォローしているユーザーがいません</h3>
+                                        <p class="empty-state-description">他のユーザーをフォローして投稿を見てみましょう</p>
+                                    </div>
+                                `;
+                                return;
+                            }
+                        }
+                    }
+                }
+                
+                // 日付で新しい順に取得
+                const postsSnapshot = await postsRef.orderBy('createdAt', 'desc').limit(10).get();
+                
+                if (postsSnapshot.empty) {
+                    // 投稿がない場合は空の状態を表示
+                    postsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-comment-slash empty-state-icon"></i>
+                            <h3 class="empty-state-title">まだ投稿がありません</h3>
+                            <p class="empty-state-description">あなたが最初の投稿をしてみませんか？</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 投稿データの取得とユーザー情報の追加
+                const postsWithUserData = await Promise.all(postsSnapshot.docs.map(async doc => {
+                    const postData = doc.data();
+                    postData.id = doc.id;
+                    
+                    // 投稿ユーザーの情報を取得
+                    try {
+                        const userDoc = await db.collection('users').doc(postData.userId).get();
+                        if (userDoc.exists) {
+                            postData.userData = userDoc.data();
+                        }
+                    } catch (error) {
+                        console.error("ユーザーデータ取得エラー:", error);
+                        postData.userData = { displayName: '不明なユーザー' };
+                    }
+                    
+                    return postData;
+                }));
+                
+                let postsHTML = '';
+                
+                // 投稿のHTMLを生成
+                postsWithUserData.forEach(post => {
+                    // 投稿日時のフォーマット
+                    const postDate = post.createdAt ? post.createdAt.toDate() : new Date();
+                    const formattedDate = formatDate(postDate);
+                    
+                    // ユーザーアバター
+                    let avatarHTML = '';
+                    if (post.userData && post.userData.profileImageUrl) {
+                        avatarHTML = `<img src="${post.userData.profileImageUrl}" alt="User Avatar">`;
+                    } else {
+                        const initial = post.userData && post.userData.displayName ? post.userData.displayName.charAt(0).toUpperCase() : 'U';
+                        avatarHTML = initial;
+                    }
+                    
+                    // 認証バッジ
+                    const verifiedBadge = post.userData && post.userData.isVerified ? 
+                        '<i class="fas fa-check-circle verified-badge"></i>' : '';
+                    
+                    // いいねアイコン
+                    const likeIcon = post.likedBy && auth.currentUser && post.likedBy.includes(auth.currentUser.uid) ?
+                        'fas fa-heart liked' : 'far fa-heart';
+                    
+                    // 画像表示
+                    const imageHTML = post.imageUrl ? 
+                        `<img src="${post.imageUrl}" alt="Post image" class="post-image">` : '';
+                    
+                    // 投稿内容（ハッシュタグをリンク化）
+                    const content = post.content ? post.content.replace(/#(\w+)/g, '<a href="#" class="hashtag">#$1</a>') : '';
+                    
+                    // 現在のユーザーが投稿者かどうかチェック
+                    const isAuthor = auth.currentUser && post.userId === auth.currentUser.uid;
+                    
+                    postsHTML += `
+                        <div class="post-card" data-post-id="${post.id}">
+                            <div class="post-header">
+                                <div class="post-user-avatar">
+                                    ${avatarHTML}
+                                </div>
+                                <div class="post-user-info">
+                                    <a href="user-profile.html?id=${post.userId}" class="post-user-name">
+                                        ${post.userData ? post.userData.displayName : '不明なユーザー'} ${verifiedBadge}
+                                    </a>
+                                    <div class="post-timestamp">${formattedDate}</div>
+                                </div>
+                                <div class="post-menu" data-post-id="${post.id}">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+                                <div class="post-menu-dropdown" id="post-menu-${post.id}">
+                                    ${isAuthor ? `
+                                        <div class="post-menu-item edit-post" data-post-id="${post.id}">
+                                            <i class="fas fa-edit"></i> 編集する
+                                        </div>
+                                        <div class="post-menu-item delete post-delete" data-post-id="${post.id}">
+                                            <i class="fas fa-trash-alt"></i> 削除する
+                                        </div>
+                                    ` : `
+                                        <div class="post-menu-item">
+                                            <i class="fas fa-flag"></i> 報告する
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                            <div class="post-body">
+                                <div class="post-content">${content}</div>
+                                ${imageHTML}
+                            </div>
+                            <div class="post-edit-form" id="post-edit-form-${post.id}">
+                                <textarea class="post-edit-input" id="post-edit-input-${post.id}">${post.content || ''}</textarea>
+                                <div class="post-edit-actions">
+                                    <button class="post-edit-cancel" data-post-id="${post.id}">キャンセル</button>
+                                    <button class="post-edit-save" data-post-id="${post.id}">保存</button>
+                                </div>
+                            </div>
+                            <div class="post-actions-bar">
+                                <div class="post-action${post.likedBy && auth.currentUser && post.likedBy.includes(auth.currentUser.uid) ? ' liked' : ''}" data-action="like">
+                                    <i class="${likeIcon}"></i>
+                                    <span class="post-action-count">${post.likeCount || 0}</span>
+                                </div>
+                                <div class="post-action" data-action="comment">
+                                    <i class="far fa-comment"></i>
+                                    <span class="post-action-count">${post.commentCount || 0}</span>
+                                </div>
+                                <div class="post-action" data-action="share">
+                                    <i class="fas fa-share-alt"></i>
+                                    <span class="post-action-count">${post.shareCount || 0}</span>
+                                </div>
+                                <div class="post-action" data-action="bookmark">
+                                    <i class="far fa-bookmark"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                postsContainer.innerHTML = postsHTML;
+                
+                // 投稿アクションのイベントリスナー設定
+                setupPostActionListeners();
+                
+                // 投稿からハッシュタグを集計してトレンドを更新
+                updateTrends(postsWithUserData);
+                
+                // おすすめユーザー表示
+                updateUserSuggestions();
+                
+            } catch (error) {
+                console.error("投稿取得エラー:", error);
+                postsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle empty-state-icon" style="color: var(--danger);"></i>
+                        <h3 class="empty-state-title">投稿の読み込み中にエラーが発生しました</h3>
+                        <p class="empty-state-description">しばらくしてから再度お試しください</p>
+                    </div>
+                `;
+            }
+        }
+
+        // トレンドハッシュタグの更新
+        function updateTrends(posts) {
+            // すべての投稿からハッシュタグを抽出
+            const tags = {};
+            
+            posts.forEach(post => {
+                if (post.content) {
+                    // ハッシュタグを抽出
+                    const matches = post.content.match(/#(\w+)/g);
+                    if (matches) {
+                        matches.forEach(tag => {
+                            if (tags[tag]) {
+                                tags[tag]++;
+                            } else {
+                                tags[tag] = 1;
+                            }
+                        });
+                    }
+                }
+            });
+            
+            // ハッシュタグを使用回数の多い順にソート
+            const sortedTags = Object.entries(tags)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5); // トップ5のみ表示
+            
+            // ハッシュタグがあればトレンドを表示
+            if (sortedTags.length > 0) {
+                trendsContainer.style.display = 'block';
+                
+                let trendsHTML = '';
+                
+                sortedTags.forEach(([tag, count]) => {
+                    trendsHTML += `
+                        <li class="trend-item">
+                            <a href="#" data-tag="${tag}">
+                                <div class="trend-hashtag">${tag}</div>
+                                <div class="trend-count">${count}件の投稿</div>
+                            </a>
+                        </li>
+                    `;
+                });
+                
+                trendList.innerHTML = trendsHTML;
+                
+                // タグクリックのイベントリスナー
+                trendList.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const tag = e.currentTarget.getAttribute('data-tag');
+                        // タグ検索を実装
+                        searchByTag(tag);
+                    });
+                });
+            }
+        }
+
+        // タグ検索
+        async function searchByTag(tag) {
+            try {
+                // UI更新
+                postsContainer.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div></div>';
+                
+                // タブ表示更新
+                document.querySelectorAll('.post-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // 投稿のハッシュタグで検索
+                const postsRef = db.collection('posts')
+                    .orderBy('createdAt', 'desc');
+                
+                const postsSnapshot = await postsRef.get();
+                
+                const filteredPosts = [];
+                
+                // クライアントサイドでフィルタリング（タグフィールドがない場合はコンテンツ内を検索）
+                postsSnapshot.forEach(doc => {
+                    const postData = doc.data();
+                    
+                    // タグ配列があればそこから検索
+                    if (postData.tags && postData.tags.includes(tag)) {
+                        postData.id = doc.id;
+                        filteredPosts.push(postData);
+                    } 
+                    // コンテンツ内のタグを検索
+                    else if (postData.content && postData.content.includes(tag)) {
+                        postData.id = doc.id;
+                        filteredPosts.push(postData);
+                    }
+                });
+                
+                if (filteredPosts.length === 0) {
+                    postsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-search empty-state-icon"></i>
+                            <h3 class="empty-state-title">${tag}の検索結果はありません</h3>
+                            <p class="empty-state-description">別のキーワードで検索してみてください</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // ユーザーデータを取得
+                const postsWithUserData = await Promise.all(filteredPosts.map(async postData => {
+                    try {
+                        const userDoc = await db.collection('users').doc(postData.userId).get();
+                        if (userDoc.exists) {
+                            postData.userData = userDoc.data();
+                        }
+                    } catch (error) {
+                        console.error("ユーザーデータ取得エラー:", error);
+                        postData.userData = { displayName: '不明なユーザー' };
+                    }
+                    
+                    return postData;
+                }));
+                
+                let postsHTML = `
+                    <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: var(--primary-light); border-radius: var(--radius-md); color: var(--primary);">
+                        <i class="fas fa-hashtag"></i> <strong>${tag}</strong> の検索結果: ${postsWithUserData.length}件
+                    </div>
+                `;
+                
+                // 投稿のHTMLを生成
+                postsWithUserData.forEach(post => {
+                    // 投稿日時のフォーマット
+                    const postDate = post.createdAt ? post.createdAt.toDate() : new Date();
+                    const formattedDate = formatDate(postDate);
+                    
+                    // ユーザーアバター
+                    let avatarHTML = '';
+                    if (post.userData && post.userData.profileImageUrl) {
+                        avatarHTML = `<img src="${post.userData.profileImageUrl}" alt="User Avatar">`;
+                    } else {
+                        const initial = post.userData && post.userData.displayName ? post.userData.displayName.charAt(0).toUpperCase() : 'U';
+                        avatarHTML = initial;
+                    }
+                    
+                    // 認証バッジ
+                    const verifiedBadge = post.userData && post.userData.isVerified ? 
+                        '<i class="fas fa-check-circle verified-badge"></i>' : '';
+                    
+                    // いいねアイコン
+                    const likeIcon = post.likedBy && auth.currentUser && post.likedBy.includes(auth.currentUser.uid) ?
+                        'fas fa-heart liked' : 'far fa-heart';
+                    
+                    // 画像表示
+                    const imageHTML = post.imageUrl ? 
+                        `<img src="${post.imageUrl}" alt="Post image" class="post-image">` : '';
+                    
+                    // 投稿内容（ハッシュタグをリンク化）
+                    const content = post.content ? post.content.replace(/#(\w+)/g, '<a href="#" class="hashtag">#$1</a>') : '';
+                    
+                    // 現在のユーザーが投稿者かどうかチェック
+                    const isAuthor = auth.currentUser && post.userId === auth.currentUser.uid;
+                    
+                    postsHTML += `
+                        <div class="post-card" data-post-id="${post.id}">
+                            <div class="post-header">
+                                <div class="post-user-avatar">
+                                    ${avatarHTML}
+                                </div>
+                                <div class="post-user-info">
+                                    <a href="user-profile.html?id=${post.userId}" class="post-user-name">
+                                        ${post.userData ? post.userData.displayName : '不明なユーザー'} ${verifiedBadge}
+                                    </a>
+                                    <div class="post-timestamp">${formattedDate}</div>
+                                </div>
+                                <div class="post-menu" data-post-id="${post.id}">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </div>
+                                <div class="post-menu-dropdown" id="post-menu-${post.id}">
+                                    ${isAuthor ? `
+                                        <div class="post-menu-item edit-post" data-post-id="${post.id}">
+                                            <i class="fas fa-edit"></i> 編集する
+                                        </div>
+                                        <div class="post-menu-item delete post-delete" data-post-id="${post.id}">
+                                            <i class="fas fa-trash-alt"></i> 削除する
+                                        </div>
+                                    ` : `
+                                        <div class="post-menu-item">
+                                            <i class="fas fa-flag"></i> 報告する
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                            <div class="post-body">
+                                <div class="post-content">${content}</div>
+                                ${imageHTML}
+                            </div>
+                            <div class="post-edit-form" id="post-edit-form-${post.id}">
+                                <textarea class="post-edit-input" id="post-edit-input-${post.id}">${post.content || ''}</textarea>
+                                <div class="post-edit-actions">
+                                    <button class="post-edit-cancel" data-post-id="${post.id}">キャンセル</button>
+                                    <button class="post-edit-save" data-post-id="${post.id}">保存</button>
+                                </div>
+                            </div>
+                            <div class="post-actions-bar">
+                                <div class="post-action${post.likedBy && auth.currentUser && post.likedBy.includes(auth.currentUser.uid) ? ' liked' : ''}" data-action="like">
+                                    <i class="${likeIcon}"></i>
+                                    <span class="post-action-count">${post.likeCount || 0}</span>
+                                </div>
+                                <div class="post-action" data-action="comment">
+                                    <i class="far fa-comment"></i>
+                                    <span class="post-action-count">${post.commentCount || 0}</span>
+                                </div>
+                                <div class="post-action" data-action="share">
+                                    <i class="fas fa-share-alt"></i>
+                                    <span class="post-action-count">${post.shareCount || 0}</span>
+                                </div>
+                                <div class="post-action" data-action="bookmark">
+                                    <i class="far fa-bookmark"></i>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                postsContainer.innerHTML = postsHTML;
+                
+                // 投稿アクションのイベントリスナー設定
+                setupPostActionListeners();
+                
+            } catch (error) {
+                console.error("タグ検索エラー:", error);
+                postsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle empty-state-icon" style="color: var(--danger);"></i>
+                        <h3 class="empty-state-title">検索中にエラーが発生しました</h3>
+                        <p class="empty-state-description">しばらくしてから再度お試しください</p>
+                    </div>
+                `;
+            }
+        }
+
+        // おすすめユーザーの表示
+        async function updateUserSuggestions() {
+            try {
+                const currentUser = auth.currentUser;
+                if (!currentUser) return;
+                
+                // 現在のユーザーの情報を取得
+                const currentUserDoc = await db.collection('users').doc(currentUser.uid).get();
+                if (!currentUserDoc.exists) return;
+                
+                const currentUserData = currentUserDoc.data();
+                const following = currentUserData.following || [];
+                
+                // ユーザーの投稿が一定数以上あるユーザーを取得（上位アクティブユーザー）
+                const usersSnapshot = await db.collection('users')
+                    .orderBy('communityPosts', 'desc')
+                    .limit(10)
+                    .get();
+                
+                if (usersSnapshot.empty) return;
+                
+                // フォローしていないユーザーのみフィルタリング
+                const suggestedUsers = [];
+                
+                usersSnapshot.forEach(doc => {
+                    const userData = doc.data();
+                    
+                    // 自分自身と既にフォロー中のユーザーを除外
+                    if (doc.id !== currentUser.uid && !following.includes(doc.id)) {
+                        suggestedUsers.push({
+                            id: doc.id,
+                            ...userData
+                        });
+                    }
+                });
+                
+                // 表示するユーザーがあれば表示
+                if (suggestedUsers.length > 0) {
+                    suggestionsContainer.style.display = 'block';
+                    
+                    // 最大3人まで表示
+                    const displayUsers = suggestedUsers.slice(0, 3);
+                    
+                    let suggestionsHTML = '';
+                    
+                    displayUsers.forEach(user => {
+                        // ユーザーアバター
+                        let avatarHTML = '';
+                        if (user.profileImageUrl) {
+                            avatarHTML = `<img src="${user.profileImageUrl}" alt="User Avatar">`;
+                        } else {
+                            const initial = user.displayName ? user.displayName.charAt(0).toUpperCase() : 'U';
+                            avatarHTML = initial;
+                        }
+                        
+                        // 認証バッジ
+                        const verifiedBadge = user.isVerified ? 
+                            '<i class="fas fa-check-circle verified-badge"></i>' : '';
+                        
+                        // ユーザー名
+                        const userName = user.displayName || '不明なユーザー';
+                        
+                        // 専門分野
+                        const specialty = user.specialty || '';
+                        
+                        suggestionsHTML += `
+                            <li class="user-suggestion-item" data-user-id="${user.id}">
+                                <div class="suggestion-avatar">
+                                    ${avatarHTML}
+                                </div>
+                                <div class="suggestion-info">
+                                    <div class="suggestion-name">
+                                        ${userName} ${verifiedBadge}
+                                    </div>
+                                    <div class="suggestion-username">${specialty}</div>
+                                </div>
+                                <button class="follow-btn" data-user-id="${user.id}">フォロー</button>
+                            </li>
+                        `;
+                    });
+                    
+                    userSuggestionList.innerHTML = suggestionsHTML;
+                    
+                    // フォローボタンのイベントリスナー
+                    userSuggestionList.querySelectorAll('.follow-btn').forEach(btn => {
+                        btn.addEventListener('click', handleFollowAction);
+                    });
+                    
+                    // ユーザーアイテムのクリックイベント
+                    userSuggestionList.querySelectorAll('.suggestion-avatar, .suggestion-info').forEach(element => {
+                        element.addEventListener('click', (e) => {
+                            const userItem = e.target.closest('.user-suggestion-item');
+                            if (userItem) {
+                                const userId = userItem.getAttribute('data-user-id');
+                                window.location.href = `user-profile.html?id=${userId}`;
+                            }
+                        });
+                    });
+                }
+            } catch (error) {
+                console.error("おすすめユーザー取得エラー:", error);
+            }
+        }
+
+        // フォロー処理
+        async function handleFollowAction(e) {
+            if (!auth.currentUser) {
+                alert('フォローするにはログインが必要です');
+                return;
+            }
+            
+            try {
+                const btn = e.currentTarget;
+                const userId = btn.getAttribute('data-user-id');
+                
+                // ログイン中のユーザーID
+                const currentUserId = auth.currentUser.uid;
+                
+                // 自分自身はフォローできない
+                if (userId === currentUserId) {
+                    alert('自分自身をフォローすることはできません');
+                    return;
+                }
+                
+                // ターゲットユーザーの情報を取得
+                const targetUserDoc = await db.collection('users').doc(userId).get();
+                
+                if (!targetUserDoc.exists) {
+                    alert('ユーザーが見つかりません');
+                    return;
+                }
+                // フォロー処理の続き
+                const targetUser = targetUserDoc.data();
+                
+                // 現在のユーザーデータを取得
+                const currentUserRef = db.collection('users').doc(currentUserId);
+                const currentUserDoc = await currentUserRef.get();
+                
+                if (!currentUserDoc.exists) {
+                    alert('ユーザーデータが見つかりません');
+                    return;
+                }
+                
+                const userData = currentUserDoc.data();
+                const following = userData.following || [];
+                
+                // フォロー状態によって処理を分岐
+                if (following.includes(userId)) {
+                    // フォロー解除
+                    await currentUserRef.update({
+                        following: firebase.firestore.FieldValue.arrayRemove(userId)
+                    });
+                    
+                    // ターゲットユーザーのフォロワーリストからも削除
+                    await db.collection('users').doc(userId).update({
+                        followers: firebase.firestore.FieldValue.arrayRemove(currentUserId)
+                    });
+                    
+                    // UIを更新
+                    btn.textContent = 'フォロー';
+                    btn.classList.remove('following');
+                    
+                    // トースト通知
+                    showToast(`${targetUser.displayName}さんのフォローを解除しました`);
+                    
+                    // プロフィールのフォロー数を更新
+                    if (profileFollowing) {
+                        profileFollowing.textContent = parseInt(profileFollowing.textContent) - 1;
+                    }
+                } else {
+                    // フォロー追加
+                    await currentUserRef.update({
+                        following: firebase.firestore.FieldValue.arrayUnion(userId)
+                    });
+                    
+                    // ターゲットユーザーのフォロワーリストにも追加
+                    await db.collection('users').doc(userId).update({
+                        followers: firebase.firestore.FieldValue.arrayUnion(currentUserId)
+                    });
+                    
+                    // UIを更新
+                    btn.textContent = 'フォロー中';
+                    btn.classList.add('following');
+                    
+                    // トースト通知
+                    showToast(`${targetUser.displayName}さんをフォローしました`);
+                    
+                    // プロフィールのフォロー数を更新
+                    if (profileFollowing) {
+                        profileFollowing.textContent = parseInt(profileFollowing.textContent) + 1;
+                    }
+                    
+                    // 通知を作成
+                    await db.collection('notifications').add({
+                        userId: userId,
+                        actorId: currentUserId,
+                        type: 'follow',
+                        read: false,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // アクティビティに追加
+                    await db.collection('activities').add({
+                        userId: currentUserId,
+                        type: 'follow',
+                        title: 'フォロー',
+                        description: `${targetUser.displayName}さんをフォローしました`,
+                        targetUserId: userId,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error('フォロー処理エラー:', error);
+                alert('処理中にエラーが発生しました');
+            }
+        }
+
+        // 投稿アクションのイベントリスナー設定
+        function setupPostActionListeners() {
+            // いいねボタン
+            document.querySelectorAll('.post-action[data-action="like"]').forEach(btn => {
+                btn.addEventListener('click', handleLikeAction);
+            });
+            
+            // コメントボタン
+            document.querySelectorAll('.post-action[data-action="comment"]').forEach(btn => {
+                btn.addEventListener('click', handleCommentAction);
+            });
+            
+            // シェアボタン
+            document.querySelectorAll('.post-action[data-action="share"]').forEach(btn => {
+                btn.addEventListener('click', handleShareAction);
+            });
+            
+            // ブックマークボタン
+            document.querySelectorAll('.post-action[data-action="bookmark"]').forEach(btn => {
+                btn.addEventListener('click', handleBookmarkAction);
+            });
+            
+            // ハッシュタグクリック
+            document.querySelectorAll('.hashtag').forEach(tag => {
+                tag.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    searchByTag(e.target.textContent);
+                });
+            });
+            
+            // 投稿ユーザー名クリック
+            document.querySelectorAll('.post-user-name').forEach(name => {
+                name.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const userId = e.currentTarget.getAttribute('href').split('=')[1];
+                    showUserProfileModal(userId);
+                });
+            });
+            
+            // 投稿メニューボタンのクリックイベント
+            document.querySelectorAll('.post-menu').forEach(menu => {
+                menu.addEventListener('click', (e) => {
+                    e.stopPropagation(); // バブリング防止
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    const menuDropdown = document.getElementById(`post-menu-${postId}`);
+                    
+                    // すべてのドロップダウンを一旦閉じる
+                    document.querySelectorAll('.post-menu-dropdown').forEach(dropdown => {
+                        if (dropdown !== menuDropdown) {
+                            dropdown.classList.remove('active');
+                        }
+                    });
+                    
+                    // クリックされたメニューのドロップダウンを表示/非表示切替
+                    menuDropdown.classList.toggle('active');
+                });
+            });
+            
+            // ドキュメント全体をクリックしたらメニューを閉じる
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.post-menu')) {
+                    document.querySelectorAll('.post-menu-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
+            
+            // 投稿編集ボタンのクリックイベント
+            document.querySelectorAll('.edit-post').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+                    const postBody = postCard.querySelector('.post-body');
+                    const editForm = document.getElementById(`post-edit-form-${postId}`);
+                    
+                    // 投稿本文を非表示にして編集フォームを表示
+                    postBody.style.display = 'none';
+                    editForm.classList.add('active');
+                    
+                    // メニューを閉じる
+                    document.querySelectorAll('.post-menu-dropdown').forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                });
+            });
+            
+            // 編集キャンセルボタンのクリックイベント
+            document.querySelectorAll('.post-edit-cancel').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const postId = e.currentTarget.getAttribute('data-post-id');
+                    const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+                    const postBody = postCard.querySelector('.post-body');
+                    const editForm = document.getElementById(`post-edit-form-${postId}`);
+                    
+                    // 編集フォームを非表示にして投稿本文を表示
+                    editForm.classList.remove('active');
+                    postBody.style.display = 'block';
+                });
+            });
+            
+            // 編集保存ボタンのクリックイベント
+            document.querySelectorAll('.post-edit-save').forEach(btn => {
+                btn.addEventListener('click', handlePostEdit);
+            });
+            
+            // 投稿削除ボタンのクリックイベント
+            document.querySelectorAll('.post-delete').forEach(btn => {
+                btn.addEventListener('click', handlePostDelete);
+            });
+        }
+
+        // いいね処理
+        async function handleLikeAction(e) {
+            if (!auth.currentUser) {
+                alert('いいねするにはログインが必要です');
+                return;
+            }
+            
+            try {
+                const postAction = e.currentTarget;
+                const postCard = postAction.closest('.post-card');
+                const postId = postCard.getAttribute('data-post-id');
+                const postRef = db.collection('posts').doc(postId);
+                
+                // 現在の投稿データを取得
+                const postDoc = await postRef.get();
+                if (!postDoc.exists) {
+                    console.error('投稿が見つかりません');
+                    return;
+                }
+                
+                const postData = postDoc.data();
+                const likedBy = postData.likedBy || [];
+                const currentUserId = auth.currentUser.uid;
+                const isLiked = likedBy.includes(currentUserId);
+                
+                if (isLiked) {
+                    // いいねを解除
+                    await postRef.update({
+                        likedBy: firebase.firestore.FieldValue.arrayRemove(currentUserId),
+                        likeCount: firebase.firestore.FieldValue.increment(-1)
+                    });
+                    
+                    // UIを更新
+                    postAction.classList.remove('liked');
+                    const icon = postAction.querySelector('i');
+                    icon.className = 'far fa-heart';
+                    const countElement = postAction.querySelector('.post-action-count');
+                    countElement.textContent = parseInt(countElement.textContent) - 1;
+                } else {
+                    // いいねを追加
+                    await postRef.update({
+                        likedBy: firebase.firestore.FieldValue.arrayUnion(currentUserId),
+                        likeCount: firebase.firestore.FieldValue.increment(1)
+                    });
+                    
+                    // UIを更新
+                    postAction.classList.add('liked');
+                    const icon = postAction.querySelector('i');
+                    icon.className = 'fas fa-heart liked';
+                    const countElement = postAction.querySelector('.post-action-count');
+                    countElement.textContent = parseInt(countElement.textContent) + 1;
+                    
+                    // 投稿者へ通知（自分の投稿以外）
+                    if (postData.userId !== currentUserId) {
+                        await db.collection('notifications').add({
+                            userId: postData.userId,
+                            actorId: currentUserId,
+                            type: 'like',
+                            postId: postId,
+                            read: false,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // アクティビティに追加
+                        await db.collection('activities').add({
+                            userId: currentUserId,
+                            type: 'like',
+                            title: 'いいね',
+                            description: '投稿にいいねしました',
+                            postId: postId,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('いいね処理エラー:', error);
+                alert('処理中にエラーが発生しました');
+            }
+        }
+
+        // コメント表示・非表示切替
+        function handleCommentAction(e) {
+            const postCard = e.currentTarget.closest('.post-card');
+            const postId = postCard.getAttribute('data-post-id');
+            
+            let commentsSection = postCard.querySelector('.post-comments');
+            
+            if (!commentsSection) {
+                // コメントセクションがなければ作成
+                commentsSection = document.createElement('div');
+                commentsSection.className = 'post-comments';
+                commentsSection.innerHTML = `
+                    <div class="comment-form">
+                        <input type="text" class="comment-input" placeholder="コメントを追加..." data-post-id="${postId}">
+                        <button type="button" class="comment-submit" data-post-id="${postId}">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                `;
+                postCard.appendChild(commentsSection);
+                
+                // コメント入力イベントリスナー
+                const commentInput = commentsSection.querySelector('.comment-input');
+                commentInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        submitComment({ target: commentsSection.querySelector('.comment-submit') });
+                    }
+                });
+                
+                // コメント送信ボタンイベントリスナー
+                const commentSubmit = commentsSection.querySelector('.comment-submit');
+                commentSubmit.addEventListener('click', submitComment);
+                
+                // コメント一覧を読み込む
+                loadComments(postId, commentsSection);
+            } else {
+                // 既にあれば表示・非表示を切り替え
+                if (commentsSection.style.display === 'none') {
+                    commentsSection.style.display = 'block';
+                    
+                    // コメントまだ読み込まれていなければ読み込む
+                    if (!commentsSection.querySelector('.comment-list')) {
+                        loadComments(postId, commentsSection);
+                    }
+                } else {
+                    commentsSection.style.display = 'none';
+                }
+            }
+        }
+
+        // コメント読み込み
+        async function loadComments(postId, commentsSection) {
+            try {
+                // ローディング表示
+                const commentForm = commentsSection.querySelector('.comment-form');
+                const loadingSpinner = document.createElement('div');
+                loadingSpinner.className = 'loading-container';
+                loadingSpinner.innerHTML = '<div class="loading-spinner"></div>';
+                commentsSection.insertBefore(loadingSpinner, commentForm);
+                
+                // コメント取得
+                const commentsRef = db.collection('comments')
+                    .where('postId', '==', postId)
+                    .orderBy('createdAt', 'desc')
+                    .limit(5);
+                
+                const commentsSnapshot = await commentsRef.get();
+                
+                // ローディング表示削除
+                loadingSpinner.remove();
+                
+                // コメントリスト作成
+                const commentList = document.createElement('div');
+                commentList.className = 'comment-list';
+                
+                if (commentsSnapshot.empty) {
+                    commentList.innerHTML = `
+                        <div style="text-align: center; padding: 0.5rem 0; color: var(--text-muted); font-size: 0.875rem;">
+                            まだコメントがありません
+                        </div>
+                    `;
+                } else {
+                    // コメントデータの取得とユーザー情報の追加
+                    const commentsWithUserData = await Promise.all(commentsSnapshot.docs.map(async doc => {
+                        const commentData = doc.data();
+                        commentData.id = doc.id;
+                        
+                        // コメントユーザーの情報を取得
+                        try {
+                            const userDoc = await db.collection('users').doc(commentData.userId).get();
+                            if (userDoc.exists) {
+                                commentData.userData = userDoc.data();
+                            }
+                        } catch (error) {
+                            console.error("コメントユーザーデータ取得エラー:", error);
+                            commentData.userData = { displayName: '不明なユーザー' };
+                        }
+                        
+                        return commentData;
+                    }));
+                    
+                    let commentsHTML = '';
+                    
+                    commentsWithUserData.forEach(comment => {
+                        // コメント日時のフォーマット
+                        const commentDate = comment.createdAt ? comment.createdAt.toDate() : new Date();
+                        const formattedDate = formatDate(commentDate);
+                        
+                        // ユーザーアバター
+                        let avatarHTML = '';
+                        if (comment.userData && comment.userData.profileImageUrl) {
+                            avatarHTML = `<img src="${comment.userData.profileImageUrl}" alt="User Avatar">`;
+                        } else {
+                            const initial = comment.userData && comment.userData.displayName ? comment.userData.displayName.charAt(0).toUpperCase() : 'U';
+                            avatarHTML = initial;
+                        }
+                        
+                        // 認証バッジ
+                        const verifiedBadge = comment.userData && comment.userData.isVerified ? 
+                            '<i class="fas fa-check-circle verified-badge"></i>' : '';
+                        
+                        commentsHTML += `
+                            <div class="comment-item" data-comment-id="${comment.id}">
+                                <div class="comment-avatar">
+                                    ${avatarHTML}
+                                </div>
+                                <div class="comment-content">
+                                    <div class="comment-author">
+                                        ${comment.userData ? comment.userData.displayName : '不明なユーザー'} ${verifiedBadge}
+                                    </div>
+                                    <div class="comment-text">${comment.content}</div>
+                                    <div class="comment-actions">
+                                        <span class="comment-action" data-action="like-comment">いいね</span>
+                                        <span class="comment-action" data-action="reply-comment">返信</span>
+                                        <span class="comment-time">${formattedDate}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    commentList.innerHTML = commentsHTML;
+                }
+                
+                // コメントフォームの前に挿入
+                commentsSection.insertBefore(commentList, commentForm);
+                
+            } catch (error) {
+                console.error("コメント読み込みエラー:", error);
+                const commentForm = commentsSection.querySelector('.comment-form');
+                const errorMessage = document.createElement('div');
+                errorMessage.style.textAlign = 'center';
+                errorMessage.style.padding = '0.5rem 0';
+                errorMessage.style.color = 'var(--danger)';
+                errorMessage.style.fontSize = '0.875rem';
+                errorMessage.textContent = 'コメントの読み込み中にエラーが発生しました';
+                commentsSection.insertBefore(errorMessage, commentForm);
+            }
+        }
+
+        // コメント送信
+        async function submitComment(e) {
+            if (!auth.currentUser) {
+                alert('コメントするにはログインが必要です');
+                return;
+            }
+            
+            const submitBtn = e.target;
+            const postId = submitBtn.getAttribute('data-post-id');
+            const commentsSection = submitBtn.closest('.post-comments');
+            const commentInput = commentsSection.querySelector('.comment-input');
+            const commentText = commentInput.value.trim();
+            
+            if (!commentText) {
+                return;
+            }
+            
+            try {
+                // コメントデータ作成
+                const commentData = {
+                    postId: postId,
+                    userId: auth.currentUser.uid,
+                    content: commentText,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    likeCount: 0,
+                    likedBy: []
+                };
+                
+                // コメント保存
+                const commentRef = await db.collection('comments').add(commentData);
+                
+                // 投稿のコメント数を更新
+                const postRef = db.collection('posts').doc(postId);
+                await postRef.update({
+                    commentCount: firebase.firestore.FieldValue.increment(1)
+                });
+                
+                // UIを更新
+                const countElement = document.querySelector(`.post-card[data-post-id="${postId}"] .post-action[data-action="comment"] .post-action-count`);
+                countElement.textContent = parseInt(countElement.textContent) + 1;
+                
+                // 入力フィールドをクリア
+                commentInput.value = '';
+                
+                // コメント一覧を更新（新しいコメントを先頭に追加）
+                const commentList = commentsSection.querySelector('.comment-list');
+                if (commentList) {
+                    // 現在のユーザー情報を取得
+                    const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+                    const userData = userDoc.exists ? userDoc.data() : { displayName: auth.currentUser.displayName || 'ユーザー' };
+                    
+                    // アバター表示用HTML
+                    let avatarHTML = '';
+                    if (userData.profileImageUrl) {
+                        avatarHTML = `<img src="${userData.profileImageUrl}" alt="User Avatar">`;
+                    } else {
+                        const initial = userData.displayName ? userData.displayName.charAt(0).toUpperCase() : 'U';
+                        avatarHTML = initial;
+                    }
+                    
+                    // 認証バッジ
+                    const verifiedBadge = userData.isVerified ? 
+                        '<i class="fas fa-check-circle verified-badge"></i>' : '';
+                    
+                    // 新しいコメントのHTML
+                    const newCommentHTML = `
+                        <div class="comment-item" data-comment-id="${commentRef.id}">
+                            <div class="comment-avatar">
+                                ${avatarHTML}
+                            </div>
+                            <div class="comment-content">
+                                <div class="comment-author">
+                                    ${userData.displayName} ${verifiedBadge}
+                                </div>
+                                <div class="comment-text">${commentText}</div>
+                                <div class="comment-actions">
+                                    <span class="comment-action" data-action="like-comment">いいね</span>
+                                    <span class="comment-action" data-action="reply-comment">返信</span>
+                                    <span class="comment-time">たった今</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 「まだコメントがありません」メッセージがあれば削除
+                    const noCommentsMessage = commentList.querySelector('div[style*="text-align: center"]');
+                    if (noCommentsMessage) {
+                        noCommentsMessage.remove();
+                    }
+                    
+                    // 新しいコメントを先頭に追加
+                    commentList.insertAdjacentHTML('afterbegin', newCommentHTML);
+                    
+                    // 投稿者へ通知（自分の投稿以外）
+                    const postDoc = await postRef.get();
+                    const postData = postDoc.data();
+                    
+                    if (postData && postData.userId !== auth.currentUser.uid) {
+                        await db.collection('notifications').add({
+                            userId: postData.userId,
+                            actorId: auth.currentUser.uid,
+                            type: 'comment',
+                            postId: postId,
+                            commentId: commentRef.id,
+                            read: false,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        
+                        // アクティビティに追加
+                        await db.collection('activities').add({
+                            userId: auth.currentUser.uid,
+                            type: 'comment',
+                            title: 'コメント',
+                            description: '投稿にコメントしました',
+                            postId: postId,
+                            commentId: commentRef.id,
+                            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    }
+                } else {
+                    // コメント一覧が存在しない場合は再読み込み
+                    loadComments(postId, commentsSection);
+                }
+                
+            } catch (error) {
+                console.error("コメント送信エラー:", error);
+                alert('コメントの送信中にエラーが発生しました');
+            }
+        }
+
+        // シェア処理
+        function handleShareAction(e) {
+            const postCard = e.currentTarget.closest('.post-card');
+            const postId = postCard.getAttribute('data-post-id');
+            
+            // シェア用URLを作成
+            const shareUrl = `${window.location.origin}/post.html?id=${postId}`;
+            
+            // シェアを促すダイアログ表示
+            if (navigator.share) {
+                // Web Share API が利用可能な場合
+                navigator.share({
+                    title: 'KatsujiRingX コミュニティ投稿',
+                    text: 'KatsujiRingXのコミュニティで見つけた投稿をシェアします',
+                    url: shareUrl
+                }).then(() => {
+                    console.log('共有に成功しました');
+                    updateShareCount(postId);
+                }).catch(err => {
+                    console.error('共有エラー:', err);
+                });
+            } else {
+                // Web Share API が利用できない場合
+                prompt('以下のURLをコピーしてシェアしてください:', shareUrl);
+                updateShareCount(postId);
+            }
+        }
+
+        // シェア数更新
+        async function updateShareCount(postId) {
+            try {
+                const postRef = db.collection('posts').doc(postId);
+                
+                // シェア数を増加
+                await postRef.update({
+                    shareCount: firebase.firestore.FieldValue.increment(1)
+                });
+                
+                // UI更新
+                const countElement = document.querySelector(`.post-card[data-post-id="${postId}"] .post-action[data-action="share"] .post-action-count`);
+                countElement.textContent = parseInt(countElement.textContent) + 1;
+                
+                // アクティビティに追加
+                if (auth.currentUser) {
+                    await db.collection('activities').add({
+                        userId: auth.currentUser.uid,
+                        type: 'share',
+                        title: 'シェア',
+                        description: '投稿をシェアしました',
+                        postId: postId,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error("シェア数更新エラー:", error);
+            }
+        }
+
+        // ブックマーク処理
+        async function handleBookmarkAction(e) {
+            if (!auth.currentUser) {
+                alert('ブックマークするにはログインが必要です');
+                return;
+            }
+            
+            try {
+                const postAction = e.currentTarget;
+                const postCard = postAction.closest('.post-card');
+                const postId = postCard.getAttribute('data-post-id');
+                const userId = auth.currentUser.uid;
+                
+                // ブックマークコレクションを取得
+                const bookmarkRef = db.collection('bookmarks')
+                    .where('userId', '==', userId)
+                    .where('postId', '==', postId)
+                    .limit(1);
+                
+                const bookmarkSnapshot = await bookmarkRef.get();
+                
+                if (bookmarkSnapshot.empty) {
+                    // ブックマークが存在しない場合は追加
+                    await db.collection('bookmarks').add({
+                        userId: userId,
+                        postId: postId,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // UIを更新
+                    const icon = postAction.querySelector('i');
+                    icon.className = 'fas fa-bookmark';
+                    postAction.classList.add('liked');
+                    
+                    // アクティビティに追加
+                    await db.collection('activities').add({
+                        userId: userId,
+                        type: 'bookmark',
+                        title: 'ブックマーク',
+                        description: '投稿をブックマークしました',
+                        postId: postId,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    
+                    // トースト通知
+                    showToast('投稿をブックマークしました');
+                } else {
+                    // ブックマークが存在する場合は削除
+                    const bookmarkId = bookmarkSnapshot.docs[0].id;
+                    await db.collection('bookmarks').doc(bookmarkId).delete();
+                    
+                    // UIを更新
+                    const icon = postAction.querySelector('i');
+                    icon.className = 'far fa-bookmark';
+                    postAction.classList.remove('liked');
+                    
+                    // トースト通知
+                    showToast('ブックマークを削除しました');
+                }
+            } catch (error) {
+                console.error('ブックマーク処理エラー:', error);
+                alert('処理中にエラーが発生しました');
+            }
+        }
+
+        // 投稿編集処理
+        async function handlePostEdit(e) {
+            if (!auth.currentUser) {
+                alert('編集するにはログインが必要です');
+                return;
+            }
+            
+            try {
+                const saveBtn = e.currentTarget;
+                const postId = saveBtn.getAttribute('data-post-id');
+                const editInput = document.getElementById(`post-edit-input-${postId}`);
+                const newContent = editInput.value.trim();
+                
+                if (!newContent) {
+                    alert('投稿内容を入力してください');
+                    return;
+                }
+                
+                // 投稿を更新
+                const postRef = db.collection('posts').doc(postId);
+                
+                // ハッシュタグを抽出
+                const hashtags = newContent.match(/#(\w+)/g) || [];
+                
+                await postRef.update({
+                    content: newContent,
+                    editedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    tags: hashtags.map(tag => tag.substring(1)) // #を除去
+                });
+                
+                // 投稿本文を更新
+                const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+                const postContent = postCard.querySelector('.post-content');
+                postContent.innerHTML = newContent.replace(/#(\w+)/g, '<a href="#" class="hashtag">#$1</a>');
+                
+                // ハッシュタグのイベントリスナーを設定
+                postCard.querySelectorAll('.hashtag').forEach(tag => {
+                    tag.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        searchByTag(e.target.textContent);
+                    });
+                });
+                
+                // 編集フォームを非表示にして投稿本文を表示
+                const postBody = postCard.querySelector('.post-body');
+                const editForm = document.getElementById(`post-edit-form-${postId}`);
+                
+                editForm.classList.remove('active');
+                postBody.style.display = 'block';
+                
+                // トースト通知
+                showToast('投稿を更新しました');
+                
+            } catch (error) {
+                console.error('投稿編集エラー:', error);
+                alert('編集中にエラーが発生しました');
+            }
+        }
+
+        // 投稿削除処理
+        async function handlePostDelete(e) {
+            if (!auth.currentUser) {
+                alert('削除するにはログインが必要です');
+                return;
+            }
+            
+            // 確認ダイアログ
+            if (!confirm('この投稿を削除してもよろしいですか？')) {
+                return;
+            }
+            
+            try {
+                const deleteBtn = e.currentTarget;
+                const postId = deleteBtn.getAttribute('data-post-id');
+                
+                // 投稿を削除
+                await db.collection('posts').doc(postId).delete();
+                
+                // 関連するコメントも削除
+                const commentsSnapshot = await db.collection('comments')
+                    .where('postId', '==', postId)
+                    .get();
+                
+                // バッチ処理でコメントを削除
+                if (!commentsSnapshot.empty) {
+                    const batch = db.batch();
+                    commentsSnapshot.forEach(doc => {
+                        batch.delete(doc.ref);
+                    });
+                    await batch.commit();
+                }
+                
+                // ユーザーの投稿数を更新
+                await db.collection('users').doc(auth.currentUser.uid).update({
+                    communityPosts: firebase.firestore.FieldValue.increment(-1)
+                });
+                
+                // プロフィールの投稿数更新
+                if (profilePosts) {
+                    const currentCount = parseInt(profilePosts.textContent);
+                    if (currentCount > 0) {
+                        profilePosts.textContent = currentCount - 1;
+                    }
+                }
+                
+                // 投稿カードをUIから削除
+                const postCard = document.querySelector(`.post-card[data-post-id="${postId}"]`);
+                postCard.remove();
+                
+                // トースト通知
+                showToast('投稿を削除しました');
+                
+            } catch (error) {
+                console.error('投稿削除エラー:', error);
+                alert('削除中にエラーが発生しました');
+            }
+        }
+
+        // 投稿作成
+        async function createPost() {
+            if (!auth.currentUser) {
+                alert('投稿するにはログインが必要です');
+                return;
+            }
+            
+            const content = postInput.value.trim();
+            
+            if (!content) {
+                alert('投稿内容を入力してください');
+                return;
+            }
+            
+            try {
+                // 投稿ボタンを無効化（多重送信防止）
+                postSubmitBtn.disabled = true;
+                postSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 投稿中...';
+                
+                // ハッシュタグを抽出
+                const hashtags = content.match(/#(\w+)/g) || [];
+                
+                // 投稿データ
+                const postData = {
+                    userId: auth.currentUser.uid,
+                    content: content,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    likeCount: 0,
+                    commentCount: 0,
+                    shareCount: 0,
+                    likedBy: [],
+                    tags: hashtags.map(tag => tag.substring(1)) // #を除去
+                };
+                
+                // 画像添付処理
+                if (imageUpload.files && imageUpload.files[0]) {
+                    const imageFile = imageUpload.files[0];
+                    const imagePath = `posts/${auth.currentUser.uid}/${Date.now()}_${imageFile.name}`;
+                    const imageRef = storage.ref().child(imagePath);
+                    
+                    // 画像アップロード
+                    const snapshot = await imageRef.put(imageFile);
+                    const imageUrl = await snapshot.ref.getDownloadURL();
+                    
+                    // 画像URLを投稿データに追加
+                    postData.imageUrl = imageUrl;
+                }
+                
+                // 投稿を保存
+                const postRef = await db.collection('posts').add(postData);
+                
+                // ユーザーの投稿数を更新
+                await db.collection('users').doc(auth.currentUser.uid).update({
+                    communityPosts: firebase.firestore.FieldValue.increment(1)
+                });
+                
+                // プロフィールの投稿数を更新
+                if (profilePosts) {
+                    profilePosts.textContent = parseInt(profilePosts.textContent) + 1;
+                }
+                
+                // 活動ログ追加
+                await db.collection('activities').add({
+                    userId: auth.currentUser.uid,
+                    type: 'post_created',
+                    title: '投稿作成',
+                    description: 'コミュニティに新しい投稿を作成しました。',
+                    postId: postRef.id,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // ハッシュタグを更新・保存
+                if (hashtags.length > 0) {
+                    const batch = db.batch();
+                    
+                    for (const tag of hashtags) {
+                        const tagName = tag.substring(1); // #を除去
+                        const tagRef = db.collection('hashtags').doc(tagName);
+                        
+                        // ハッシュタグが存在するか確認
+                        const tagDoc = await tagRef.get();
+                        
+                        if (tagDoc.exists) {
+                            // 既存のタグを更新
+                            batch.update(tagRef, {
+                                count: firebase.firestore.FieldValue.increment(1),
+                                lastUsed: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        } else {
+                            // 新規タグを作成
+                            batch.set(tagRef, {
+                                tag: tagName,
+                                count: 1,
+                                lastUsed: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    }
+                    
+                    // バッチ処理実行
+                    await batch.commit();
+                }
+                
+                // 入力欄をクリア
+                postInput.value = '';
+                imageUpload.value = '';
+                
+                // プレビュー画像があれば削除
+                const existingPreview = document.querySelector('.image-preview');
+                if (existingPreview) {
+                    existingPreview.remove();
+                }
+                
+                // トースト通知
+                showToast('投稿しました！');
+                
+                // 投稿一覧を更新
+                fetchPosts();
+                
+            } catch (error) {
+                console.error("投稿作成エラー:", error);
+                alert('投稿中にエラーが発生しました。もう一度お試しください。');
+            } finally {
+                // 投稿ボタンを再有効化
+                postSubmitBtn.disabled = false;
+                postSubmitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 投稿する';
+            }
+        }
+
+        // トースト通知
+        function showToast(message) {
+            // 既存のトーストがあれば削除
+            const existingToast = document.querySelector('.toast-notification');
+            if (existingToast) {
+                existingToast.remove();
+            }
+            
+            // トースト要素作成
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.textContent = message;
+            
+            // 表示
+            document.body.appendChild(toast);
+            
+            // アニメーション
+            setTimeout(() => {
+                toast.style.opacity = '1';
+            }, 10);
+            
+            // 3秒後に消す
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // タブ切り替え
+        document.querySelectorAll('.post-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabType = tab.getAttribute('data-tab');
+                
+                // アクティブクラス切り替え
+                document.querySelectorAll('.post-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                tab.classList.add('active');
+                
+                // 投稿再読み込み
+                fetchPosts(tabType);
+            });
+        });
+
+        // 日付フォーマット
+        function formatDate(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
+            
+            if (diffSec < 60) {
+                return 'たった今';
+            } else if (diffMin < 60) {
+                return `${diffMin}分前`;
+            } else if (diffHour < 24) {
+                return `${diffHour}時間前`;
+            } else if (diffDay < 7) {
+                return `${diffDay}日前`;
+            } else {
+                // YYYY年MM月DD日形式
+                return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+            }
+        }
+
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("ログアウトエラー:", error);
+            }
+        }
+
+        // テーマ切替
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (newTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        // サイドバー切替（モバイル用）
+        function toggleSidebar() {
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+
+        // ユーザープロフィールモーダル表示
+        async function showUserProfileModal(userId) {
+            if (!userId) return;
+            
+            // モーダル要素
+            const modalOverlay = document.getElementById('user-profile-modal-overlay');
+            const modalLoading = document.getElementById('modal-loading');
+            const modalContent = document.getElementById('modal-content');
+            const modalFollowBtn = document.getElementById('modal-follow-btn');
+            
+            // モーダルを表示
+            modalOverlay.classList.add('active');
+            modalLoading.style.display = 'flex';
+            modalContent.style.display = 'none';
+            
+            try {
+                // ユーザーデータを取得
+                const userDoc = await db.collection('users').doc(userId).get();
+                
+                if (!userDoc.exists) {
+                    throw new Error('ユーザーが見つかりません');
+                }
+                
+                const userData = userDoc.data();
+                
+                // フォロー状態の確認
+                const currentUser = auth.currentUser;
+                let isFollowing = false;
+                
+                if (currentUser) {
+                    const currentUserDoc = await db.collection('users').doc(currentUser.uid).get();
+                    if (currentUserDoc.exists) {
+                        const currentUserData = currentUserDoc.data();
+                        const following = currentUserData.following || [];
+                        isFollowing = following.includes(userId);
+                    }
+                }
+                
+                // モーダルの内容を更新
+                document.getElementById('modal-user-name').textContent = userData.displayName || 'ユーザー名';
+                document.getElementById('modal-user-bio').textContent = userData.bio || 'プロフィールはまだ設定されていません。';
+                document.getElementById('modal-user-posts').textContent = userData.communityPosts || 0;
+                document.getElementById('modal-user-followers').textContent = userData.followers ? userData.followers.length : 0;
+                document.getElementById('modal-user-following').textContent = userData.following ? userData.following.length : 0;
+                document.getElementById('modal-user-email').textContent = userData.email || '';
+                
+                // 専門分野
+                const specialtyContainer = document.getElementById('modal-user-specialty-container');
+                const specialtyElement = document.getElementById('modal-user-specialty');
+                
+                if (userData.specialty) {
+                    specialtyElement.textContent = userData.specialty;
+                    specialtyContainer.style.display = 'flex';
+                } else {
+                    specialtyContainer.style.display = 'none';
+                }
+                
+                // 参加日
+                const joinedElement = document.getElementById('modal-user-joined');
+                if (userData.createdAt) {
+                    const joinDate = userData.createdAt.toDate();
+                    joinedElement.textContent = `${joinDate.getFullYear()}年${joinDate.getMonth() + 1}月に参加`;
+                } else {
+                    joinedElement.textContent = '参加日不明';
+                }
+                
+                // 認証バッジ
+                const verifiedBadge = document.getElementById('modal-verified-badge');
+                if (userData.isVerified) {
+                    verifiedBadge.style.display = 'inline-flex';
+                } else {
+                    verifiedBadge.style.display = 'none';
+                }
+                
+                // アバター
+                const avatarElement = document.getElementById('modal-user-avatar');
+                const initialElement = document.getElementById('modal-user-initial');
+                
+                if (userData.profileImageUrl) {
+                    avatarElement.innerHTML = `<img src="${userData.profileImageUrl}" alt="${userData.displayName}">`;
+                } else {
+                    initialElement.textContent = userData.displayName ? userData.displayName.charAt(0).toUpperCase() : 'U';
+                }
+                
+                // フォローボタン
+                modalFollowBtn.setAttribute('data-user-id', userId);
+                
+                if (isFollowing) {
+                    modalFollowBtn.textContent = 'フォロー中';
+                    modalFollowBtn.classList.add('following');
+                } else {
+                    modalFollowBtn.textContent = 'フォローする';
+                    modalFollowBtn.classList.remove('following');
+                }
+                
+                // 自分自身の場合はフォローボタンを非表示
+                if (currentUser && userId === currentUser.uid) {
+                    document.querySelector('.modal-actions').style.display = 'none';
+                } else {
+                    document.querySelector('.modal-actions').style.display = 'flex';
+                }
+                
+                // ローディング非表示、コンテンツ表示
+                modalLoading.style.display = 'none';
+                modalContent.style.display = 'block';
+                
+            } catch (error) {
+                console.error('ユーザープロフィール取得エラー:', error);
+                alert('ユーザー情報の取得中にエラーが発生しました');
+                closeUserProfileModal();
+            }
+        }
+        
+        // ユーザープロフィールモーダル閉じる
+        function closeUserProfileModal() {
+            const modalOverlay = document.getElementById('user-profile-modal-overlay');
+            modalOverlay.classList.remove('active');
+        }
+        
+        // イベントリスナー
+        document.addEventListener('DOMContentLoaded', () => {
+            // テーマ初期化
+            initTheme();
+            
+            // 投稿作成イベント
+            if (postSubmitBtn) {
+                postSubmitBtn.addEventListener('click', createPost);
+            }
+            
+            // メディアアップロードイベント
+            if (imageUploadBtn) {
+                imageUploadBtn.addEventListener('click', () => {
+                    imageUpload.click();
+                });
+            }
+            
+            // モーダル関連のイベントリスナー
+            const modalCloseBtn = document.getElementById('modal-close-btn');
+            const modalOverlay = document.getElementById('user-profile-modal-overlay');
+            const modalFollowBtn = document.getElementById('modal-follow-btn');
+            
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', closeUserProfileModal);
+            }
+            
+            // モーダルの外側をクリックしたら閉じる
+            if (modalOverlay) {
+                modalOverlay.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) {
+                        closeUserProfileModal();
+                    }
+                });
+            }
+            
+            // モーダル内のフォローボタンのイベント
+            if (modalFollowBtn) {
+                modalFollowBtn.addEventListener('click', async (e) => {
+                    const userId = e.currentTarget.getAttribute('data-user-id');
+                    if (!userId) return;
+                    
+                    try {
+                        // ボタンを無効化
+                        modalFollowBtn.disabled = true;
+                        
+                        // フォロー/アンフォロー処理
+                        const currentUser = auth.currentUser;
+                        if (!currentUser) throw new Error('ログインが必要です');
+                        
+                        const isFollowing = modalFollowBtn.classList.contains('following');
+                        const currentUserRef = db.collection('users').doc(currentUser.uid);
+                        
+                        if (isFollowing) {
+                            // フォロー解除
+                            await currentUserRef.update({
+                                following: firebase.firestore.FieldValue.arrayRemove(userId)
+                            });
+                            
+                            // ターゲットユーザーのフォロワーリストからも削除
+                            await db.collection('users').doc(userId).update({
+                                followers: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+                            });
+                            
+                            // UIを更新
+                            modalFollowBtn.textContent = 'フォローする';
+                            modalFollowBtn.classList.remove('following');
+                            
+                            // フォロワー数更新
+                            const followersCount = document.getElementById('modal-user-followers');
+                            followersCount.textContent = parseInt(followersCount.textContent) - 1;
+                            
+                            // プロフィールのフォロー数を更新
+                            if (profileFollowing) {
+                                profileFollowing.textContent = parseInt(profileFollowing.textContent) - 1;
+                            }
+                            
+                            showToast('フォローを解除しました');
+                        } else {
+                            // フォロー追加
+                            await currentUserRef.update({
+                                following: firebase.firestore.FieldValue.arrayUnion(userId)
+                            });
+                            
+                            // ターゲットユーザーのフォロワーリストにも追加
+                            await db.collection('users').doc(userId).update({
+                                followers: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+                            });
+                            
+                            // UIを更新
+                            modalFollowBtn.textContent = 'フォロー中';
+                            modalFollowBtn.classList.add('following');
+                            
+                            // フォロワー数更新
+                            const followersCount = document.getElementById('modal-user-followers');
+                            followersCount.textContent = parseInt(followersCount.textContent) + 1;
+                            
+                            // プロフィールのフォロー数を更新
+                            if (profileFollowing) {
+                                profileFollowing.textContent = parseInt(profileFollowing.textContent) + 1;
+                            }
+                            
+                            showToast('フォローしました');
+                            
+                            // 通知を作成
+                            await db.collection('notifications').add({
+                                userId: userId,
+                                actorId: currentUser.uid,
+                                type: 'follow',
+                                read: false,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                        
+                        // おすすめユーザーリストのフォローボタンも更新
+                        const listButton = document.querySelector(`.user-suggestion-item[data-user-id="${userId}"] .follow-btn`);
+                        if (listButton) {
+                            if (isFollowing) {
+                                listButton.textContent = 'フォロー';
+                                listButton.classList.remove('following');
+                            } else {
+                                listButton.textContent = 'フォロー中';
+                                listButton.classList.add('following');
+                            }
+                        }
+                        
+                    } catch (error) {
+                        console.error('フォロー処理エラー:', error);
+                        alert(error.message || '処理中にエラーが発生しました');
+                    } finally {
+                        // ボタンを再有効化
+                        modalFollowBtn.disabled = false;
+                    }
+                });
+            }
+            
+            if (pdfUploadBtn) {
+                pdfUploadBtn.addEventListener('click', () => {
+                    pdfUpload.click();
+                });
+            }
+            
+            // ハッシュタグ挿入
+            if (tagBtn) {
+                tagBtn.addEventListener('click', () => {
+                    postInput.value += ' #';
+                    postInput.focus();
+                });
+            }
+            
+            // ログアウトボタン
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // テーマ切替ボタン
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // サイドバー切替ボタン
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // エンターキーで投稿
+            if (postInput) {
+                postInput.addEventListener('keydown', (e) => {
+                    // Ctrl+Enter または Command+Enter で投稿
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                        createPost();
+                    }
+                });
+            }
+            
+            // 画像アップロードプレビュー
+            if (imageUpload) {
+                imageUpload.addEventListener('change', (e) => {
+                    if (e.target.files && e.target.files[0]) {
+                        const reader = new FileReader();
+                        
+                        reader.onload = function(e) {
+                            // プレビュー要素があれば削除
+                            const existingPreview = document.querySelector('.image-preview');
+                            if (existingPreview) {
+                                existingPreview.remove();
+                            }
+                            
+                            // プレビュー要素を作成
+                            const preview = document.createElement('div');
+                            preview.className = 'image-preview';
+                            preview.style.marginTop = '1rem';
+                            preview.style.position = 'relative';
+                            
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.width = '100%';
+                            img.style.maxHeight = '200px';
+                            img.style.objectFit = 'contain';
+                            img.style.borderRadius = 'var(--radius)';
+                            
+                            const removeBtn = document.createElement('button');
+                            removeBtn.className = 'remove-preview';
+                            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                            removeBtn.style.position = 'absolute';
+                            removeBtn.style.top = '0.5rem';
+                            removeBtn.style.right = '0.5rem';
+                            removeBtn.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+                            removeBtn.style.color = 'white';
+                            removeBtn.style.border = 'none';
+                            removeBtn.style.borderRadius = '50%';
+                            removeBtn.style.width = '2rem';
+                            removeBtn.style.height = '2rem';
+                            removeBtn.style.display = 'flex';
+                            removeBtn.style.alignItems = 'center';
+                            removeBtn.style.justifyContent = 'center';
+                            removeBtn.style.cursor = 'pointer';
+                            
+                            removeBtn.addEventListener('click', () => {
+                                preview.remove();
+                                imageUpload.value = '';
+                            });
+                            
+                            preview.appendChild(img);
+                            preview.appendChild(removeBtn);
+                            
+                            // 投稿フォームに追加
+                            const postActions = document.querySelector('.post-actions');
+                            postActions.parentNode.insertBefore(preview, postActions);
+                        }
+                        
+                        reader.readAsDataURL(e.target.files[0]);
+                    }
+                });
+            }
+        });
+
+       
+        
+        
+        </script>
+        </body>
+        </html>
