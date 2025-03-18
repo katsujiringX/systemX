@@ -1,0 +1,2839 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
+    <title>完成本を見る | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- PDF.js for PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin var(--transition-normal);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
+
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+
+        /* ボタンスタイル */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            border-radius: 50%;
+        }
+        
+        .btn-icon i {
+            margin-right: 0;
+        }
+
+        /* Kindle風ライブラリビュー */
+        .library-view {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .library-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .view-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .view-option {
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color var(--transition-normal), background-color var(--transition-normal);
+        }
+
+        .view-option:hover, .view-option.active {
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .book-card {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform var(--transition-normal);
+            position: relative;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .book-thumbnail {
+            width: 100%;
+            aspect-ratio: 2/3;
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+
+        .book-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-thumbnail .pdf-icon {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--danger);
+            font-size: 0.75rem;
+        }
+
+        .book-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .book-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-author {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .book-list {
+            width: 100%;
+        }
+
+        .book-list-item {
+            display: flex;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+
+        .book-list-item:hover {
+            background-color: var(--primary-light);
+        }
+
+        .book-list-thumbnail {
+            width: 4rem;
+            height: 6rem;
+            background-color: white;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-right: 1rem;
+        }
+
+        .book-list-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .book-list-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .book-list-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .book-list-author {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .book-list-meta {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .book-list-meta span {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+        }
+
+        .book-list-meta i {
+            margin-right: 0.25rem;
+        }
+
+        /* 読書ビュー */
+        .reader-view {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .reader-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+        }
+
+        .reader-title {
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60%;
+        }
+
+        .reader-tools {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .reader-tool {
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color var(--transition-normal), background-color var(--transition-normal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reader-tool:hover {
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .reader-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .reader-main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            position: relative;
+            background-color: white;
+        }
+
+        [data-theme="dark"] .reader-main {
+            background-color: var(--bg-color);
+        }
+
+        .reader-sidebar {
+            width: 320px;
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color);
+            transform: translateX(100%);
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            transition: transform var(--transition-normal);
+            z-index: 10;
+        }
+
+        .reader-sidebar.active {
+            transform: translateX(0);
+        }
+
+        .sidebar-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sidebar-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .sidebar-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        /* 検索機能 */
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .search-results {
+            margin-top: 1rem;
+        }
+
+        .search-result {
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+
+        .search-result:hover {
+            background-color: var(--primary-light);
+        }
+
+        .result-text {
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-location {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .highlight {
+            background-color: rgba(254, 240, 138, 0.5);
+            padding: 0 0.125rem;
+            border-radius: 2px;
+        }
+
+        /* 分析パネル */
+        .analysis-panel {
+            margin-top: 1.5rem;
+        }
+
+        .analysis-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .analysis-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9375rem;
+        }
+
+        .analysis-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+
+        .analysis-label {
+            font-size: 0.875rem;
+        }
+
+        .analysis-value {
+            font-weight: 500;
+            color: var(--primary);
+            font-size: 0.875rem;
+        }
+
+        .language-bar {
+            width: 100%;
+            height: 1.5rem;
+            background-color: var(--gray-200);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-top: 0.5rem;
+            display: flex;
+        }
+
+        .language-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.625rem;
+            font-weight: 700;
+            transition: width var(--transition-normal);
+        }
+
+        /* 注釈パネル */
+        .notes-panel {
+            margin-top: 1.5rem;
+        }
+
+        .note-item {
+            padding: 0.75rem;
+            background-color: var(--primary-light);
+            border-radius: var(--radius);
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--primary);
+        }
+
+        .note-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .note-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .note-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .note-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .note-content {
+            font-size: 0.875rem;
+        }
+
+        .note-meta {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* PDF表示 */
+        #pdf-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pdf-page {
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .pdf-page canvas {
+            width: 100%;
+            height: auto;
+        }
+
+        /* テキスト表示 */
+        .text-container {
+            max-width: 800px;
+            margin: 0 auto;
+            font-family: 'Noto Serif JP', serif;
+            font-size: 1.125rem;
+            line-height: 1.8;
+        }
+
+        .text-container p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* ページネーション */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+        }
+
+        .page-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: background-color var(--transition-normal);
+        }
+
+        .page-btn:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .page-btn:disabled {
+            color: var(--text-muted);
+            cursor: not-allowed;
+            background-color: transparent;
+        }
+
+        .page-number {
+            margin: 0 1rem;
+            font-size: 0.875rem;
+        }
+
+        #page-slider {
+            flex: 1;
+            margin: 0 1rem;
+            max-width: 300px;
+        }
+
+        /* ローディングスピナー */
+        .loading-spinner {
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary);
+            width: 2rem;
+            height: 2rem;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 新規登録ボタン */
+        .add-book-button {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal), transform var(--transition-normal);
+            z-index: 40;
+        }
+        
+        .add-book-button:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+        
+        .add-book-button i {
+            font-size: 1.5rem;
+        }
+
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .book-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+
+            .reader-sidebar {
+                width: 100%;
+                max-width: 320px;
+            }
+            
+            .book-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .library-toolbar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .book-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .page-header {
+                padding: 1rem;
+            }
+
+            .library-view {
+                padding: 1rem;
+            }
+            
+            .reader-toolbar {
+                padding: 0.5rem 1rem;
+            }
+            
+            .reader-main {
+                padding: 1rem;
+            }
+            
+            .pagination {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            #page-slider {
+                max-width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="katsujieditor.html" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="bookview.html" class="menu-item active">
+                <i class="fas fa-book"></i> 完成本を見る
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <!-- ライブラリビュー -->
+        <div class="library-view" id="library-view">
+            <div class="page-header">
+                <div class="breadcrumb">
+                    <a href="mainpage.html">ホーム</a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>完成本を見る</span>
+                </div>
+                <h1 class="page-title">ライブラリ</h1>
+            </div>
+
+            <div class="library-toolbar">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" id="library-search" placeholder="タイトル、著者、キーワードで検索">
+                </div>
+                <div class="view-options">
+                    <button class="view-option active" id="grid-view-btn" title="グリッド表示">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-option" id="list-view-btn" title="リスト表示">
+                        <i class="fas fa-list"></i>
+                    </button>
+                    <button class="view-option" id="sort-btn" title="並べ替え">
+                        <i class="fas fa-sort-amount-down"></i>
+                    </button>
+                    <button class="view-option" id="filter-btn" title="フィルター">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="book-grid" id="book-grid">
+                <!-- ここに本のカードが動的に追加されます -->
+                <div class="loading-spinner" id="library-loading"></div>
+            </div>
+
+            <div class="book-list" id="book-list" style="display: none;">
+                <!-- ここに本のリストアイテムが動的に追加されます -->
+            </div>
+            
+            <!-- 新規登録ボタン -->
+            <a href="book-upload.html" class="add-book-button" title="新しい本を登録">
+                <i class="fas fa-plus"></i>
+            </a>
+        </div>
+
+        <!-- 読書ビュー -->
+        <div class="reader-view" id="reader-view">
+            <div class="reader-toolbar">
+                <button class="reader-tool" id="back-to-library">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="reader-title" id="current-book-title">本のタイトル</div>
+                <div class="reader-tools">
+                    <button class="reader-tool" id="font-size-btn" title="文字サイズ変更">
+                        <i class="fas fa-font"></i>
+                    </button>
+                    <button class="reader-tool" id="search-btn" title="検索">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <button class="reader-tool" id="bookmark-btn" title="ブックマーク">
+                        <i class="far fa-bookmark"></i>
+                    </button>
+                    <button class="reader-tool" id="note-btn" title="メモ">
+                        <i class="far fa-sticky-note"></i>
+                    </button>
+                    <button class="reader-tool" id="analysis-btn" title="テキスト分析">
+                        <i class="fas fa-chart-bar"></i>
+                    </button>
+                    <button class="reader-tool" id="download-btn" title="ダウンロード">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="reader-content">
+                <div class="reader-main" id="reader-main">
+                    <!-- ここに本の内容が表示されます -->
+                    <div class="loading-spinner" id="reader-loading"></div>
+                </div>
+
+                <!-- サイドバー：検索パネル -->
+                <div class="reader-sidebar" id="search-panel">
+                    <div class="sidebar-header">
+                        <h3 class="sidebar-title">検索</h3>
+                        <button class="sidebar-close" id="search-panel-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar-content">
+                        <div class="search-box">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" id="content-search" placeholder="テキストを検索">
+                        </div>
+                        <div class="search-results" id="search-results">
+                            <!-- ここに検索結果が表示されます -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- サイドバー：分析パネル -->
+                <div class="reader-sidebar" id="analysis-panel">
+                    <div class="sidebar-header">
+                        <h3 class="sidebar-title">テキスト分析</h3>
+                        <button class="sidebar-close" id="analysis-panel-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar-content">
+                        <div class="analysis-panel">
+                            <div class="analysis-group">
+                                <h4 class="analysis-title">テキスト統計</h4>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">総文字数</div>
+                                    <div class="analysis-value" id="char-count">0</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">総単語数</div>
+                                    <div class="analysis-value" id="word-count">0</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">総段落数</div>
+                                    <div class="analysis-value" id="paragraph-count">0</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">推定読了時間</div>
+                                    <div class="analysis-value" id="read-time">0分</div>
+                                </div>
+                            </div>
+
+                            <div class="analysis-group">
+                                <h4 class="analysis-title">言語分析</h4>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">日本語</div>
+                                    <div class="analysis-value" id="japanese-percent">0%</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">英語</div>
+                                    <div class="analysis-value" id="english-percent">0%</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">漢字</div>
+                                    <div class="analysis-value" id="kanji-percent">0%</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">ひらがな</div>
+                                    <div class="analysis-value" id="hiragana-percent">0%</div>
+                                </div>
+                                <div class="analysis-item">
+                                    <div class="analysis-label">カタカナ</div>
+                                    <div class="analysis-value" id="katakana-percent">0%</div>
+                                </div>
+                                <div class="language-bar" id="language-bar">
+                                    <div class="language-segment" id="kanji-bar" style="width: 0%; background-color: #3b82f6;">0%</div>
+                                    <div class="language-segment" id="hiragana-bar" style="width: 0%; background-color: #10b981;">0%</div>
+                                    <div class="language-segment" id="katakana-bar" style="width: 0%; background-color: #f59e0b;">0%</div>
+                                    <div class="language-segment" id="english-bar" style="width: 0%; background-color: #ef4444;">0%</div>
+                                    <div class="language-segment" id="other-bar" style="width: 0%; background-color: #6b7280;">0%</div>
+                                </div>
+                            </div>
+
+                            <div class="analysis-group">
+                                <h4 class="analysis-title">頻出単語</h4>
+                                <div id="common-words">
+                                    <!-- ここに頻出単語が表示されます -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- サイドバー：メモパネル -->
+                <div class="reader-sidebar" id="notes-panel">
+                    <div class="sidebar-header">
+                        <h3 class="sidebar-title">メモ</h3>
+                        <button class="sidebar-close" id="notes-panel-close">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar-content">
+                        <button class="btn btn-primary" id="add-note-btn" style="width: 100%; margin-bottom: 1rem;">
+                            <i class="fas fa-plus"></i> 新しいメモを追加
+                        </button>
+                        <div class="notes-panel" id="notes-list">
+                            <!-- ここにメモが表示されます -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination" id="pagination">
+                <button class="page-btn" id="prev-page" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <input type="range" id="page-slider" min="1" max="1" value="1">
+                <div class="page-number">
+                    <span id="current-page">1</span> / <span id="total-pages">1</span>
+                </div>
+                <button class="page-btn" id="next-page">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScripts -->
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // 日本語ロケールの設定
+        auth.languageCode = 'ja';
+
+        // DOM要素の参照
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const userInitial = document.getElementById('user-initial');
+        const userAvatar = document.getElementById('user-avatar');
+        const logoutBtn = document.getElementById('logout-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        // ライブラリビューの要素
+        const libraryView = document.getElementById('library-view');
+        const bookGrid = document.getElementById('book-grid');
+        const bookList = document.getElementById('book-list');
+        const gridViewBtn = document.getElementById('grid-view-btn');
+        const listViewBtn = document.getElementById('list-view-btn');
+        const librarySearch = document.getElementById('library-search');
+        const libraryLoading = document.getElementById('library-loading');
+
+        // 読書ビューの要素
+        const readerView = document.getElementById('reader-view');
+        const readerMain = document.getElementById('reader-main');
+        const currentBookTitle = document.getElementById('current-book-title');
+        const backToLibrary = document.getElementById('back-to-library');
+        const prevPage = document.getElementById('prev-page');
+        const nextPage = document.getElementById('next-page');
+        const currentPage = document.getElementById('current-page');
+        const totalPages = document.getElementById('total-pages');
+        const pageSlider = document.getElementById('page-slider');
+        const readerLoading = document.getElementById('reader-loading');
+
+        // サイドバーパネルの要素
+        const searchPanel = document.getElementById('search-panel');
+        const analysisPanel = document.getElementById('analysis-panel');
+        const notesPanel = document.getElementById('notes-panel');
+        const searchBtn = document.getElementById('search-btn');
+        const analysisBtn = document.getElementById('analysis-btn');
+        const noteBtn = document.getElementById('note-btn');
+        const searchPanelClose = document.getElementById('search-panel-close');
+        const analysisPanelClose = document.getElementById('analysis-panel-close');
+        const notesPanelClose = document.getElementById('notes-panel-close');
+        const contentSearch = document.getElementById('content-search');
+        const searchResults = document.getElementById('search-results');
+
+        // 分析パネルの要素
+        const charCount = document.getElementById('char-count');
+        const wordCount = document.getElementById('word-count');
+        const paragraphCount = document.getElementById('paragraph-count');
+        const readTime = document.getElementById('read-time');
+        const japanesePercent = document.getElementById('japanese-percent');
+        const englishPercent = document.getElementById('english-percent');
+        const kanjiPercent = document.getElementById('kanji-percent');
+        const hiraganaPercent = document.getElementById('hiragana-percent');
+        const katakanaPercent = document.getElementById('katakana-percent');
+        const kanjiBar = document.getElementById('kanji-bar');
+        const hiraganaBar = document.getElementById('hiragana-bar');
+        const katakanaBar = document.getElementById('katakana-bar');
+        const englishBar = document.getElementById('english-bar');
+        const otherBar = document.getElementById('other-bar');
+        const commonWords = document.getElementById('common-words');
+
+        // グローバル変数
+        let currentBookId = null;
+        let currentPdf = null;
+        let currentPdfPages = 0;
+        let currentText = '';
+        let currentFormat = '';
+        let books = [];
+        let notes = [];
+        let bookmarks = [];
+
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // ユーザーがログインしている場合
+                console.log("ログイン中:", user.uid);
+                
+                // 初期表示名の即時反映（暫定表示）
+                const initialDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                if (sidebarUserName) {
+                    sidebarUserName.textContent = initialDisplayName;
+                }
+                
+                // ユーザーの初期アバター表示
+                if (userInitial && user.displayName) {
+                    const initial = user.displayName.charAt(0).toUpperCase();
+                    userInitial.textContent = initial;
+                    
+                    if (user.photoURL) {
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = user.photoURL;
+                        avatarImg.alt = user.displayName;
+                        userAvatar.innerHTML = '';
+                        userAvatar.appendChild(avatarImg);
+                    }
+                }
+                
+                // 完全なユーザーデータ取得
+                fetchUserData(user.uid);
+                
+                // 本のデータを取得
+                fetchBooks(user.uid);
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ユーザーデータの取得
+        async function fetchUserData(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                const currentUser = auth.currentUser;
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    // Firebase Authentication からの最新ユーザー名があれば更新
+                    if (currentUser && currentUser.displayName && 
+                        currentUser.displayName !== userData.displayName) {
+                        await db.collection('users').doc(userId).update({
+                            displayName: currentUser.displayName
+                        });
+                        userData.displayName = currentUser.displayName;
+                    }
+                    
+                    // ユーザー名を表示
+                    if (sidebarUserName) {
+                        sidebarUserName.textContent = userData.displayName || 'ゲスト';
+                    }
+                    
+                    // ユーザーアバター設定
+                    if (userInitial) {
+                        const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                        userInitial.textContent = initial;
+                        
+                        // Firebase Authentication のプロフィール画像を優先
+                        const profileImageUrl = (currentUser && currentUser.photoURL) || userData.profileImageUrl;
+                        if (profileImageUrl) {
+                            const avatarImg = document.createElement('img');
+                            avatarImg.src = profileImageUrl;
+                            avatarImg.alt = userData.displayName || 'ユーザー';
+                            userAvatar.innerHTML = '';
+                            userAvatar.appendChild(avatarImg);
+                        }
+                    }
+                } else {
+                    console.log("ユーザーデータが見つかりません");
+                }
+            } catch (error) {
+                console.error("ユーザーデータ取得エラー:", error);
+            }
+        }
+
+        // 本のデータ取得
+        async function fetchBooks(userId) {
+            try {
+                if (!bookGrid) return;
+                
+                const booksSnapshot = await db.collection('books')
+                    .where('userId', '==', userId)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                // ローディング表示を非表示
+                if (libraryLoading) {
+                    libraryLoading.style.display = 'none';
+                }
+                
+                if (booksSnapshot.empty) {
+                    // 本がない場合
+                    bookGrid.innerHTML = `
+                        <div style="text-align: center; padding: 2rem 0; grid-column: 1 / -1;">
+                            <i class="fas fa-book" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                            <p style="color: var(--text-muted);">まだ本がありません</p>
+                            <a href="book-upload.html" class="btn btn-primary mt-3">新しく登録する</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 本のデータを保存
+                books = [];
+                booksSnapshot.forEach(doc => {
+                    books.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // 本を表示
+                renderBooks();
+                
+            } catch (error) {
+                console.error("本の取得エラー:", error);
+                
+                if (bookGrid) {
+                    bookGrid.innerHTML = `
+                        <div style="text-align: center; padding: 2rem 0; grid-column: 1 / -1;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 0.5rem;"></i>
+                            <p style="color: var(--text-muted);">本の読み込み中にエラーが発生しました</p>
+                        </div>
+                    `;
+                }
+                
+                if (libraryLoading) {
+                    libraryLoading.style.display = 'none';
+                }
+            }
+        }
+
+        // 本の表示
+        function renderBooks(filteredBooks = null) {
+            const booksToRender = filteredBooks || books;
+            
+            // グリッドビュー
+            if (bookGrid) {
+                let gridHTML = '';
+                
+                booksToRender.forEach(book => {
+                    const thumbnailUrl = book.thumbnailUrl || 'default-book.jpg';
+                    const isPdf = book.format === 'pdf';
+                    
+                    gridHTML += `
+                        <div class="book-card" data-id="${book.id}">
+                            <div class="book-thumbnail">
+                                <img src="${thumbnailUrl}" alt="${book.title}" loading="lazy">
+                                ${isPdf ? `<div class="pdf-icon"><i class="fas fa-file-pdf"></i></div>` : ''}
+                            </div>
+                            <div class="book-info">
+                                <div class="book-title">${book.title}</div>
+                                <div class="book-author">${book.author || '不明な著者'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                if (booksToRender.length === 0) {
+                    gridHTML = `
+                        <div style="text-align: center; padding: 2rem 0; grid-column: 1 / -1;">
+                            <i class="fas fa-search" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                            <p style="color: var(--text-muted);">検索結果がありません</p>
+                        </div>
+                    `;
+                }
+                
+                bookGrid.innerHTML = gridHTML;
+                
+                // 本のクリックイベント
+                const bookCards = document.querySelectorAll('.book-card');
+                bookCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        const bookId = card.dataset.id;
+                        openBook(bookId);
+                    });
+                });
+            }
+            
+            // リストビュー
+            if (bookList) {
+                let listHTML = '';
+                
+                booksToRender.forEach(book => {
+                    const thumbnailUrl = book.thumbnailUrl || 'default-book.jpg';
+                    const isPdf = book.format === 'pdf';
+                    const lastRead = book.lastRead ? new Date(book.lastRead.toDate()).toLocaleDateString('ja-JP') : '未読';
+                    const progress = book.progress || 0;
+                    
+                    listHTML += `
+                        <div class="book-list-item" data-id="${book.id}">
+                            <div class="book-list-thumbnail">
+                                <img src="${thumbnailUrl}" alt="${book.title}" loading="lazy">
+                            </div>
+                            <div class="book-list-info">
+                                <div class="book-list-title">${book.title}</div>
+                                <div class="book-list-author">${book.author || '不明な著者'}</div>
+                                <div class="book-list-meta">
+                                    <span><i class="fas fa-clock"></i> ${lastRead}</span>
+                                    <span><i class="fas fa-chart-bar"></i> ${progress}%</span>
+                                    ${isPdf ? `<span><i class="fas fa-file-pdf"></i> PDF</span>` : `<span><i class="fas fa-file-alt"></i> テキスト</span>`}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                if (booksToRender.length === 0) {
+                    listHTML = `
+                        <div style="text-align: center; padding: 2rem 0;">
+                            <i class="fas fa-search" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                            <p style="color: var(--text-muted);">検索結果がありません</p>
+                        </div>
+                    `;
+                }
+                
+                bookList.innerHTML = listHTML;
+                
+                // 本のクリックイベント
+                const bookListItems = document.querySelectorAll('.book-list-item');
+                bookListItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const bookId = item.dataset.id;
+                        openBook(bookId);
+                    });
+                });
+            }
+        }
+
+        // 本を開く
+        async function openBook(bookId) {
+            try {
+                currentBookId = bookId;
+                const book = books.find(b => b.id === bookId);
+                
+                if (!book) {
+                    console.error('本が見つかりません');
+                    return;
+                }
+                
+                // ライブラリビューを非表示、読書ビューを表示
+                libraryView.style.display = 'none';
+                readerView.style.display = 'flex';
+                
+                // 本のタイトルを表示
+                currentBookTitle.textContent = book.title;
+                
+                // ローディング表示
+                readerMain.innerHTML = '<div class="loading-spinner"></div>';
+                
+                // PDFかテキストかによって表示方法を変える
+                currentFormat = book.format;
+                
+                if (book.format === 'pdf') {
+                    await loadPdf(book.fileUrl);
+                } else {
+                    await loadText(book.content || '本文がありません');
+                }
+                
+                // メモとブックマークを取得
+                await fetchNotes(bookId);
+                await fetchBookmarks(bookId);
+                
+                // 最後に読んだページを表示
+                const lastPage = book.lastPage || 1;
+                if (currentFormat === 'pdf') {
+                    await goToPage(lastPage);
+                }
+                
+                // 最終閲覧日時を更新
+                await db.collection('books').doc(bookId).update({
+                    lastRead: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+            } catch (error) {
+                console.error("本を開くエラー:", error);
+                readerMain.innerHTML = `
+                    <div style="text-align: center; padding: 2rem 0;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 0.5rem;"></i>
+                        <p style="color: var(--text-muted);">本の読み込み中にエラーが発生しました</p>
+                        <p style="font-size: 0.875rem; color: var(--text-muted); margin: 1rem 0;">
+                            エラー詳細: ${error.message || "不明なエラー"}
+                        </p>
+                        <button class="btn btn-primary mt-3" id="retry-load">再試行</button>
+                    </div>
+                `;
+                
+                document.getElementById('retry-load')?.addEventListener('click', () => {
+                    openBook(bookId);
+                });
+            }
+        }
+
+        // PDFの読み込み - CORS対応バージョン
+        async function loadPdf(url) {
+            try {
+                // PDFの読み込み
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+                
+                // ローディング表示
+                readerMain.innerHTML = '<div class="loading-spinner"></div><div style="text-align: center; margin-top: 1rem;">PDFを読み込み中...</div>';
+                
+                let loadingTask;
+                
+                try {
+                    // 直接URLからのロード試行
+                    loadingTask = pdfjsLib.getDocument(url);
+                    currentPdf = await loadingTask.promise;
+                } catch (corsError) {
+                    console.warn("CORS関連のエラーが発生しました。プロキシを試みます:", corsError);
+                    
+                    // CORS エラーが発生した場合の対応策
+                    // 1. ローカル開発環境かどうかを確認
+                    const isLocalhost = window.location.hostname === 'localhost' || 
+                                       window.location.hostname === '127.0.0.1';
+                    
+                    if (isLocalhost) {
+                        // ローカル開発環境の場合、Firebase のダウンロード機能を使用して一度データをダウンロードしてみる
+                        try {
+                            readerMain.innerHTML = '<div class="loading-spinner"></div><div style="text-align: center; margin-top: 1rem;">CORS制限を回避してPDFを読み込み中...</div>';
+                            
+                            // Firebase Storage からバイナリとして取得を試みる
+                            const ref = storage.refFromURL(url);
+                            const data = await ref.getBytes(50 * 1024 * 1024); // 最大50MBまで
+                            
+                            // TypedArray に変換
+                            const uint8Array = new Uint8Array(data);
+                            
+                            // データから直接読み込み
+                            loadingTask = pdfjsLib.getDocument({data: uint8Array});
+                            currentPdf = await loadingTask.promise;
+                            
+                        } catch (storageError) {
+                            console.error("Firebase Storage からの取得にも失敗しました:", storageError);
+                            
+                            // エラーメッセージを表示
+                            readerMain.innerHTML = `
+                                <div style="text-align: center; padding: 2rem 0;">
+                                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 0.5rem;"></i>
+                                    <p style="color: var(--text-muted); margin-bottom: 1rem;">CORSポリシーによりPDFの読み込みができません</p>
+                                    <p style="font-size: 0.875rem; margin-bottom: 1rem;">
+                                        ローカル開発環境で実行している場合は、以下の方法をお試しください:<br>
+                                        1. CORSプラグインをブラウザにインストール<br>
+                                        2. Firebase Storage のCORS設定を更新<br>
+                                        3. プロダクション環境にデプロイして確認
+                                    </p>
+                                    <button class="btn btn-primary" id="retry-load">再試行</button>
+                                </div>
+                            `;
+                            
+                            document.getElementById('retry-load')?.addEventListener('click', () => {
+                                loadPdf(url);
+                            });
+                            
+                            throw new Error("CORS制限によりPDFを読み込めません");
+                        }
+                    } else {
+                        // 本番環境でもエラーが発生した場合
+                        throw corsError;
+                    }
+                }
+                
+                // PDFの読み込みが成功した場合の処理
+                currentPdfPages = currentPdf.numPages;
+                
+                // ページスライダーを更新
+                pageSlider.min = 1;
+                pageSlider.max = currentPdfPages;
+                pageSlider.value = 1;
+                currentPage.textContent = '1';
+                totalPages.textContent = currentPdfPages;
+                
+                // 最初のページを表示
+                await renderPdfPage(1);
+                
+                // テキスト抽出（検索と分析用）
+                currentText = await extractTextFromPdf(currentPdf);
+                
+                // テキスト分析
+                analyzeText(currentText);
+                
+            } catch (error) {
+                console.error("PDF読み込みエラー:", error);
+                readerMain.innerHTML = `
+                    <div style="text-align: center; padding: 2rem 0;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 0.5rem;"></i>
+                        <p style="color: var(--text-muted);">PDFの読み込み中にエラーが発生しました</p>
+                        <p style="font-size: 0.875rem; color: var(--text-muted); margin: 1rem 0;">
+                            エラー詳細: ${error.message || "不明なエラー"}
+                        </p>
+                        <button class="btn btn-primary mt-3" id="retry-load">再試行</button>
+                    </div>
+                `;
+                
+                document.getElementById('retry-load')?.addEventListener('click', () => {
+                    loadPdf(url);
+                });
+                
+                throw error;
+            }
+        }
+
+        // PDFページのレンダリング
+        async function renderPdfPage(pageNum) {
+            try {
+                if (!currentPdf) return;
+                
+                const page = await currentPdf.getPage(pageNum);
+                const viewport = page.getViewport({ scale: 1.5 });
+                
+                // キャンバスの準備
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                // PDFコンテナを準備
+                readerMain.innerHTML = '<div id="pdf-container"></div>';
+                const pdfContainer = document.getElementById('pdf-container');
+                
+                // キャンバスをコンテナに追加
+                const pageContainer = document.createElement('div');
+                pageContainer.className = 'pdf-page';
+                pageContainer.appendChild(canvas);
+                pdfContainer.appendChild(pageContainer);
+                
+                // PDFをレンダリング
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                
+                await page.render(renderContext).promise;
+                
+                // ページナビゲーションを更新
+                currentPage.textContent = pageNum;
+                pageSlider.value = pageNum;
+                prevPage.disabled = pageNum <= 1;
+                nextPage.disabled = pageNum >= currentPdfPages;
+                
+                // 現在のページを保存
+                if (currentBookId) {
+                    await db.collection('books').doc(currentBookId).update({
+                        lastPage: pageNum,
+                        progress: Math.round((pageNum / currentPdfPages) * 100)
+                    });
+                }
+                
+                // ブックマークボタンの更新
+                updateBookmarkButton();
+                
+            } catch (error) {
+                console.error("PDFページレンダリングエラー:", error);
+                throw error;
+            }
+        }
+
+        // PDFからテキストを抽出
+        async function extractTextFromPdf(pdf) {
+            try {
+                let fullText = '';
+                
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(' ');
+                    fullText += pageText + '\n\n';
+                }
+                
+                return fullText;
+                
+            } catch (error) {
+                console.error("PDFテキスト抽出エラー:", error);
+                return '';
+            }
+        }
+
+        // テキストの読み込み
+        async function loadText(text) {
+            try {
+                currentText = text;
+                
+                // テキストの表示
+                readerMain.innerHTML = `<div class="text-container">${formatTextContent(text)}</div>`;
+                
+                // ページナビゲーションの更新
+                // テキストの場合は1ページのみ
+                currentPage.textContent = '1';
+                totalPages.textContent = '1';
+                pageSlider.value = 1;
+                pageSlider.max = 1;
+                prevPage.disabled = true;
+                nextPage.disabled = true;
+                
+                // テキスト分析
+                analyzeText(text);
+                
+                // 進捗を100%に設定
+                if (currentBookId) {
+                    await db.collection('books').doc(currentBookId).update({
+                        lastPage: 1,
+                        progress: 100
+                    });
+                }
+                
+                // ブックマークボタンの更新
+                updateBookmarkButton();
+                
+            } catch (error) {
+                console.error("テキスト読み込みエラー:", error);
+                throw error;
+            }
+        }
+
+        // テキストの整形
+        function formatTextContent(text) {
+            // 段落に分割してHTML形式に変換
+            const paragraphs = text.split('\n').filter(p => p.trim());
+            return paragraphs.map(p => `<p>${p}</p>`).join('');
+        }
+
+        // ページ移動
+        async function goToPage(pageNum) {
+            if (currentFormat === 'pdf') {
+                await renderPdfPage(pageNum);
+            }
+            // テキストの場合は1ページのみ
+        }
+
+        // メモの取得
+        async function fetchNotes(bookId) {
+            try {
+                const notesSnapshot = await db.collection('notes')
+                    .where('bookId', '==', bookId)
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                notes = [];
+                notesSnapshot.forEach(doc => {
+                    notes.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                renderNotes();
+                
+            } catch (error) {
+                console.error("メモ取得エラー:", error);
+            }
+        }
+
+        // メモの表示
+        function renderNotes() {
+            if (!notesPanel) return;
+            
+            const notesList = document.getElementById('notes-list');
+            
+            if (notes.length === 0) {
+                notesList.innerHTML = `
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <i class="fas fa-sticky-note" style="font-size: 1.5rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                        <p style="color: var(--text-muted);">メモがありません</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let notesHTML = '';
+            
+            notes.forEach(note => {
+                const date = note.createdAt ? new Date(note.createdAt.toDate()).toLocaleString('ja-JP') : '日時不明';
+                
+                notesHTML += `
+                    <div class="note-item" data-id="${note.id}">
+                        <div class="note-header">
+                            <div class="note-title">${note.title || 'タイトルなし'}</div>
+                            <div class="note-actions">
+                                <button class="note-action edit-note" data-id="${note.id}">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="note-action delete-note" data-id="${note.id}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="note-content">${note.content}</div>
+                        <div class="note-meta">
+                            <i class="far fa-clock mr-1"></i> ${date}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            notesList.innerHTML = notesHTML;
+            
+            // メモの編集・削除イベント
+            document.querySelectorAll('.edit-note').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const noteId = btn.dataset.id;
+                    editNote(noteId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-note').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const noteId = btn.dataset.id;
+                    deleteNote(noteId);
+                });
+            });
+        }
+
+        // メモの追加
+        async function addNote() {
+            try {
+                const title = prompt('メモのタイトルを入力してください:');
+                if (title === null) return; // キャンセル
+                
+                const content = prompt('メモの内容を入力してください:');
+                if (content === null) return; // キャンセル
+                
+                const newNote = {
+                    bookId: currentBookId,
+                    title: title || 'タイトルなし',
+                    content: content || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('notes').add(newNote);
+                
+                // メモを再取得
+                await fetchNotes(currentBookId);
+                
+            } catch (error) {
+                console.error("メモ追加エラー:", error);
+                alert('メモの追加中にエラーが発生しました');
+            }
+        }
+
+        // メモの編集
+        async function editNote(noteId) {
+            try {
+                const note = notes.find(n => n.id === noteId);
+                if (!note) return;
+                
+                const title = prompt('メモのタイトルを編集:', note.title);
+                if (title === null) return; // キャンセル
+                
+                const content = prompt('メモの内容を編集:', note.content);
+                if (content === null) return; // キャンセル
+                
+                await db.collection('notes').doc(noteId).update({
+                    title: title || 'タイトルなし',
+                    content: content || '',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // メモを再取得
+                await fetchNotes(currentBookId);
+                
+            } catch (error) {
+                console.error("メモ編集エラー:", error);
+                alert('メモの編集中にエラーが発生しました');
+            }
+        }
+
+        // メモの削除
+        async function deleteNote(noteId) {
+            try {
+                if (!confirm('このメモを削除してもよろしいですか？')) return;
+                
+                await db.collection('notes').doc(noteId).delete();
+                
+                // メモを再取得
+                await fetchNotes(currentBookId);
+                
+            } catch (error) {
+                console.error("メモ削除エラー:", error);
+                alert('メモの削除中にエラーが発生しました');
+            }
+        }
+
+        // ブックマークの取得
+        async function fetchBookmarks(bookId) {
+            try {
+                const bookmarksSnapshot = await db.collection('bookmarks')
+                    .where('bookId', '==', bookId)
+                    .orderBy('page', 'asc')
+                    .get();
+                
+                bookmarks = [];
+                bookmarksSnapshot.forEach(doc => {
+                    bookmarks.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // ブックマークボタンの更新
+                updateBookmarkButton();
+                
+            } catch (error) {
+                console.error("ブックマーク取得エラー:", error);
+            }
+        }
+
+        // ブックマークボタンの更新
+        function updateBookmarkButton() {
+            const bookmarkBtn = document.getElementById('bookmark-btn');
+            if (!bookmarkBtn) return;
+            
+            const currentPageNum = parseInt(currentPage.textContent);
+            const isBookmarked = bookmarks.some(b => b.page === currentPageNum);
+            
+            if (isBookmarked) {
+                bookmarkBtn.innerHTML = '<i class="fas fa-bookmark"></i>';
+                bookmarkBtn.title = 'ブックマークを削除';
+            } else {
+                bookmarkBtn.innerHTML = '<i class="far fa-bookmark"></i>';
+                bookmarkBtn.title = 'ブックマークを追加';
+            }
+        }
+
+        // ブックマークの切り替え
+        async function toggleBookmark() {
+            try {
+                const currentPageNum = parseInt(currentPage.textContent);
+                const existingBookmark = bookmarks.find(b => b.page === currentPageNum);
+                
+                if (existingBookmark) {
+                    // ブックマークの削除
+                    await db.collection('bookmarks').doc(existingBookmark.id).delete();
+                } else {
+                    // ブックマークの追加
+                    const newBookmark = {
+                        bookId: currentBookId,
+                        page: currentPageNum,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await db.collection('bookmarks').add(newBookmark);
+                }
+                
+                // ブックマークを再取得
+                await fetchBookmarks(currentBookId);
+                
+            } catch (error) {
+                console.error("ブックマーク切り替えエラー:", error);
+                alert('ブックマークの操作中にエラーが発生しました');
+            }
+        }
+
+        // テキスト検索
+        function searchText(query) {
+            if (!query || !currentText) return [];
+            
+            const results = [];
+            const lowerQuery = query.toLowerCase();
+            const lowerText = currentText.toLowerCase();
+            
+            let index = 0;
+            while ((index = lowerText.indexOf(lowerQuery, index)) !== -1) {
+                // 見つかった位置の前後のテキストを取得
+                const start = Math.max(0, index - 30);
+                const end = Math.min(currentText.length, index + query.length + 30);
+                let snippet = currentText.substring(start, end);
+                
+                // 検索語をハイライト
+                const highlightStart = index - start;
+                const highlightEnd = highlightStart + query.length;
+                snippet = 
+                    snippet.substring(0, highlightStart) +
+                    '<span class="highlight">' + 
+                    snippet.substring(highlightStart, highlightEnd) + 
+                    '</span>' + 
+                    snippet.substring(highlightEnd);
+                
+                // 結果を追加
+                results.push({
+                    text: snippet,
+                    index: index
+                });
+                
+                index += query.length;
+            }
+            
+            return results;
+        }
+
+        // 検索結果の表示
+        function renderSearchResults(results) {
+            if (!searchResults) return;
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = `
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <i class="fas fa-search" style="font-size: 1.5rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                        <p style="color: var(--text-muted);">検索結果がありません</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let resultsHTML = '';
+            
+            results.forEach((result, i) => {
+                resultsHTML += `
+                    <div class="search-result" data-index="${result.index}">
+                        <div class="result-text">${result.text}</div>
+                        <div class="result-location">結果 ${i + 1} / ${results.length}</div>
+                    </div>
+                `;
+            });
+            
+            searchResults.innerHTML = resultsHTML;
+            
+            // 検索結果クリックイベント
+            document.querySelectorAll('.search-result').forEach(result => {
+                result.addEventListener('click', () => {
+                    const index = parseInt(result.dataset.index);
+                    jumpToTextPosition(index);
+                });
+            });
+        }
+
+        // テキスト位置へジャンプ
+        function jumpToTextPosition(index) {
+            if (currentFormat === 'pdf') {
+                // PDFの場合、該当ページを表示してテキストをハイライト
+                // PDF.jsの制約上、簡単な実装は難しいため、単にテキストを検索結果へスクロール
+                alert('該当箇所へのジャンプ機能は現在PDFでは利用できません。');
+            } else {
+                // テキストの場合は該当位置にスクロール
+                const textContainer = document.querySelector('.text-container');
+                if (!textContainer) return;
+                
+                // テキスト内の位置を探す
+                const textNodes = [];
+                const walker = document.createTreeWalker(
+                    textContainer,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+                
+                let node;
+                while (node = walker.nextNode()) {
+                    textNodes.push(node);
+                }
+                
+                // テキストノードを順に調べて、インデックスの位置を見つける
+                let currentIndex = 0;
+                let targetNode = null;
+                let nodeIndex = 0;
+                
+                for (let i = 0; i < textNodes.length; i++) {
+                    const node = textNodes[i];
+                    const nodeLength = node.textContent.length;
+                    
+                    if (currentIndex <= index && index < currentIndex + nodeLength) {
+                        targetNode = node;
+                        nodeIndex = index - currentIndex;
+                        break;
+                    }
+                    
+                    currentIndex += nodeLength;
+                }
+                
+                if (targetNode) {
+                    // 該当箇所にスクロール
+                    targetNode.parentElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+                    
+                    // ハイライト表示
+                    const range = document.createRange();
+                    range.setStart(targetNode, Math.max(0, nodeIndex - 10));
+                    range.setEnd(targetNode, Math.min(targetNode.length, nodeIndex + 50));
+                    
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                }
+            }
+        }
+
+        // テキスト分析
+        function analyzeText(text) {
+            if (!text) return;
+            
+            // 文字数
+            const charCount = text.length;
+            
+            // 単語数（簡易的に空白で区切る）
+            const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+            const wordCount = words.length;
+            
+            // 段落数
+            const paragraphs = text.split('\n\n').filter(p => p.trim().length > 0);
+            const paragraphCount = paragraphs.length;
+            
+            // 読了時間（日本語の場合は1分あたり400文字、英語の場合は200単語と仮定）
+            const japaneseChars = countJapaneseChars(text);
+            const englishChars = charCount - japaneseChars;
+            const readTimeMinutes = Math.ceil((japaneseChars / 400) + (englishChars / 2000));
+            
+            // 言語分析
+            const japanesePercent = Math.round((japaneseChars / charCount) * 100);
+            const englishPercent = 100 - japanesePercent;
+            
+            // 文字種分析
+            const kanjiCount = countKanji(text);
+            const hiraganaCount = countHiragana(text);
+            const katakanaCount = countKatakana(text);
+            const alphaNumCount = countAlphaNum(text);
+            const otherCount = charCount - kanjiCount - hiraganaCount - katakanaCount - alphaNumCount;
+            
+            const kanjiPercent = Math.round((kanjiCount / charCount) * 100);
+            const hiraganaPercent = Math.round((hiraganaCount / charCount) * 100);
+            const katakanaPercent = Math.round((katakanaCount / charCount) * 100);
+            const alphaNumPercent = Math.round((alphaNumCount / charCount) * 100);
+            const otherPercent = 100 - kanjiPercent - hiraganaPercent - katakanaPercent - alphaNumPercent;
+            
+            // UI更新
+            if (charCount) document.getElementById('char-count').textContent = charCount.toLocaleString();
+            if (wordCount) document.getElementById('word-count').textContent = wordCount.toLocaleString();
+            if (paragraphCount) document.getElementById('paragraph-count').textContent = paragraphCount.toLocaleString();
+            if (readTime) document.getElementById('read-time').textContent = `${readTimeMinutes}分`;
+            
+            if (japanesePercent) document.getElementById('japanese-percent').textContent = `${japanesePercent}%`;
+            if (englishPercent) document.getElementById('english-percent').textContent = `${alphaNumPercent}%`;
+            
+            if (kanjiPercent && kanjiBar) {
+                document.getElementById('kanji-percent').textContent = `${kanjiPercent}%`;
+                kanjiBar.style.width = `${kanjiPercent}%`;
+                kanjiBar.textContent = `${kanjiPercent}%`;
+            }
+            
+            if (hiraganaPercent && hiraganaBar) {
+                document.getElementById('hiragana-percent').textContent = `${hiraganaPercent}%`;
+                hiraganaBar.style.width = `${hiraganaPercent}%`;
+                hiraganaBar.textContent = `${hiraganaPercent}%`;
+            }
+            
+            if (katakanaPercent && katakanaBar) {
+                document.getElementById('katakana-percent').textContent = `${katakanaPercent}%`;
+                katakanaBar.style.width = `${katakanaPercent}%`;
+                katakanaBar.textContent = `${katakanaPercent}%`;
+            }
+            
+            if (englishBar) {
+                englishBar.style.width = `${alphaNumPercent}%`;
+                englishBar.textContent = `${alphaNumPercent}%`;
+            }
+            
+            if (otherBar) {
+                otherBar.style.width = `${otherPercent}%`;
+                otherBar.textContent = `${otherPercent}%`;
+            }
+            
+            // 頻出単語
+            const commonWordsMap = getCommonWords(text);
+            let commonWordsHTML = '';
+            
+            for (const [word, count] of commonWordsMap) {
+                if (word.length < 2) continue; // 1文字の単語は除外
+                
+                commonWordsHTML += `
+                    <div class="analysis-item">
+                        <div class="analysis-label">${word}</div>
+                        <div class="analysis-value">${count}</div>
+                    </div>
+                `;
+            }
+            
+            if (commonWords) {
+                commonWords.innerHTML = commonWordsHTML || '<p style="color: var(--text-muted);">分析できる単語がありません</p>';
+            }
+        }
+
+        // 日本語文字のカウント
+        function countJapaneseChars(text) {
+            let count = 0;
+            for (let i = 0; i < text.length; i++) {
+                const code = text.charCodeAt(i);
+                if ((code >= 0x3000 && code <= 0x9FFF) || (code >= 0xFF00 && code <= 0xFFEF)) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // 漢字のカウント
+        function countKanji(text) {
+            let count = 0;
+            for (let i = 0; i < text.length; i++) {
+                const code = text.charCodeAt(i);
+                // 漢字の範囲（CJK統合漢字）
+                if (code >= 0x4E00 && code <= 0x9FFF) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // ひらがなのカウント
+        function countHiragana(text) {
+            let count = 0;
+            for (let i = 0; i < text.length; i++) {
+                const code = text.charCodeAt(i);
+                // ひらがなの範囲
+                if (code >= 0x3040 && code <= 0x309F) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // カタカナのカウント
+        function countKatakana(text) {
+            let count = 0;
+            for (let i = 0; i < text.length; i++) {
+                const code = text.charCodeAt(i);
+                // カタカナの範囲
+                if (code >= 0x30A0 && code <= 0x30FF) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // 英数字のカウント
+        function countAlphaNum(text) {
+            let count = 0;
+            for (let i = 0; i < text.length; i++) {
+                const code = text.charCodeAt(i);
+                // 英数字の範囲
+                if ((code >= 0x0030 && code <= 0x0039) || // 数字
+                    (code >= 0x0041 && code <= 0x005A) || // 大文字英字
+                    (code >= 0x0061 && code <= 0x007A)) { // 小文字英字
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        // 頻出単語の抽出
+        function getCommonWords(text) {
+            const words = {};
+            
+            // 日本語の場合、形態素解析が理想的だが、シンプルな実装として文字の連続で区切る
+            // 実際のアプリでは外部ライブラリなどを使用することを推奨
+            const matches = text.match(/[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]{2,}|[a-zA-Z]{2,}/gu) || [];
+            
+            for (const word of matches) {
+                if (words[word]) {
+                    words[word]++;
+                } else {
+                    words[word] = 1;
+                }
+            }
+            
+            // 出現回数でソート
+            return Object.entries(words)
+                .filter(([_, count]) => count > 1) // 1回のみの出現を除外
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10); // 上位10個を返す
+        }
+
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("ログアウトエラー:", error);
+            }
+        }
+
+        // テーマ切替
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (newTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        // サイドバー切替（モバイル用）
+        function toggleSidebar() {
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+
+        // 文字サイズ変更
+        function changeFontSize() {
+            const textContainer = document.querySelector('.text-container');
+            if (!textContainer) return;
+            
+            const currentSize = parseFloat(window.getComputedStyle(textContainer).fontSize);
+            const sizes = [1, 1.125, 1.25, 1.375, 1.5, 1.625, 1.75];
+            
+            let currentIndex = sizes.findIndex(size => Math.abs(size - currentSize / 16) < 0.1);
+            if (currentIndex === -1) currentIndex = 1; // デフォルトサイズ
+            
+            const nextIndex = (currentIndex + 1) % sizes.length;
+            textContainer.style.fontSize = `${sizes[nextIndex]}rem`;
+        }
+
+        // 本のダウンロード
+        async function downloadBook() {
+            try {
+                const book = books.find(b => b.id === currentBookId);
+                if (!book) return;
+                
+                if (book.format === 'pdf' && book.fileUrl) {
+                    // PDFの場合は直接ダウンロード
+                    const a = document.createElement('a');
+                    a.href = book.fileUrl;
+                    a.download = `${book.title}.pdf`;
+                    a.target = '_blank';
+                    a.click();
+                } else if (currentText) {
+                    // テキストの場合はテキストファイルとして保存
+                    const blob = new Blob([currentText], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${book.title}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                console.error("ダウンロードエラー:", error);
+                alert('ダウンロード中にエラーが発生しました');
+            }
+        }
+
+        // ライブラリ検索
+        function searchLibrary(query) {
+            if (!query) {
+                renderBooks(); // 空のクエリなら全て表示
+                return;
+            }
+            
+            const lowerQuery = query.toLowerCase();
+            
+            const filteredBooks = books.filter(book => 
+                book.title.toLowerCase().includes(lowerQuery) ||
+                (book.author && book.author.toLowerCase().includes(lowerQuery)) ||
+                (book.description && book.description.toLowerCase().includes(lowerQuery)) ||
+                (book.tags && book.tags.some(tag => tag.toLowerCase().includes(lowerQuery)))
+            );
+            
+            renderBooks(filteredBooks);
+        }
+
+        // イベントリスナー
+        document.addEventListener('DOMContentLoaded', () => {
+            // テーマ初期化
+            initTheme();
+            
+            // ログアウトボタン
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // テーマ切替ボタン
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // サイドバー切替ボタン
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+            
+            // ビュー切替
+            if (gridViewBtn) {
+                gridViewBtn.addEventListener('click', () => {
+                    gridViewBtn.classList.add('active');
+                    listViewBtn.classList.remove('active');
+                    bookGrid.style.display = 'grid';
+                    bookList.style.display = 'none';
+                });
+            }
+            
+            if (listViewBtn) {
+                listViewBtn.addEventListener('click', () => {
+                    listViewBtn.classList.add('active');
+                    gridViewBtn.classList.remove('active');
+                    bookGrid.style.display = 'none';
+                    bookList.style.display = 'block';
+                });
+            }
+            
+            // ライブラリ検索
+            if (librarySearch) {
+                librarySearch.addEventListener('input', (e) => {
+                    searchLibrary(e.target.value);
+                });
+            }
+            
+            // 読書ビューに戻るボタン
+            if (backToLibrary) {
+                backToLibrary.addEventListener('click', () => {
+                    libraryView.style.display = 'block';
+                    readerView.style.display = 'none';
+                });
+            }
+            
+            // ページ切り替えボタン
+            if (prevPage) {
+                prevPage.addEventListener('click', () => {
+                    const currentPageNum = parseInt(currentPage.textContent);
+                    if (currentPageNum > 1) {
+                        goToPage(currentPageNum - 1);
+                    }
+                });
+            }
+            
+            if (nextPage) {
+                nextPage.addEventListener('click', () => {
+                    const currentPageNum = parseInt(currentPage.textContent);
+                    const totalPagesNum = parseInt(totalPages.textContent);
+                    if (currentPageNum < totalPagesNum) {
+                        goToPage(currentPageNum + 1);
+                    }
+                });
+            }
+            
+            if (pageSlider) {
+                pageSlider.addEventListener('input', (e) => {
+                    goToPage(parseInt(e.target.value));
+                });
+            }
+            
+            // サイドバーパネル
+            if (searchBtn) {
+                searchBtn.addEventListener('click', () => {
+                    // 他のパネルを閉じる
+                    analysisPanel.classList.remove('active');
+                    notesPanel.classList.remove('active');
+                    // 検索パネルを開く
+                    searchPanel.classList.toggle('active');
+                    if (searchPanel.classList.contains('active')) {
+                        contentSearch.focus();
+                    }
+                });
+            }
+            
+            if (analysisBtn) {
+                analysisBtn.addEventListener('click', () => {
+                    // 他のパネルを閉じる
+                    searchPanel.classList.remove('active');
+                    notesPanel.classList.remove('active');
+                    // 分析パネルを開く
+                    analysisPanel.classList.toggle('active');
+                });
+            }
+            
+            if (noteBtn) {
+                noteBtn.addEventListener('click', () => {
+                    // 他のパネルを閉じる
+                    searchPanel.classList.remove('active');
+                    analysisPanel.classList.remove('active');
+                    // メモパネルを開く
+                    notesPanel.classList.toggle('active');
+                });
+            }
+            
+            // パネル閉じるボタン
+            if (searchPanelClose) {
+                searchPanelClose.addEventListener('click', () => {
+                    searchPanel.classList.remove('active');
+                });
+            }
+            
+            if (analysisPanelClose) {
+                analysisPanelClose.addEventListener('click', () => {
+                    analysisPanel.classList.remove('active');
+                });
+            }
+            
+            if (notesPanelClose) {
+                notesPanelClose.addEventListener('click', () => {
+                    notesPanel.classList.remove('active');
+                });
+            }
+            
+            // 検索機能
+            if (contentSearch) {
+                contentSearch.addEventListener('input', (e) => {
+                    const query = e.target.value;
+                    if (query.length < 2) {
+                        searchResults.innerHTML = '';
+                        return;
+                    }
+                    
+                    const results = searchText(query);
+                    renderSearchResults(results);
+                });
+            }
+            
+            // ツールボタン
+            document.getElementById('font-size-btn')?.addEventListener('click', changeFontSize);
+            document.getElementById('bookmark-btn')?.addEventListener('click', toggleBookmark);
+            document.getElementById('download-btn')?.addEventListener('click', downloadBook);
+            document.getElementById('add-note-btn')?.addEventListener('click', addNote);
+            
+            // キーボードショートカット
+            document.addEventListener('keydown', (e) => {
+                // 読書ビューがアクティブな場合のみ
+                if (readerView.style.display !== 'flex') return;
+                
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                    // 前のページ
+                    prevPage.click();
+                } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                    // 次のページ
+                    nextPage.click();
+                } else if (e.key === 'f' || e.key === 'F') {
+                    // 検索
+                    searchBtn.click();
+                } else if (e.key === 'b' || e.key === 'B') {
+                    // ブックマーク
+                    document.getElementById('bookmark-btn')?.click();
+                } else if (e.key === 'n' || e.key === 'N') {
+                    // メモ
+                    noteBtn.click();
+                } else if (e.key === 'a' || e.key === 'A') {
+                    // 分析
+                    analysisBtn.click();
+                } else if (e.key === 'Escape') {
+                    // パネルを閉じる
+                    searchPanel.classList.remove('active');
+                    analysisPanel.classList.remove('active');
+                    notesPanel.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
