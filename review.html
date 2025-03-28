@@ -1,0 +1,1491 @@
+// 編集モードの状態を管理する変数
+        let editMode = false;<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
+    <title>活字化審査 | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* ユーザープロフィール表示 */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.75rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+            font-weight: 600;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            width: 100%;
+            transition: color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            color: white;
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.5rem;
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin var(--transition-normal);
+        }
+        
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* Breadcrumb navigation */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+            flex-wrap: wrap;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color var(--transition-normal);
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+            margin: 0 0.25rem;
+        }
+        
+        .breadcrumb-item {
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        /* 審査表示 */
+        .review-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 8rem);
+            background-color: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .review-container {
+            background-color: var(--gray-800);
+        }
+        
+        .review-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .review-metadata {
+            padding: 1rem;
+            background-color: var(--gray-50);
+            border-bottom: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        
+        [data-theme="dark"] .review-metadata {
+            background-color: var(--gray-700);
+        }
+        
+        .metadata-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .metadata-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        
+        .metadata-value {
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .review-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .review-image {
+            flex: 1;
+            background-color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+            padding: 1rem;
+        }
+        
+        .review-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .review-text {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            background-color: white;
+        }
+        
+        [data-theme="dark"] .review-text {
+            background-color: var(--gray-700);
+        }
+        
+        .review-vertical-text {
+            height: 100%;
+            writing-mode: vertical-rl;
+            font-family: 'Noto Serif JP', serif;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            padding: 1rem;
+        }
+        
+        .review-footer {
+            padding: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .review-note-section {
+            padding: 1rem;
+            background-color: var(--gray-50);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        [data-theme="dark"] .review-note-section {
+            background-color: var(--gray-700);
+        }
+        
+        .document-selector {
+            margin-bottom: 1rem;
+        }
+        
+        /* トースト通知 */
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .toast {
+            padding: 0.75rem 1rem;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        
+        [data-theme="dark"] .toast {
+            background-color: var(--gray-800);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .toast.hide {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+        
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+        
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+        
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+        
+        .toast-warning .toast-icon {
+            color: var(--warning);
+        }
+        
+        .toast-info .toast-icon {
+            color: var(--info);
+        }
+        
+        /* ボタンスタイル */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: var(--success-hover);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .form-control {
+            background-color: var(--gray-700);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .review-metadata {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .review-body {
+                flex-direction: column;
+            }
+            
+            .review-image, .review-text {
+                width: 100%;
+                height: 50%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .review-metadata {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="mainpage.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="katsujieditor.html" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="books.html" class="menu-item">
+                <i class="fas fa-book"></i> 完成本を見る
+            </a>
+            <a href="review.html" class="menu-item active">
+                <i class="fas fa-check-circle"></i> 審査
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="learning.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ダッシュボード</a>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-item active">審査</span>
+            </div>
+            <div class="page-title">
+                <span>活字化審査</span>
+            </div>
+            
+            <div class="document-selector">
+                <label for="doc-select">審査する文書:</label>
+                <select id="doc-select" class="form-control" style="max-width: 300px; margin-top: 0.5rem;">
+                    <option value="">文書を選択してください</option>
+                    <!-- ここに文書リストが動的に生成されます -->
+                </select>
+            </div>
+        </div>
+        
+        <div class="review-container">
+            <div class="review-header">
+                <h3 id="document-title">文書を選択してください</h3>
+                <div>
+                    <button id="prev-page-btn" class="btn btn-outline" disabled>
+                        <i class="fas fa-chevron-left"></i> 前のページ
+                    </button>
+                    <span id="page-info" style="margin: 0 0.5rem;">- / -</span>
+                    <button id="next-page-btn" class="btn btn-outline" disabled>
+                        次のページ <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="review-metadata">
+                <div class="metadata-item">
+                    <span class="metadata-label">資料番号</span>
+                    <span id="doc-number" class="metadata-value">-</span>
+                </div>
+                <div class="metadata-item">
+                    <span class="metadata-label">所蔵</span>
+                    <span id="doc-collection" class="metadata-value">-</span>
+                </div>
+                <div class="metadata-item">
+                    <span class="metadata-label">年代</span>
+                    <span id="doc-date" class="metadata-value">-</span>
+                </div>
+                <div class="metadata-item">
+                    <span class="metadata-label">作成者</span>
+                    <span id="doc-author" class="metadata-value">-</span>
+                </div>
+                <div class="metadata-item">
+                    <span class="metadata-label">担当者</span>
+                    <span id="doc-person" class="metadata-value">-</span>
+                </div>
+                <div class="metadata-item">
+                    <span class="metadata-label">ステータス</span>
+                    <span id="doc-status" class="metadata-value">-</span>
+                </div>
+            </div>
+            
+            <div class="review-body">
+                <div class="review-image">
+                    <img id="image-display" src="" alt="原資料">
+                </div>
+                
+                <div class="review-text">
+                    <div id="vertical-text" class="review-vertical-text"></div>
+                </div>
+            </div>
+            
+            <div class="review-note-section">
+                <label for="review-note">審査メモ:</label>
+                <textarea id="review-note" class="form-control" rows="2" placeholder="審査メモを入力（担当者に共有されます）"></textarea>
+            </div>
+            
+            <div class="review-footer">
+                <button id="reject-btn" class="btn btn-danger" disabled>
+                    <i class="fas fa-times"></i> 差し戻す
+                </button>
+                <button id="approve-btn" class="btn btn-success" disabled>
+                    <i class="fas fa-check"></i> 承認する
+                </button>
+            </div>
+        </div>
+        
+        <!-- トースト通知コンテナ -->
+        <div class="toast-container" id="toast-container">
+            <!-- トーストは動的に生成されます -->
+        </div>
+    </div>
+
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+        
+        // Firebase初期化
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        
+        // 日本語ロケールの設定
+        auth.languageCode = 'ja';
+        
+        // 現在のユーザー
+        let currentUser = null;
+        
+        // 現在表示中の文書
+        let currentDocument = {
+            id: null,
+            title: "",
+            number: "",
+            collection: "",
+            date: "",
+            author: "",
+            person: "",
+            status: "",
+            pages: [],
+            currentPage: 0
+        };
+        
+        // 審査対象文書一覧の読み込み
+        async function loadDocumentList() {
+            try {
+                const docSelect = document.getElementById('doc-select');
+                docSelect.innerHTML = '<option value="">文書を選択してください</option>';
+                
+                // 審査待ちの文書を取得
+                const docsQuery = await db.collection('transcriptions')
+                    .where('status', '==', 'review')
+                    .orderBy('updatedAt', 'desc')
+                    .get();
+                
+                if (docsQuery.empty) {
+                    docSelect.innerHTML += '<option value="" disabled>審査待ちの文書はありません</option>';
+                    return;
+                }
+                
+                docsQuery.forEach(doc => {
+                    const docData = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = docData.title || '無題の文書';
+                    docSelect.appendChild(option);
+                });
+                
+                // 変更イベントを設定
+                docSelect.addEventListener('change', () => {
+                    const selectedId = docSelect.value;
+                    if (selectedId) {
+                        loadDocument(selectedId);
+                    } else {
+                        resetReviewUI();
+                    }
+                });
+            } catch (error) {
+                console.error("文書リスト読み込みエラー:", error);
+                showToast('文書リストの読み込みに失敗しました', 'error');
+            }
+        }
+        
+        // 文書の読み込み (デバッグ追加)
+        async function loadDocument(docId) {
+            try {
+                console.log("読み込むドキュメントID:", docId);
+                
+                if (!docId) {
+                    console.error("ドキュメントIDが空です");
+                    showToast('ドキュメントIDが指定されていません', 'error');
+                    return;
+                }
+                
+                const docRef = db.collection('transcriptions').doc(docId);
+                const docSnapshot = await docRef.get();
+                
+                if (!docSnapshot.exists) {
+                    console.error("ドキュメントが存在しません:", docId);
+                    showToast('文書が見つかりません', 'error');
+                    return;
+                }
+                
+                const docData = docSnapshot.data();
+                console.log("ドキュメントデータ:", docData);
+                
+                // 現在の文書を更新
+                currentDocument = {
+                    id: docSnapshot.id,
+                    title: docData.title || '無題の文書',
+                    number: docData.number || '',
+                    collection: docData.collection || '',
+                    date: docData.date || '',
+                    author: docData.author || '',
+                    person: docData.person || '',
+                    status: docData.status || '',
+                    pages: docData.pages || [],
+                    currentPage: 0
+                };
+                
+                console.log("現在の文書オブジェクト:", currentDocument);
+                
+                // UI更新
+                updateReviewUI();
+                
+                // ボタンを有効化
+                document.getElementById('reject-btn').disabled = false;
+                document.getElementById('approve-btn').disabled = false;
+                
+                // ページナビゲーションの更新
+                updatePageNavigation();
+            } catch (error) {
+                console.error("文書読み込みエラー:", error);
+                showToast('文書の読み込みに失敗しました', 'error');
+            }
+        }
+        
+        // UI更新 (編集フォームのID設定を追加)
+        function updateReviewUI() {
+            // タイトルを設定
+            document.getElementById('document-title').textContent = currentDocument.title;
+            
+            // メタデータを設定
+            document.getElementById('doc-number').textContent = currentDocument.number || '-';
+            document.getElementById('doc-collection').textContent = currentDocument.collection || '-';
+            document.getElementById('doc-date').textContent = currentDocument.date || '-';
+            document.getElementById('doc-author').textContent = currentDocument.author || '-';
+            document.getElementById('doc-person').textContent = currentDocument.person || '-';
+            
+            // ステータスを設定（日本語表示）
+            let statusText = '-';
+            switch (currentDocument.status) {
+                case 'draft': statusText = '下書き'; break;
+                case 'review': statusText = '審査待ち'; break;
+                case 'complete': statusText = '完了'; break;
+                case 'rejected': statusText = '差し戻し'; break;
+            }
+            document.getElementById('doc-status').textContent = statusText;
+            
+            // 編集フォームのIDフィールドを更新 (これは重要)
+            if (currentDocument.id) {
+                const editDocIdField = document.getElementById('edit-doc-id');
+                if (editDocIdField) {
+                    editDocIdField.value = currentDocument.id;
+                    console.log("フォームIDフィールドを更新:", currentDocument.id);
+                }
+            }
+            
+            // 現在のページを表示
+            updatePageDisplay();
+        }
+        
+        // ページ表示の更新 (デバッグ追加)
+        function updatePageDisplay() {
+            // ページデータがなければ何もしない
+            if (!currentDocument.pages || currentDocument.pages.length === 0) {
+                console.log("ページデータがありません");
+                document.getElementById('image-display').src = '';
+                document.getElementById('vertical-text').textContent = '';
+                return;
+            }
+            
+            console.log("ページ総数:", currentDocument.pages.length);
+            console.log("現在のページ番号:", currentDocument.currentPage);
+            
+            const currentPageData = currentDocument.pages[currentDocument.currentPage];
+            console.log("現在のページデータ:", currentPageData);
+            
+            // 画像を表示
+            if (currentPageData && currentPageData.url) {
+                console.log("画像URL:", currentPageData.url);
+                document.getElementById('image-display').src = currentPageData.url;
+            } else {
+                console.log("画像URLがありません");
+                document.getElementById('image-display').src = '';
+            }
+            
+            // テキストを表示
+            if (currentPageData && currentPageData.text) {
+                console.log("テキストあり:", currentPageData.text.substring(0, 50) + "...");
+                document.getElementById('vertical-text').textContent = currentPageData.text;
+            } else {
+                console.log("テキストがありません");
+                document.getElementById('vertical-text').textContent = '';
+            }
+        }
+        
+        // ページナビゲーションの更新
+        function updatePageNavigation() {
+            const prevBtn = document.getElementById('prev-page-btn');
+            const nextBtn = document.getElementById('next-page-btn');
+            const pageInfo = document.getElementById('page-info');
+            
+            // ページ情報を更新
+            if (currentDocument.pages && currentDocument.pages.length > 0) {
+                pageInfo.textContent = `${currentDocument.currentPage + 1} / ${currentDocument.pages.length}`;
+                
+                // ボタンの有効/無効状態を更新
+                prevBtn.disabled = currentDocument.currentPage === 0;
+                nextBtn.disabled = currentDocument.currentPage >= currentDocument.pages.length - 1;
+            } else {
+                pageInfo.textContent = '- / -';
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+            }
+        }
+        
+        // ページ切り替え
+        function changePage(direction) {
+            // ページ番号を更新
+            const newPage = currentDocument.currentPage + direction;
+            
+            // 範囲チェック
+            if (newPage < 0 || newPage >= currentDocument.pages.length) {
+                return;
+            }
+            
+            currentDocument.currentPage = newPage;
+            
+            // UI更新
+            updatePageDisplay();
+            updatePageNavigation();
+        }
+        
+        // 審査UIのリセット
+        function resetReviewUI() {
+            currentDocument = {
+                id: null,
+                title: "",
+                number: "",
+                collection: "",
+                date: "",
+                author: "",
+                person: "",
+                status: "",
+                pages: [],
+                currentPage: 0
+            };
+            
+            // タイトルをリセット
+            document.getElementById('document-title').textContent = '文書を選択してください';
+            
+            // メタデータをリセット
+            document.getElementById('doc-number').textContent = '-';
+            document.getElementById('doc-collection').textContent = '-';
+            document.getElementById('doc-date').textContent = '-';
+            document.getElementById('doc-author').textContent = '-';
+            document.getElementById('doc-person').textContent = '-';
+            document.getElementById('doc-status').textContent = '-';
+            
+            // 画像とテキストをリセット
+            document.getElementById('image-display').src = '';
+            document.getElementById('vertical-text').textContent = '';
+            
+            // ページナビゲーションをリセット
+            document.getElementById('page-info').textContent = '- / -';
+            document.getElementById('prev-page-btn').disabled = true;
+            document.getElementById('next-page-btn').disabled = true;
+            
+            // ボタンを無効化
+            document.getElementById('reject-btn').disabled = true;
+            document.getElementById('approve-btn').disabled = true;
+            
+            // 審査メモをクリア
+            document.getElementById('review-note').value = '';
+        }
+        
+        // 文書の承認処理
+        async function approveDocument() {
+            try {
+                if (!currentDocument.id) return;
+                
+                // 審査メモを取得
+                const reviewNote = document.getElementById('review-note').value;
+                
+                // 文書のステータスを更新
+                await db.collection('transcriptions').doc(currentDocument.id).update({
+                    status: 'complete',
+                    reviewedBy: currentUser.uid,
+                    reviewerName: currentUser.displayName || '',
+                    reviewNote: reviewNote,
+                    reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showToast('文書を承認しました', 'success');
+                
+                // 文書リストを再読み込み
+                await loadDocumentList();
+                
+                // 現在の文書をリセット
+                resetReviewUI();
+            } catch (error) {
+                console.error("承認エラー:", error);
+                showToast('文書の承認に失敗しました', 'error');
+            }
+        }
+        
+        // 文書の差し戻し処理
+        async function rejectDocument() {
+            try {
+                if (!currentDocument.id) return;
+                
+                // 審査メモを取得
+                const reviewNote = document.getElementById('review-note').value;
+                
+                if (!reviewNote) {
+                    showToast('差し戻し理由を審査メモに入力してください', 'warning');
+                    return;
+                }
+                
+                // 文書のステータスを更新
+                await db.collection('transcriptions').doc(currentDocument.id).update({
+                    status: 'rejected',
+                    reviewedBy: currentUser.uid,
+                    reviewerName: currentUser.displayName || '',
+                    reviewNote: reviewNote,
+                    reviewedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // 担当者への通知を作成
+                if (currentDocument.person) {
+                    try {
+                        await db.collection('notifications').add({
+                            userId: currentDocument.person,
+                            title: "文書が差し戻されました",
+                            message: `「${currentDocument.title}」が差し戻されました。理由: ${reviewNote}`,
+                            documentId: currentDocument.id,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            read: false,
+                            type: 'document_rejected'
+                        });
+                        console.log("担当者への通知を作成しました");
+                    } catch (notificationError) {
+                        console.error("通知作成エラー:", notificationError);
+                    }
+                }
+                
+                showToast('文書を差し戻しました', 'success');
+                
+                // 文書リストを再読み込み
+                await loadDocumentList();
+                
+                // 現在の文書をリセット
+                resetReviewUI();
+            } catch (error) {
+                console.error("差し戻しエラー:", error);
+                showToast('文書の差し戻しに失敗しました', 'error');
+            }
+        }
+        
+        // 編集前の準備処理 (フォーム送信を使用する方式)
+        async function prepareForEditing() {
+            try {
+                if (!currentDocument.id) {
+                    console.error("エラー: ドキュメントIDがありません");
+                    showToast('ドキュメントIDが見つかりません', 'error');
+                    return false;
+                }
+                
+                console.log("編集するドキュメントID:", currentDocument.id);
+                
+                // ドキュメントのステータスを下書きに戻す
+                await db.collection('transcriptions').doc(currentDocument.id).update({
+                    status: 'draft',
+                    reviewNote: document.getElementById('review-note').value || '編集のために下書きに戻されました',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showToast('編集のため下書きに戻しました', 'success');
+                
+                // 隠しフィールドにIDを設定
+                document.getElementById('edit-doc-id').value = currentDocument.id;
+                console.log("フォームのID値を設定:", currentDocument.id);
+                
+                // 成功を返す
+                return true;
+            } catch (error) {
+                console.error("編集準備エラー:", error);
+                showToast('編集の準備に失敗しました', 'error');
+                return false;
+            }
+        }
+        
+        // 通知トーストを表示
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            
+            // トースト要素を作成
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            // アイコンを設定
+            let iconClass = '';
+            switch (type) {
+                case 'success': iconClass = 'fas fa-check-circle'; break;
+                case 'error': iconClass = 'fas fa-exclamation-circle'; break;
+                case 'warning': iconClass = 'fas fa-exclamation-triangle'; break;
+                default: iconClass = 'fas fa-info-circle';
+            }
+            
+            toast.innerHTML = `
+                <i class="${iconClass} toast-icon"></i>
+                <div>${message}</div>
+            `;
+            
+            // コンテナに追加
+            toastContainer.appendChild(toast);
+            
+            // 一定時間後に削除
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // テーマ切替
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // テーマトグルボタンのテキストとアイコンを更新
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                if (newTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+        
+        // テーマの初期化
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // テーマトグルボタンのテキストとアイコンを設定
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+        
+        // サイドバー切替（モバイル用）
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+        
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("ログアウトエラー:", error);
+                showToast('ログアウトに失敗しました', 'error');
+            }
+        }
+        
+        // DOMが読み込まれた時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // テーマの初期化
+            initTheme();
+            
+            // 要素の参照を取得
+            const themeToggle = document.getElementById('theme-toggle');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            const prevPageBtn = document.getElementById('prev-page-btn');
+            const nextPageBtn = document.getElementById('next-page-btn');
+            
+            const editBtn = document.getElementById('edit-btn');
+            const rejectBtn = document.getElementById('reject-btn');
+            const approveBtn = document.getElementById('approve-btn');
+            
+            // テーマ切替
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // サイドバー切替
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            
+            // ログアウト
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // ページナビゲーション
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', () => changePage(-1));
+            }
+            
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', () => changePage(1));
+            }
+            
+            // 審査アクション
+            if (editBtn) {
+                editBtn.addEventListener('click', () => toggleEditMode());
+            }
+            
+            if (rejectBtn) {
+                rejectBtn.addEventListener('click', rejectDocument);
+            }
+            
+            if (approveBtn) {
+                approveBtn.addEventListener('click', approveDocument);
+            }
+            
+            // 編集モードのボタン設定
+            const cancelEditBtn = document.getElementById('cancel-edit-btn');
+            if (cancelEditBtn) {
+                cancelEditBtn.addEventListener('click', () => toggleEditMode());
+            }
+            
+            const saveBtn = document.getElementById('save-btn');
+            if (saveBtn) {
+                saveBtn.addEventListener('click', saveEdit);
+            }
+        });
+        
+        // 認証状態の監視
+        auth.onAuthStateChanged(async user => {
+            try {
+                if (user) {
+                    // ログイン済み
+                    currentUser = user;
+                    
+                    // ユーザー情報表示
+                    const userNameElement = document.getElementById('sidebar-user-name');
+                    const userInitialElement = document.getElementById('user-initial');
+                    const userAvatarElement = document.getElementById('user-avatar');
+                    
+                    if (userNameElement) {
+                        userNameElement.textContent = user.displayName || user.email || 'ユーザー';
+                    }
+                    
+                    if (userInitialElement && userAvatarElement) {
+                        if (user.photoURL) {
+                            userInitialElement.style.display = 'none';
+                            userAvatarElement.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName || 'ユーザー'}">`;
+                        } else {
+                            const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+                            userInitialElement.textContent = initial;
+                        }
+                    }
+                    
+                    // 文書リストを読み込む
+                    await loadDocumentList();
+                    
+                    // URLから文書IDを取得 (改善版)
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const docId = urlParams.get('id');
+                    
+                    console.log("URL から取得したドキュメントID:", docId);
+                    
+                    if (docId) {
+                        // 文書セレクトの値を設定
+                        const docSelect = document.getElementById('doc-select');
+                        if (docSelect) {
+                            // セレクト内にこのIDのオプションが存在するか確認
+                            let optionExists = false;
+                            for (let i = 0; i < docSelect.options.length; i++) {
+                                if (docSelect.options[i].value === docId) {
+                                    optionExists = true;
+                                    break;
+                                }
+                            }
+                            
+                            // 存在しない場合は追加する（直接編集用URLからアクセスした場合など）
+                            if (!optionExists) {
+                                console.log("セレクト内にIDのオプションが見つからないため追加します");
+                                const option = document.createElement('option');
+                                option.value = docId;
+                                option.textContent = 'ドキュメント: ' + docId;
+                                docSelect.appendChild(option);
+                            }
+                            
+                            docSelect.value = docId;
+                            // 文書データを読み込む
+                            await loadDocument(docId);
+                        } else {
+                            console.error("document-selectエレメントが見つかりません");
+                        }
+                    }
+                } else {
+                    // 未ログイン
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error("認証エラー:", error);
+                showToast('認証に失敗しました', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

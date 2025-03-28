@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古文書カメラ Pro - シンプル高精度解読</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary: #06B6D4;
+            --accent: #8B5CF6;
+            --bg-light: #F9FAFB;
+            --text-dark: #111827;
+            --border: #E5E7EB;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            color: var(--text-dark);
+            background-color: var(--bg-light);
+        }
+        
+        .btn {
+            @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+        }
+        
+        .btn-primary {
+            @apply bg-indigo-600 text-white hover:bg-indigo-700;
+        }
+        
+        .btn-secondary {
+            @apply bg-cyan-600 text-white hover:bg-cyan-700;
+        }
+        
+        .btn-outline {
+            @apply border border-gray-300 bg-white hover:bg-gray-50;
+        }
+        
+        .card {
+            @apply bg-white rounded-xl shadow-sm border border-gray-100;
+        }
+        
+        .input {
+            @apply block w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500;
+        }
+        
+        /* ヘッダーと全体レイアウト */
+        .app-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .main-content {
+            max-height: calc(100vh - 100px);
+            overflow: auto;
+        }
+        
+        /* 画像表示とズーム関連 */
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.5rem;
+            background-color: #222;
+        }
+        
+        .image-view {
+            height: calc(100vh - 220px);
+            overflow: auto;
+            padding: 1rem;
+            background-color: #2D3748;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .document-image {
+            max-width: 100%;
+            margin: 0 auto;
+            transform-origin: center;
+            transition: transform 0.1s ease-out;
+            cursor: move;
+        }
+        
+        .selection-area {
+            position: absolute;
+            border: 2px dashed #4F46E5;
+            background-color: rgba(79, 70, 229, 0.2);
+            pointer-events: none;
+            z-index: 20;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 30;
+        }
+        
+        .zoom-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border-radius: 0.375rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .zoom-btn:hover {
+            background-color: #F3F4F6;
+        }
+        
+        /* 候補文字表示 */
+        .candidate-char {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            font-size: 1.5rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .candidate-char:hover {
+            border-color: var(--primary);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+        
+        /* クロスヘア */
+        .selection-crosshair {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            pointer-events: none;
+            z-index: 100;
+            border: 2px dashed #4F46E5;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        
+        /* 解読者モデル切り替え */
+        .model-select {
+            border: 2px solid var(--border);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            width: 100%;
+            background-color: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+        }
+        
+        /* 通知 */
+        .notification {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            padding: 1rem 1.5rem;
+            border-radius: 0.375rem;
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            max-width: 24rem;
+            z-index: 40;
+            animation: slideIn 0.3s ease forwards;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #10B981;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #EF4444;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #3B82F6;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* タブ切り替え */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* バッジ */
+        .badge {
+            @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+        }
+        
+        .badge-indigo {
+            @apply bg-indigo-100 text-indigo-800;
+        }
+        
+        .badge-cyan {
+            @apply bg-cyan-100 text-cyan-800;
+        }
+        
+        .badge-purple {
+            @apply bg-purple-100 text-purple-800;
+        }
+        
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* ローディング */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(79, 70, 229, 0.2);
+            border-left-color: #4F46E5;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .app-actions {
+                margin-top: 1rem;
+                width: 100%;
+            }
+            
+            .image-view {
+                height: 50vh;
+            }
+        }
+        
+        .upload-area {
+            border: 2px dashed #D1D5DB;
+            border-radius: 0.5rem;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .upload-area:hover {
+            border-color: #4F46E5;
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+        
+        @keyframes ripple {
+            to {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="selection-crosshair" id="selectionCrosshair"></div>
+    
+    <div class="app-container">
+        <!-- アプリヘッダー -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-6 app-header">
+            <div>
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-cyan-500 text-transparent bg-clip-text">古文書カメラ Pro</h1>
+                <p class="text-gray-600">崩し字を簡単に解読</p>
+            </div>
+            
+            <div class="flex items-center space-x-4 mt-4 md:mt-0 app-actions">
+                <span class="badge badge-indigo">
+                    解読残: <span id="ocrCounter">10</span>/10
+                </span>
+                
+                <select id="modelSelect" class="model-select">
+                    <option value="combined" selected>統合モデル（全解読者）</option>
+                    <option value="expert_a">田中教授（江戸時代文書）</option>
+                    <option value="expert_b">鈴木博士（明治期公文書）</option>
+                    <option value="expert_c">佐藤准教授（古典籍・版本）</option>
+                    <option value="expert_d">山本研究員（書状・手紙）</option>
+                </select>
+                
+                <button id="historyBtn" class="btn btn-outline flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    履歴
+                </button>
+            </div>
+        </header>
+        
+        <main class="main-content">
+            <!-- アップロードタブ -->
+            <div id="uploadTab" class="tab-content active">
+                <div id="uploadPanel" class="card p-6">
+                    <div class="upload-area" id="uploadArea">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p class="text-xl font-medium text-gray-700 mb-2">画像をドラッグ＆ドロップ</p>
+                        <p class="text-gray-500 mb-4">または</p>
+                        <button id="browseBtn" class="btn btn-primary">
+                            画像を選択
+                        </button>
+                        <p class="text-sm text-gray-500 mt-4">
+                            または <button id="cameraBtn" class="text-indigo-600 font-medium">カメラで撮影</button>
+                        </p>
+                    </div>
+                    <input type="file" id="fileInput" class="hidden" accept="image/*">
+                    <input type="file" id="cameraInput" class="hidden" accept="image/*" capture="environment">
+                </div>
+                
+                <!-- 画像表示パネル (最初は非表示) -->
+                <div id="imagePanel" class="hidden mt-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- 左側: 画像表示 -->
+                        <div class="lg:col-span-2">
+                            <div class="card">
+                                <div class="p-4 border-b border-gray-100">
+                                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        画像表示
+                                    </h2>
+                                    <p class="text-sm text-gray-500">画像内の解読したい文字の範囲をドラッグして選択してください</p>
+                                </div>
+                                
+                                <div class="image-view">
+                                    <div class="image-container" id="imageContainer">
+                                        <img id="documentImage" class="document-image" src="#" alt="古文書画像">
+                                        <div id="selectionArea" class="selection-area hidden"></div>
+                                        
+                                        <div class="zoom-controls">
+                                            <div id="zoomIn" class="zoom-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                </svg>
+                                            </div>
+                                            <div id="zoomOut" class="zoom-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                                                </svg>
+                                            </div>
+                                            <div id="zoomReset" class="zoom-btn">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 右側: 解読結果 -->
+                        <div class="lg:col-span-1">
+                            <div class="card">
+                                <div class="p-4 border-b border-gray-100">
+                                    <h2 class="text-lg font-semibold text-gray-800 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        解読結果
+                                    </h2>
+                                </div>
+                                
+                                <div class="p-4">
+                                    <!-- ローディング表示 -->
+                                    <div id="loadingIndicator" class="hidden py-8 flex flex-col items-center justify-center">
+                                        <div class="loading-spinner mb-4"></div>
+                                        <p class="text-gray-600">解読中...</p>
+                                    </div>
+                                    
+                                    <!-- 候補文字表示 -->
+                                    <div id="candidatesSection" class="hidden">
+                                        <div class="mb-4">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <h3 class="font-medium text-gray-700">候補文字</h3>
+                                                <span class="badge badge-indigo" id="currentModelBadge">統合モデル</span>
+                                            </div>
+                                            <div class="grid grid-cols-4 gap-2" id="candidateChars">
+                                                <!-- 候補文字はここに動的に追加 -->
+                                            </div>
+                                            
+                                            <div class="mt-4">
+                                                <p class="text-sm text-gray-500 mb-2">または正確な文字を入力:</p>
+                                                <div class="flex">
+                                                    <input type="text" id="customChar" maxlength="3" class="input rounded-r-none" placeholder="文字入力">
+                                                    <button id="submitCustomChar" class="btn btn-primary rounded-l-none">確定</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- テキスト表示 -->
+                                    <div class="mt-6">
+                                        <h3 class="font-medium text-gray-700 mb-2">解読テキスト</h3>
+                                        <div class="bg-gray-50 p-4 rounded-lg min-h-[100px] border border-gray-200">
+                                            <p id="resultText" class="text-xl"></p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- アクションボタン -->
+                                    <div class="mt-6 flex justify-end">
+                                        <button id="clearTextBtn" class="btn btn-outline mr-2">
+                                            クリア
+                                        </button>
+                                        <button id="copyTextBtn" class="btn btn-outline mr-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                                            </svg>
+                                            コピー
+                                        </button>
+                                        <button id="saveBtn" class="btn btn-secondary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                                            </svg>
+                                            保存
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 履歴タブ (最初は非表示) -->
+            <div id="historyTab" class="tab-content">
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold text-gray-800">解読履歴</h2>
+                        <button id="backToUploadBtn" class="btn btn-outline">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            戻る
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="historyItems">
+                        <!-- 履歴アイテム (サンプル) -->
+                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-all hover:shadow-md">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="badge badge-purple">田中教授モデル</span>
+                                    <span class="text-sm text-gray-500">2025/03/20 14:30</span>
+                                </div>
+                                <p class="font-medium text-gray-800 text-lg mb-2">之を以て見るに方今</p>
+                                <div class="flex justify-between items-center">
+                                    <button class="text-sm text-indigo-600 hover:text-indigo-800">コピー</button>
+                                    <button class="text-sm text-gray-500 hover:text-gray-700">削除</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-all hover:shadow-md">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="badge badge-indigo">統合モデル</span>
+                                    <span class="text-sm text-gray-500">2025/03/19 11:15</span>
+                                </div>
+                                <p class="font-medium text-gray-800 text-lg mb-2">徳川家康公</p>
+                                <div class="flex justify-between items-center">
+                                    <button class="text-sm text-indigo-600 hover:text-indigo-800">コピー</button>
+                                    <button class="text-sm text-gray-500 hover:text-gray-700">削除</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-all hover:shadow-md">
+                            <div class="p-4">
+                                <div class="flex justify-between items-start mb-3">
+                                    <span class="badge badge-cyan">山本研究員モデル</span>
+                                    <span class="text-sm text-gray-500">2025/03/18 09:45</span>
+                                </div>
+                                <p class="font-medium text-gray-800 text-lg mb-2">急ぎ此段申進候</p>
+                                <div class="flex justify-between items-center">
+                                    <button class="text-sm text-indigo-600 hover:text-indigo-800">コピー</button>
+                                    <button class="text-sm text-gray-500 hover:text-gray-700">削除</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="mt-8 text-center text-sm text-gray-500">
+            <p>© <span id="currentYear"></span> 古文書カメラ Pro - 崩し字解読システム</p>
+        </footer>
+    </div>
+    
+    <script>
+        // DOM要素
+        const uploadTab = document.getElementById('uploadTab');
+        const historyTab = document.getElementById('historyTab');
+        const historyBtn = document.getElementById('historyBtn');
+        const backToUploadBtn = document.getElementById('backToUploadBtn');
+        const uploadPanel = document.getElementById('uploadPanel');
+        const imagePanel = document.getElementById('imagePanel');
+        const uploadArea = document.getElementById('uploadArea');
+        const browseBtn = document.getElementById('browseBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const fileInput = document.getElementById('fileInput');
+        const cameraInput = document.getElementById('cameraInput');
+        const documentImage = document.getElementById('documentImage');
+        const selectionArea = document.getElementById('selectionArea');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const candidatesSection = document.getElementById('candidatesSection');
+        const candidateChars = document.getElementById('candidateChars');
+        const customChar = document.getElementById('customChar');
+        const submitCustomChar = document.getElementById('submitCustomChar');
+        const resultText = document.getElementById('resultText');
+        const clearTextBtn = document.getElementById('clearTextBtn');
+        const copyTextBtn = document.getElementById('copyTextBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const modelSelect = document.getElementById('modelSelect');
+        const currentModelBadge = document.getElementById('currentModelBadge');
+        const ocrCounter = document.getElementById('ocrCounter');
+        const selectionCrosshair = document.getElementById('selectionCrosshair');
+        const zoomIn = document.getElementById('zoomIn');
+        const zoomOut = document.getElementById('zoomOut');
+        const zoomReset = document.getElementById('zoomReset');
+        
+        // アプリケーションの状態
+        let state = {
+            result: '',
+            imageFile: null,
+            imageDataUrl: null,
+            selectionStart: null,
+            selectionCurrent: null,
+            isSelecting: false,
+            candidates: [],
+            ocrModel: 'combined',
+            dailyOcrCount: 10,
+            zoomLevel: 1.0,
+            panOffset: { x: 0, y: 0 },
+            isDragging: false,
+            dragStart: { x: 0, y: 0 }
+        };
+        
+        // 現在の年を更新
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+       // タブ切り替え続き
+backToUploadBtn.addEventListener('click', () => {
+    uploadTab.classList.add('active');
+    historyTab.classList.remove('active');
+});
+
+// ファイル選択ボタン
+browseBtn.addEventListener('click', () => {
+    fileInput.click();
+});
+
+// カメラ起動ボタン
+cameraBtn.addEventListener('click', () => {
+    cameraInput.click();
+});
+
+// ファイル選択後の処理
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+        handleImageFile(e.target.files[0]);
+    }
+});
+
+// カメラ撮影後の処理
+cameraInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+        handleImageFile(e.target.files[0]);
+    }
+});
+
+// ドラッグ&ドロップ対応
+uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.classList.add('border-indigo-500', 'bg-indigo-50');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+    uploadArea.classList.remove('border-indigo-500', 'bg-indigo-50');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.classList.remove('border-indigo-500', 'bg-indigo-50');
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleImageFile(e.dataTransfer.files[0]);
+    }
+});
+
+// 画像ファイル処理
+function handleImageFile(file) {
+    // ファイルタイプチェック
+    if (!file.type.match('image.*')) {
+        showNotification('画像ファイルを選択してください', 'error');
+        return;
+    }
+    
+    state.imageFile = file;
+    
+    // 画像の読み込みとプレビュー
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        documentImage.src = event.target.result;
+        state.imageDataUrl = event.target.result;
+        
+        // 画像読み込み完了後に表示を切り替え
+        documentImage.onload = function() {
+            uploadPanel.classList.add('hidden');
+            imagePanel.classList.remove('hidden');
+            
+            // ズームをリセット
+            resetZoom();
+        };
+    };
+    reader.readAsDataURL(file);
+}
+
+// 画像上での選択機能
+documentImage.parentElement.addEventListener('mousemove', (e) => {
+    // クロスヘアを表示
+    selectionCrosshair.style.display = 'block';
+    selectionCrosshair.style.left = `${e.clientX}px`;
+    selectionCrosshair.style.top = `${e.clientY}px`;
+    
+    if (state.isSelecting) {
+        const rect = documentImage.parentElement.getBoundingClientRect();
+        state.selectionCurrent = {
+            x: e.clientX - rect.left,
+            y: e.clientY - rect.top
+        };
+        
+        // 選択範囲の計算
+        const left = Math.min(state.selectionStart.x, state.selectionCurrent.x);
+        const top = Math.min(state.selectionStart.y, state.selectionCurrent.y);
+        const width = Math.abs(state.selectionStart.x - state.selectionCurrent.x);
+        const height = Math.abs(state.selectionStart.y - state.selectionCurrent.y);
+        
+        // オーバーレイの更新
+        selectionArea.style.left = `${left}px`;
+        selectionArea.style.top = `${top}px`;
+        selectionArea.style.width = `${width}px`;
+        selectionArea.style.height = `${height}px`;
+    } else if (state.isDragging) {
+        // パン機能
+        const dx = e.clientX - state.dragStart.x;
+        const dy = e.clientY - state.dragStart.y;
+        
+        state.panOffset.x += dx;
+        state.panOffset.y += dy;
+        
+        state.dragStart = { x: e.clientX, y: e.clientY };
+        
+        applyZoomAndPan();
+    }
+});
+
+// マウスがコンテナを離れたときにクロスヘアを非表示
+documentImage.parentElement.addEventListener('mouseleave', () => {
+    selectionCrosshair.style.display = 'none';
+});
+
+documentImage.parentElement.addEventListener('mousedown', (e) => {
+    if (e.button === 0) { // 左クリック
+        if (e.ctrlKey || e.metaKey) {
+            // Ctrlキーが押されている場合はパン
+            state.isDragging = true;
+            state.dragStart = { x: e.clientX, y: e.clientY };
+            documentImage.style.cursor = 'grabbing';
+        } else {
+            // 範囲選択
+            const rect = documentImage.parentElement.getBoundingClientRect();
+            state.selectionStart = {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+            state.isSelecting = true;
+            
+            selectionArea.style.left = `${state.selectionStart.x}px`;
+            selectionArea.style.top = `${state.selectionStart.y}px`;
+            selectionArea.style.width = '0px';
+            selectionArea.style.height = '0px';
+            selectionArea.classList.remove('hidden');
+        }
+    }
+});
+
+documentImage.parentElement.addEventListener('mouseup', (e) => {
+    if (state.isSelecting) {
+        state.isSelecting = false;
+        
+        // 選択範囲が十分な大きさか確認
+        const width = parseInt(selectionArea.style.width);
+        const height = parseInt(selectionArea.style.height);
+        
+        if (width < 20 || height < 20) {
+            selectionArea.classList.add('hidden');
+            return;
+        }
+        
+        // 範囲選択解読処理
+        recognizeSelectedArea();
+    }
+    
+    if (state.isDragging) {
+        state.isDragging = false;
+        documentImage.style.cursor = 'move';
+    }
+});
+
+// タッチデバイス対応
+documentImage.parentElement.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        
+        if (state.isSelecting) {
+            const rect = documentImage.parentElement.getBoundingClientRect();
+            state.selectionCurrent = {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+            
+            // 選択範囲の計算
+            const left = Math.min(state.selectionStart.x, state.selectionCurrent.x);
+            const top = Math.min(state.selectionStart.y, state.selectionCurrent.y);
+            const width = Math.abs(state.selectionStart.x - state.selectionCurrent.x);
+            const height = Math.abs(state.selectionStart.y - state.selectionCurrent.y);
+            
+            // オーバーレイの更新
+            selectionArea.style.left = `${left}px`;
+            selectionArea.style.top = `${top}px`;
+            selectionArea.style.width = `${width}px`;
+            selectionArea.style.height = `${height}px`;
+        } else if (state.isDragging) {
+            // パン機能
+            const dx = touch.clientX - state.dragStart.x;
+            const dy = touch.clientY - state.dragStart.y;
+            
+            state.panOffset.x += dx;
+            state.panOffset.y += dy;
+            
+            state.dragStart = { x: touch.clientX, y: touch.clientY };
+            
+            applyZoomAndPan();
+        }
+        
+        e.preventDefault();
+    }
+});
+
+documentImage.parentElement.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        
+        // 長押しで選択モード、それ以外はパンモード
+        state.touchStartTime = new Date().getTime();
+        state.touchTimer = setTimeout(() => {
+            // 長押し - 選択モード
+            const rect = documentImage.parentElement.getBoundingClientRect();
+            state.selectionStart = {
+                x: touch.clientX - rect.left,
+                y: touch.clientY - rect.top
+            };
+            state.isSelecting = true;
+            
+            selectionArea.style.left = `${state.selectionStart.x}px`;
+            selectionArea.style.top = `${state.selectionStart.y}px`;
+            selectionArea.style.width = '0px';
+            selectionArea.style.height = '0px';
+            selectionArea.classList.remove('hidden');
+            
+            // バイブレーションフィードバック (対応デバイスのみ)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }, 500);
+        
+        // パンモード初期設定
+        state.dragStart = { x: touch.clientX, y: touch.clientY };
+        state.isDragging = true;
+        
+        e.preventDefault();
+    }
+});
+
+documentImage.parentElement.addEventListener('touchend', (e) => {
+    clearTimeout(state.touchTimer);
+    
+    if (state.isSelecting) {
+        state.isSelecting = false;
+        
+        // 選択範囲が十分な大きさか確認
+        const width = parseInt(selectionArea.style.width);
+        const height = parseInt(selectionArea.style.height);
+        
+        if (width < 20 || height < 20) {
+            selectionArea.classList.add('hidden');
+            return;
+        }
+        
+        // 範囲選択解読処理
+        recognizeSelectedArea();
+    }
+    
+    const touchDuration = new Date().getTime() - state.touchStartTime;
+    if (touchDuration < 500) {
+        // 短いタッチでパン処理が完了
+        state.isDragging = false;
+    }
+    
+    e.preventDefault();
+});
+
+// ズーム機能
+zoomIn.addEventListener('click', () => {
+    zoomImage(1.25);
+});
+
+zoomOut.addEventListener('click', () => {
+    zoomImage(0.8);
+});
+
+zoomReset.addEventListener('click', () => {
+    resetZoom();
+});
+
+// ホイールでのズーム
+documentImage.parentElement.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    
+    if (e.deltaY < 0) {
+        // ズームイン
+        zoomImage(1.1);
+    } else {
+        // ズームアウト
+        zoomImage(0.9);
+    }
+});
+
+// ズーム処理
+function zoomImage(factor) {
+    state.zoomLevel *= factor;
+    if (state.zoomLevel < 0.5) state.zoomLevel = 0.5; // 最小ズーム
+    if (state.zoomLevel > 5) state.zoomLevel = 5; // 最大ズーム
+    
+    applyZoomAndPan();
+}
+
+// ズームとパンを適用
+function applyZoomAndPan() {
+    documentImage.style.transform = `scale(${state.zoomLevel}) translate(${state.panOffset.x / state.zoomLevel}px, ${state.panOffset.y / state.zoomLevel}px)`;
+}
+
+// ズームリセット
+function resetZoom() {
+    state.zoomLevel = 1.0;
+    state.panOffset = { x: 0, y: 0 };
+    documentImage.style.transform = 'scale(1) translate(0px, 0px)';
+}
+
+// 選択範囲の解読処理
+function recognizeSelectedArea() {
+    // OCR使用回数の確認
+    if (state.dailyOcrCount <= 0) {
+        showNotification('本日のOCR解読回数の上限に達しました', 'error');
+        selectionArea.classList.add('hidden');
+        return;
+    }
+    
+    // 選択範囲の座標を取得
+    const left = parseInt(selectionArea.style.left);
+    const top = parseInt(selectionArea.style.top);
+    const width = parseInt(selectionArea.style.width);
+    const height = parseInt(selectionArea.style.height);
+    
+    // キャンバスに選択範囲を描画
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    
+    // 現在のズームとパンを考慮した位置計算
+    const zoomFactor = state.zoomLevel;
+    
+    // 画像のサイズを取得
+    const imgWidth = documentImage.naturalWidth;
+    const imgHeight = documentImage.naturalHeight;
+    
+    // 画像の表示サイズ
+    const displayWidth = documentImage.width * zoomFactor;
+    const displayHeight = documentImage.height * zoomFactor;
+    
+    // スケール計算 (ズームを考慮)
+    const scaleX = imgWidth / displayWidth;
+    const scaleY = imgHeight / displayHeight;
+    
+    // 選択範囲を元の画像サイズに変換 (パンオフセットを考慮)
+    const panX = state.panOffset.x / zoomFactor;
+    const panY = state.panOffset.y / zoomFactor;
+    
+    const sourceX = (left - panX) * scaleX;
+    const sourceY = (top - panY) * scaleY;
+    const sourceWidth = width * scaleX;
+    const sourceHeight = height * scaleY;
+    
+    // 選択範囲の画像を描画
+    ctx.drawImage(
+        documentImage,
+        sourceX, sourceY, sourceWidth, sourceHeight,
+        0, 0, width, height
+    );
+    
+    // 読み込み表示を表示
+    loadingIndicator.classList.remove('hidden');
+    candidatesSection.classList.add('hidden');
+    
+    // OCR回数を減算
+    state.dailyOcrCount--;
+    ocrCounter.textContent = state.dailyOcrCount;
+    
+    // 現在のモデルを表示更新
+    updateCurrentModelBadge();
+    
+    // OCR処理をシミュレート (実際はAPIを呼び出す)
+    setTimeout(() => {
+        // モデルに応じた候補文字を表示 (モックデータ)
+        let mockCandidates;
+        
+        switch(state.ocrModel) {
+            case 'expert_a': // 田中教授
+                mockCandidates = ['申', '候', '命', '者', '年'];
+                break;
+            case 'expert_b': // 鈴木博士
+                mockCandidates = ['候', '奉', '御', '事', '請'];
+                break;
+            case 'expert_c': // 佐藤准教授
+                mockCandidates = ['以', '木', '承', '参', '方'];
+                break;
+            case 'expert_d': // 山本研究員
+                mockCandidates = ['参', '者', '府', '札', '書'];
+                break;
+            default: // 統合モデル
+                mockCandidates = ['候', '者', '申', '以', '事'];
+                break;
+        }
+        
+        // 候補文字を表示
+        candidateChars.innerHTML = '';
+        mockCandidates.forEach(char => {
+            const candidateElem = document.createElement('div');
+            candidateElem.className = 'candidate-char';
+            candidateElem.textContent = char;
+            candidateElem.addEventListener('click', () => {
+                addCharToResult(char);
+            });
+            candidateChars.appendChild(candidateElem);
+        });
+        
+        // 候補セクションを表示
+        loadingIndicator.classList.add('hidden');
+        candidatesSection.classList.remove('hidden');
+        
+        // Firebase保存用に候補を保持
+        state.candidates = mockCandidates;
+        
+        // 選択エリアを非表示
+        selectionArea.classList.add('hidden');
+        
+        showNotification('解読候補が表示されました', 'info');
+    }, 1500);
+}
+
+// 現在のモデルをバッジに表示
+function updateCurrentModelBadge() {
+    let modelName = '統合モデル';
+    let badgeClass = 'badge badge-indigo';
+    
+    switch(state.ocrModel) {
+        case 'expert_a':
+            modelName = '田中教授モデル';
+            badgeClass = 'badge badge-purple';
+            break;
+        case 'expert_b':
+            modelName = '鈴木博士モデル';
+            badgeClass = 'badge badge-purple';
+            break;
+        case 'expert_c':
+            modelName = '佐藤准教授モデル';
+            badgeClass = 'badge badge-purple';
+            break;
+        case 'expert_d':
+            modelName = '山本研究員モデル';
+            badgeClass = 'badge badge-cyan';
+            break;
+        default:
+            modelName = '統合モデル';
+            badgeClass = 'badge badge-indigo';
+            break;
+    }
+    
+    currentModelBadge.textContent = modelName;
+    currentModelBadge.className = badgeClass;
+}
+
+// 結果に文字を追加
+function addCharToResult(char) {
+    state.result += char;
+    resultText.textContent = state.result;
+    
+    // アニメーションエフェクト
+    resultText.classList.add('animate-pulse');
+    setTimeout(() => {
+        resultText.classList.remove('animate-pulse');
+    }, 300);
+    
+    showNotification(`"${char}" を追加しました`, 'success');
+}
+
+// カスタム文字のEnterキー対応
+customChar.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        submitCustomChar.click();
+    }
+});
+
+// カスタム文字の送信
+submitCustomChar.addEventListener('click', () => {
+    const char = customChar.value.trim();
+    if (char) {
+        addCharToResult(char);
+        customChar.value = '';
+    }
+});
+
+// テキストをクリア
+clearTextBtn.addEventListener('click', () => {
+    if (state.result) {
+        if (confirm('テキストをクリアしますか？')) {
+            state.result = '';
+            resultText.textContent = '';
+            showNotification('テキストをクリアしました', 'info');
+        }
+    }
+});
+
+// テキストのコピー
+copyTextBtn.addEventListener('click', () => {
+    if (!state.result) {
+        showNotification('コピーするテキストがありません', 'error');
+        return;
+    }
+    
+    navigator.clipboard.writeText(state.result)
+        .then(() => {
+            showNotification('テキストをコピーしました', 'success');
+            
+            // リップルエフェクト
+            createRipple(copyTextBtn);
+        })
+        .catch(err => {
+            showNotification('テキストのコピーに失敗しました', 'error');
+            console.error('Could not copy text: ', err);
+        });
+});
+
+// 結果を保存
+saveBtn.addEventListener('click', () => {
+    if (!state.result) {
+        showNotification('保存するテキストがありません', 'error');
+        return;
+    }
+    
+    // リップルエフェクト
+    createRipple(saveBtn);
+    
+    // 保存処理をシミュレート (実際はFirebaseなどに保存)
+    setTimeout(() => {
+        showNotification('解読結果を保存しました', 'success');
+    }, 500);
+});
+
+// モデル選択変更
+modelSelect.addEventListener('change', () => {
+    state.ocrModel = modelSelect.value;
+    updateCurrentModelBadge();
+    showNotification(`解読モデルを「${currentModelBadge.textContent}」に変更しました`, 'info');
+});
+
+// 通知表示
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    let icon = '';
+    if (type === 'success') {
+        icon = '<svg class="h-5 w-5 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+    } else if (type === 'error') {
+        icon = '<svg class="h-5 w-5 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+    } else {
+        icon = '<svg class="h-5 w-5 text-blue-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>';
+    }
+    
+    notification.innerHTML = `
+        ${icon}
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // 数秒後に消去
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+// リップルエフェクト
+function createRipple(button) {
+    const circle = document.createElement('span');
+    const diameter = Math.max(button.clientWidth, button.clientHeight);
+    const radius = diameter / 2;
+    
+    const rect = button.getBoundingClientRect();
+    
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = '50%';
+    circle.style.top = '50%';
+    circle.className = 'ripple';
+    
+    // すでにリップルがある場合は削除
+    const ripple = button.getElementsByClassName('ripple')[0];
+    if (ripple) {
+        ripple.remove();
+    }
+    
+    button.appendChild(circle);
+}
+
+// アプリケーション初期化
+function initApp() {
+    // OCR残り回数の復元 (ローカルストレージから)
+    const savedDate = localStorage.getItem('ocrCounterDate');
+    const today = new Date().toDateString();
+    
+    // 日付が変わっていれば回数をリセット
+    if (savedDate !== today) {
+        state.dailyOcrCount = 10;
+        localStorage.setItem('ocrCounterDate', today);
+    } else {
+        // 当日の残り回数を取得
+        const savedCount = localStorage.getItem('ocrCounter');
+        if (savedCount !== null) {
+            state.dailyOcrCount = parseInt(savedCount);
+        }
+    }
+    
+    // UI更新
+    ocrCounter.textContent = state.dailyOcrCount;
+    
+    // モデルバッジ更新
+    updateCurrentModelBadge();
+}
+
+// ページ読み込み時の初期化
+window.addEventListener('load', initApp);
+
+// ページ離脱時にOCR残り回数を保存
+window.addEventListener('beforeunload', () => {
+    localStorage.setItem('ocrCounter', state.dailyOcrCount.toString());
+});
+</script>
+</body>
+</html>

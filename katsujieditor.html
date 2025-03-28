@@ -3,44 +3,2833 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>開発中 - Coming Soon</title>
+    <meta name="theme-color" content="#4338ca">
+    <title>活字化エディタ | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- PDF・Excel関連ライブラリ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- 日本語フォントの追加 -->
+    <script src="https://cdn.jsdelivr.net/npm/@cantoo/fonts-for-pdfjs@1.0.0/dist/fonts-ja.min.js"></script>
+    
     <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 250px; /* 修正1: サイドバーの幅を縮小 */
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
         body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: center;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+            overflow: hidden; /* 修正1: 画面からのはみ出しを防止 */
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
             height: 100vh;
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
             color: white;
-            font-family: Arial, sans-serif;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem; /* 修正1: パディングを縮小 */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem; /* 修正1: ギャップを縮小 */
+        }
+        
+        .logo img {
+            width: 1.75rem; /* 修正1: サイズを縮小 */
+            height: 1.75rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.75rem 0; /* 修正1: パディングを縮小 */
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.5rem 1.25rem 0.25rem; /* 修正1: パディングを調整 */
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1.25rem; /* 修正1: パディングを縮小 */
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.5rem; /* 修正1: マージンを縮小 */
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.5rem; /* 修正1: マージンを縮小 */
+            width: 1.25rem;
             text-align: center;
         }
-        .container {
-            animation: fadeIn 1.5s ease-in-out;
+        
+        .sidebar-footer {
+            padding: 0.75rem 1.25rem; /* 修正1: パディングを縮小 */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
         }
-        p {
-            font-size: 1.2rem;
-            opacity: 0.8;
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        /* ユーザープロフィール表示 */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-top: 0.75rem; /* 修正1: マージンを縮小 */
+            padding: 0.5rem 0; /* 修正1: パディングを縮小 */
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
+        
+        .user-avatar {
+            width: 2rem; /* 修正1: サイズを縮小 */
+            height: 2rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.5rem; /* 修正1: マージンを縮小 */
+            font-weight: 600;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 0.875rem; /* 修正1: フォントサイズを縮小 */
+        }
+        
+        .user-status {
+            font-size: 0.7rem; /* 修正1: フォントサイズを縮小 */
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.875rem;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            width: 100%;
+            transition: color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            color: white;
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.5rem;
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin var(--transition-normal);
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .page-header {
+            padding: 1rem 1.25rem; /* 修正1: パディングを縮小 */
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .page-title {
+            font-size: 1.25rem; /* 修正1: フォントサイズを縮小 */
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        /* Breadcrumb navigation */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-size: 0.8125rem;
+            flex-wrap: wrap;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color var(--transition-normal);
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+            margin: 0 0.25rem;
+        }
+        
+        .breadcrumb-item {
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+        }
+        
+        .breadcrumb-item.active {
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        /* 活字化エディタのメインレイアウト */
+        .editor-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - var(--header-height) - 1px); /* 修正1: 高さを明示的に指定 */
+            overflow: hidden; /* 修正1: はみ出しを防止 */
+        }
+        
+        /* 左側: 画像プレビューエリア */
+        .image-preview {
+            width: 70%; /* 修正1: 幅を50%から70%に変更 */
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            background-color: var(--gray-900);
+            position: relative;
+            overflow: hidden; /* 修正1: はみ出しを防止 */
+        }
+        
+        .image-tools {
+            padding: 0.5rem; /* 修正1: パディングを縮小 */
+            display: flex;
+            gap: 0.25rem; /* 修正1: ギャップを縮小 */
+            background-color: rgba(0, 0, 0, 0.5);
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 5;
+        }
+        
+        .image-container {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .image-display {
+            max-width: 100%;
+            max-height: 100%;
+            cursor: move;
+            user-select: none;
+        }
+        
+        /* 右側: テキスト編集エリア */
+        .text-editor {
+            width: 30%; /* 修正1: 幅を50%から30%に変更 */
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .editor-tools {
+            padding: 0.5rem; /* 修正1: パディングを縮小 */
+            display: flex;
+            gap: 0.25rem; /* 修正1: ギャップを縮小 */
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+        }
+        
+        .text-container {
+            flex: 1;
+            display: flex;
+            padding: 0.75rem; /* 修正1: パディングを縮小 */
+            overflow: hidden;
+        }
+        
+        .vertical-text-container {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start; /* 修正4: 左寄せから右寄せに変更 */
+            align-items: flex-start; /* 修正4: 上部に配置 */
+            padding: 0.75rem; /* 修正1: パディングを縮小 */
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: auto;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .vertical-text-container {
+            background-color: var(--gray-700);
+        }
+        
+        .vertical-text {
+            height: 100%;
+            writing-mode: vertical-rl; /* 日本語の縦書き - 右から左へ */
+            text-orientation: mixed; /* 漢字とかなは縦向き、英数字は横向き */
+            font-family: 'Noto Serif JP', serif;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            padding: 1rem;
+            outline: none;
+            margin-right: 0; /* 右端から始まるように */
+            margin-left: auto; /* 左側の余白を自動調整 */
+        }
+        
+        /* 文字が変わるアニメーション */
+        @keyframes character-change {
+            0% {
+                background-color: rgba(59, 130, 246, 0.2);
+            }
+            100% {
+                background-color: transparent;
+            }
+        }
+        
+        .character-changed {
+            animation: character-change 2s forwards;
+        }
+        
+        /* メタデータ編集パネル */
+        .metadata-panel {
+            background-color: var(--gray-50);
+            border-top: 1px solid var(--border-color);
+            padding: 0.75rem; /* 修正1: パディングを縮小 */
+            transition: height 0.3s ease;
+            position: relative;
+            /* スクロール問題修正: 高さ制限とスクロールを削除 */
+        }
+        
+        [data-theme="dark"] .metadata-panel {
+            background-color: var(--gray-800);
+        }
+        
+        .metadata-toggle {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+        }
+        
+        .metadata-content {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr); /* メタデータフィールドを1列に変更 */
+            gap: 0.5rem; /* ギャップをさらに縮小 */
+            font-size: 0.8rem; /* フォントサイズを小さく */
+        }
+        
+        .metadata-field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 0.15rem; /* 各フィールド間の余白を縮小 */
+        }
+        
+        .metadata-field label {
+            font-size: 0.7rem; /* ラベルを小さく */
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.15rem; /* 余白を縮小 */
+        }
+
+        .metadata-field input, 
+        .metadata-field select,
+        .metadata-field textarea {
+            padding: 0.3rem 0.5rem; /* 入力フィールドの余白を縮小 */
+            font-size: 0.8rem; /* フォントサイズを小さく */
+            min-height: unset; /* 高さの最小値を解除 */
+        }
+        
+        .metadata-field textarea {
+            height: 1.8rem; /* テキストエリアの高さを固定 */
+            min-height: 1.8rem;
+            resize: none; /* リサイズ不可に */
+        }
+        
+        /* 保存ボタンとアクションボタン */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+            flex-wrap: wrap; /* 修正1: ボタンを折り返し可能に */
+        }
+        
+        /* 修正2: エクスポートモーダルのスタイルを改善 */
+        .export-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .export-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .export-container {
+            width: 90%;
+            max-width: 500px;
+            background-color: var(--bg-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .export-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .export-body {
+            padding: 1rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .export-footer {
+            padding: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* 審査モーダル */
+        .review-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .review-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .review-container {
+            width: 90%;
+            max-width: 1200px;
+            height: 90vh;
+            background-color: var(--bg-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .review-header {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .review-body {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .review-image {
+            flex: 1;
+            background-color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+        
+        .review-text {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            justify-content: flex-start; /* 右から始まるように */
+            align-items: flex-start; /* 上部から始まるように */
+            padding: 1rem;
+            background-color: white;
+        }
+        
+        [data-theme="dark"] .review-text {
+            background-color: var(--gray-700);
+        }
+        
+        .review-vertical-text {
+            height: 100%;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-family: 'Noto Serif JP', serif;
+            font-size: 1.125rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            padding: 1rem;
+            margin-right: 0; /* 右端から始まるように */
+            margin-left: auto; /* 左側の余白を自動調整 */
+        }
+        
+        .review-footer {
+            padding: 1rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* ヒントパネル */
+        .hint-panel {
+            position: fixed;
+            top: 20vh;
+            right: -300px;
+            width: 300px;
+            background-color: white;
+            border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 80;
+            transition: right 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        [data-theme="dark"] .hint-panel {
+            background-color: var(--gray-800);
+        }
+        
+        .hint-panel.show {
+            right: 0;
+        }
+        
+        .hint-header {
+            padding: 0.75rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .hint-body {
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .hint-close {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .hint-toggle {
+            position: absolute;
+            top: 50%;
+            left: -36px;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 80px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius) 0 0 var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hint-toggle i {
+            font-size: 1.5rem;
+        }
+        
+        /* 縦書きモード調整 */
+        .character {
+            display: inline-block;
+            vertical-align: bottom;
+        }
+        
+        .special-char {
+            writing-mode: horizontal-tb;
+            text-orientation: upright;
+            display: inline-block;
+        }
+        
+        /* フォームコントロール */
+        .form-control {
+            width: 100%;
+            padding: 0.3rem 0.5rem; /* 入力フィールドの余白を縮小 */
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.8rem; /* フォントサイズを小さく */
+            transition: border-color var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .form-control {
+            background-color: var(--gray-700);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* 編集履歴パネル */
+        .history-panel {
+            position: fixed;
+            top: 20vh;
+            right: -400px;
+            width: 400px;
+            background-color: white;
+            border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            z-index: 80;
+            transition: right 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        [data-theme="dark"] .history-panel {
+            background-color: var(--gray-800);
+        }
+        
+        .history-panel.show {
+            right: 0;
+        }
+        
+        .history-header {
+            padding: 0.75rem 1rem;
+            background-color: var(--info);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .history-body {
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .history-close {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .history-toggle {
+            position: absolute;
+            top: 50%;
+            left: -36px;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 80px;
+            background-color: var(--info);
+            color: white;
+            border: none;
+            border-radius: var(--radius) 0 0 var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .history-toggle i {
+            font-size: 1.5rem;
+        }
+        
+        .history-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .history-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .history-changes {
+            font-size: 0.875rem;
+        }
+        
+        .history-changes ins {
+            background-color: var(--success-light);
+            color: var(--success);
+            text-decoration: none;
+            padding: 0 0.25rem;
+            border-radius: 2px;
+        }
+        
+        .history-changes del {
+            background-color: var(--danger-light);
+            color: var(--danger);
+            text-decoration: line-through;
+            padding: 0 0.25rem;
+            border-radius: 2px;
+        }
+        
+        /* ズームコントロール */
+        .zoom-controls {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius);
+            padding: 0.5rem;
+        }
+        
+        .zoom-controls button {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            color: var(--gray-800);
+        }
+        
+        .zoom-value {
+            color: white;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+        
+        /* ページナビゲーション */
+        .page-navigation {
+            position: absolute;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: var(--radius-full);
+            padding: 0.5rem 1rem;
+        }
+        
+        .page-navigation button {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            color: var(--gray-800);
+        }
+        
+        .page-info {
+            color: white;
+            font-size: 0.875rem;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        /* トースト通知 */
+        .toast-container {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .toast {
+            padding: 0.75rem 1rem;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        
+        [data-theme="dark"] .toast {
+            background-color: var(--gray-800);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .toast.hide {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+        
+        .toast-icon {
+            font-size: 1.25rem;
+        }
+        
+        .toast-success .toast-icon {
+            color: var(--success);
+        }
+        
+        .toast-error .toast-icon {
+            color: var(--danger);
+        }
+        
+        .toast-warning .toast-icon {
+            color: var(--warning);
+        }
+        
+        .toast-info .toast-icon {
+            color: var(--info);
+        }
+        
+        /* ボタンスタイル */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: var(--success-hover);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-icon {
+            width: 2rem;
+            height: 2rem;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-icon i {
+            margin-right: 0;
+            font-size: 1rem;
+        }
+        
+        .btn-icon.btn-sm {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+        
+        .btn-icon.btn-sm i {
+            font-size: 0.75rem;
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .editor-container {
+                flex-direction: column;
+            }
+            
+            .image-preview, .text-editor {
+                width: 100%;
+                height: 50vh;
+            }
+            
+            .vertical-text-container {
+                height: 100%;
+            }
+            
+            .metadata-content {
+                grid-template-columns: repeat(2, 1fr); /* タブレットでは2列表示に */
+            }
+            
+            .review-body {
+                flex-direction: column;
+            }
+            
+            .review-image, .review-text {
+                width: 100%;
+                height: 50%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .page-title {
+                font-size: 1.25rem;
+            }
+            
+            .action-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .btn {
+                padding: 0.375rem 0.75rem;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ページ開発中準備中</h1>
-        <p>しばらくお待ちください。４月公開予定です</p>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="mainpage.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="katsujieditor.html" class="menu-item active">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="books.html" class="menu-item">
+                <i class="fas fa-book"></i> 完成本を見る
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="learning.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ダッシュボード</a>
+                <i class="fas fa-chevron-right"></i>
+                <span class="breadcrumb-item active">活字化エディタ</span>
+            </div>
+            <div class="page-title">
+                <span id="document-title">活字化エディタ</span>
+                
+                <div class="action-buttons">
+                    <button id="hint-btn" class="btn btn-outline">
+                        <i class="fas fa-lightbulb"></i> ヒント
+                    </button>
+                    <button id="history-btn" class="btn btn-outline">
+                        <i class="fas fa-history"></i> 編集履歴
+                    </button>
+                    <button id="export-btn" class="btn btn-secondary">
+                        <i class="fas fa-file-export"></i> エクスポート
+                    </button>
+                    <button id="save-btn" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 保存
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="editor-container">
+            <!-- 左側: 画像プレビューエリア -->
+            <div class="image-preview">
+                <div class="image-tools">
+                    <button id="rotate-left-btn" class="btn btn-sm btn-icon btn-outline" title="左に回転">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button id="rotate-right-btn" class="btn btn-sm btn-icon btn-outline" title="右に回転">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button id="flip-horizontal-btn" class="btn btn-sm btn-icon btn-outline" title="左右反転">
+                        <i class="fas fa-arrows-alt-h"></i>
+                    </button>
+                    <button id="flip-vertical-btn" class="btn btn-sm btn-icon btn-outline" title="上下反転">
+                        <i class="fas fa-arrows-alt-v"></i>
+                    </button>
+                    <button id="reset-image-btn" class="btn btn-sm btn-icon btn-outline" title="リセット">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    
+                    <select id="image-adjust" class="form-control" style="max-width: 120px; height: 32px; padding: 0.25rem 0.5rem;">
+                        <option value="original">調整なし</option>
+                        <option value="contrast">コントラスト+</option>
+                        <option value="brightness">明るさ+</option>
+                        <option value="grayscale">グレースケール</option>
+                        <option value="invert">色反転</option>
+                        <option value="sepia">セピア</option>
+                    </select>
+                </div>
+                
+                <div class="image-container">
+                    <img id="image-display" class="image-display" src="" alt="資料画像" draggable="false">
+                    
+                    <!-- ズームコントロール -->
+                    <div class="zoom-controls">
+                        <button id="zoom-in-btn" title="拡大">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        <div id="zoom-value" class="zoom-value">100%</div>
+                        <button id="zoom-out-btn" title="縮小">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button id="zoom-reset-btn" title="リセット">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- ページナビゲーション -->
+                    <div class="page-navigation">
+                        <button id="prev-page-btn" title="前のページ">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div id="page-info" class="page-info">1 / 1</div>
+                        <button id="next-page-btn" title="次のページ">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 右側: テキスト編集エリア -->
+            <div class="text-editor">
+                <div class="editor-tools">
+                    <button id="undo-btn" class="btn btn-sm btn-icon btn-outline" title="元に戻す">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button id="redo-btn" class="btn btn-sm btn-icon btn-outline" title="やり直す">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    
+                    <select id="font-size" class="form-control" style="max-width: 100px; height: 32px; padding: 0.25rem 0.5rem;">
+                        <option value="0.875rem">極小</option>
+                        <option value="1rem">小</option>
+                        <option value="1.125rem" selected>標準</option>
+                        <option value="1.25rem">大</option>
+                        <option value="1.5rem">特大</option>
+                    </select>
+                    
+                    <select id="line-height" class="form-control" style="max-width: 100px; height: 32px; padding: 0.25rem 0.5rem;">
+                        <option value="1.4">狭い</option>
+                        <option value="1.6">やや狭い</option>
+                        <option value="1.8" selected>標準</option>
+                        <option value="2">やや広い</option>
+                        <option value="2.4">広い</option>
+                    </select>
+                </div>
+                
+                <div class="text-container">
+                    <div class="vertical-text-container">
+                        <div id="vertical-text" class="vertical-text" contenteditable="true" spellcheck="false"></div>
+                    </div>
+                </div>
+                
+                <!-- メタデータパネル -->
+                <div class="metadata-panel" id="metadata-panel">
+                    <div class="metadata-toggle" id="metadata-toggle">
+                        <i class="fas fa-chevron-up"></i>
+                    </div>
+                    
+                    <div class="metadata-content">
+                        <div class="metadata-field">
+                            <label for="doc-title">タイトル</label>
+                            <input type="text" id="doc-title" class="form-control" placeholder="資料のタイトル">
+                        </div>
+                        
+                        <div class="metadata-field">
+                            <label for="doc-number">資料番号</label>
+                            <input type="text" id="doc-number" class="form-control" placeholder="例: A-2023-0001">
+                        </div>
+                        
+                        <div class="metadata-field">
+                            <label for="doc-collection">所蔵</label>
+                            <input type="text" id="doc-collection" class="form-control" placeholder="所蔵機関名">
+                        </div>
+                        
+                        <div class="metadata-field">
+                            <label for="doc-date">年代</label>
+                            <input type="text" id="doc-date" class="form-control" placeholder="例: 明治30年">
+                        </div>
+                        
+                        <div class="metadata-field">
+                            <label for="doc-author">作成者</label>
+                            <input type="text" id="doc-author" class="form-control" placeholder="作成者名">
+                        </div>
+                        
+                        <div class="metadata-field">
+                            <label for="doc-person">担当者</label>
+                            <input type="text" id="doc-person" class="form-control" readonly>
+                        </div>
+                        
+                        <div class="metadata-field">
+                            <label for="doc-notes">備考</label>
+                            <textarea id="doc-notes" class="form-control" rows="1" placeholder="備考・メモ"></textarea>
+                        </div>
+                        
+                        <div class="metadata-field">
+                            <label for="doc-status">ステータス</label>
+                            <select id="doc-status" class="form-control">
+                                <option value="review">審査待ち</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ヒントパネル -->
+        <div class="hint-panel" id="hint-panel">
+            <button class="hint-toggle" id="hint-toggle">
+                <i class="fas fa-lightbulb"></i>
+            </button>
+            
+            <div class="hint-header">
+                <h3>活字化ヒント</h3>
+                <button class="hint-close" id="hint-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="hint-body">
+                <div class="hint-section">
+                    <h4>基本的な活字化のコツ</h4>
+                    <ul>
+                        <li>原本と同じ表記を心がけましょう</li>
+                        <li>くずし字は現代の字体に直して入力します</li>
+                        <li>読めない文字は「■」で入力してください</li>
+                        <li>改行は原本通りに行います</li>
+                    </ul>
+                </div>
+                
+                <div class="hint-section">
+                    <h4>特殊な文字について</h4>
+                    <ul>
+                        <li>踊り字（々）は繰り返される文字をそのまま入力</li>
+                        <li>返り点（㆒㆓㆔）は入力しなくて構いません</li>
+                        <li>ルビは入力しなくて構いません</li>
+                    </ul>
+                </div>
+                
+                <div class="hint-section">
+                    <h4>テキスト入力のショートカット</h4>
+                    <ul>
+                        <li><strong>Ctrl + Z:</strong> 元に戻す</li>
+                        <li><strong>Ctrl + Y:</strong> やり直す</li>
+                        <li><strong>Ctrl + S:</strong> 保存</li>
+                    </ul>
+                </div>
+                
+                <div class="hint-section">
+                    <h4>画像操作のコツ</h4>
+                    <ul>
+                        <li>ドラッグして画像を移動できます</li>
+                        <li>拡大・縮小して見やすく調整しましょう</li>
+                        <li>コントラストや明るさを調整すると文字が見やすくなることがあります</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 審査モーダル -->
+        <div class="review-modal" id="review-modal">
+            <div class="review-container">
+                <div class="review-header">
+                    <h3>活字化審査</h3>
+                    <button id="review-close" class="btn btn-sm btn-icon btn-outline">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="review-body">
+                    <div class="review-image">
+                        <img id="review-image-display" src="" alt="原資料">
+                    </div>
+                    
+                    <div class="review-text">
+                        <div id="review-vertical-text" class="review-vertical-text"></div>
+                    </div>
+                </div>
+                
+                <div class="review-footer">
+                    <button id="review-edit-btn" class="btn btn-outline">
+                        <i class="fas fa-edit"></i> 修正する
+                    </button>
+                    <!-- 修正3: 承認ボタンを削除して注意書きを追加 -->
+                    <div class="btn btn-secondary" style="cursor: default;">
+                        <i class="fas fa-info-circle"></i> 承認は専門の担当者が行います
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 修正2: エクスポートモーダルを改善 -->
+        <div class="export-modal" id="export-modal">
+            <div class="export-container">
+                <div class="export-header">
+                    <h3>エクスポート</h3>
+                    <button id="export-close" class="btn btn-sm btn-icon btn-outline">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="export-body">
+                    <div class="form-group">
+                        <label class="form-label">エクスポート形式</label>
+                        <select id="export-format" class="form-control">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="text">テキストファイル</option>
+                            <option value="json">JSONデータ</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">エクスポート範囲</label>
+                        <select id="export-range" class="form-control">
+                            <option value="current">現在の資料のみ</option>
+                            <option value="multiple">複数資料を選択</option>
+                        </select>
+                    </div>
+                    
+                    <div id="multiple-docs-container" class="form-group" style="display: none;">
+                        <label class="form-label">エクスポートする資料</label>
+                        <div id="document-list" class="document-selection" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: var(--radius); padding: 0.5rem;">
+                            <!-- 資料リストが動的に生成されます -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="pdf-options">
+                        <label class="form-label">PDF出力オプション</label>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center;">
+                                <input type="checkbox" id="include-image" checked>
+                                <span style="margin-left: 0.25rem;">原資料画像を含める</span>
+                            </label>
+                            <label style="display: flex; align-items: center;">
+                                <input type="checkbox" id="include-metadata" checked>
+                                <span style="margin-left: 0.25rem;">メタデータを含める</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="excel-options" style="display: none;">
+                        <label class="form-label">Excel出力オプション</label>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center;">
+                                <input type="checkbox" id="excel-include-metadata" checked>
+                                <span style="margin-left: 0.25rem;">メタデータを含める</span>
+                            </label>
+                            <label style="display: flex; align-items: center;">
+                                <input type="checkbox" id="excel-separate-sheets" checked>
+                                <span style="margin-left: 0.25rem;">ページごとに別シートにする</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="export-footer">
+                    <button id="export-cancel" class="btn btn-outline">キャンセル</button>
+                    <button id="export-submit" class="btn btn-primary">
+                        <i class="fas fa-file-export"></i> エクスポート
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- トースト通知コンテナ -->
+        <div class="toast-container" id="toast-container">
+            <!-- トーストは動的に生成されます -->
+        </div>
     </div>
+
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.appspot.com",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+        
+        // Firebase初期化
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        
+        // 日本語ロケールの設定
+        auth.languageCode = 'ja';
+        
+        // 現在のユーザー
+        let currentUser = null;
+        
+        // 現在編集中の文書情報
+        let currentDocument = {
+            id: null,
+            fileId: null,
+            title: "無題の文書",
+            number: "",
+            collection: "",
+            date: "",
+            author: "",
+            person: "",
+            notes: "",
+            status: "draft",
+            text: "",
+            pages: [],
+            currentPage: 0
+        };
+        
+        // ページURLからファイルIDを取得
+        function getFileIdFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('file');
+        }
+        
+        // 文書データの読み込み
+        async function loadDocument(fileId) {
+            try {
+                // ファイル情報を取得
+                const fileDoc = await db.collection('files').doc(fileId).get();
+                
+                if (!fileDoc.exists) {
+                    showToast('ファイルが見つかりません', 'error');
+                    return false;
+                }
+                
+                const fileData = fileDoc.data();
+                
+                // 画像URLを設定
+                if (fileData.url) {
+                    document.getElementById('image-display').src = fileData.url;
+                    document.getElementById('review-image-display').src = fileData.url;
+                }
+                
+                // 既存の文書データがあるか確認
+                const docsQuery = await db.collection('transcriptions')
+                    .where('fileId', '==', fileId)
+                    .limit(1)
+                    .get();
+                
+                if (!docsQuery.empty) {
+                    // 既存の文書があれば読み込む
+                    const docData = docsQuery.docs[0].data();
+                    
+                    currentDocument = {
+                        id: docsQuery.docs[0].id,
+                        fileId: fileId,
+                        title: docData.title || fileData.name || "無題の文書",
+                        number: docData.number || "",
+                        collection: docData.collection || "",
+                        date: docData.date || "",
+                        author: docData.author || "",
+                        person: docData.person || currentUser.displayName || "",
+                        notes: docData.notes || "",
+                        status: docData.status || "draft",
+                        text: docData.text || "",
+                        pages: docData.pages || [{ url: fileData.url, text: "" }],
+                        currentPage: 0
+                    };
+                    
+                    // 編集履歴の読み込み
+                    if (docData.history && docData.history.length > 0) {
+                        editHistory = docData.history;
+                        updateHistoryPanel();
+                    }
+                } else {
+                    // 新規文書を作成
+                    currentDocument = {
+                        id: null,
+                        fileId: fileId,
+                        title: fileData.name || "無題の文書",
+                        number: "",
+                        collection: "",
+                        date: "",
+                        author: "",
+                        person: currentUser.displayName || "",
+                        notes: "",
+                        status: "draft",
+                        text: "",
+                        pages: [{ url: fileData.url, text: "" }],
+                        currentPage: 0
+                    };
+                }
+                
+                // UI更新
+                updateUI();
+                return true;
+            } catch (error) {
+                console.error("文書読み込みエラー:", error);
+                showToast('文書の読み込みに失敗しました', 'error');
+                return false;
+            }
+        }
+        
+        // UI更新
+        function updateUI() {
+            // 文書タイトルを設定
+            document.getElementById('document-title').textContent = currentDocument.title;
+            
+            // メタデータフォームに値を設定
+            document.getElementById('doc-title').value = currentDocument.title;
+            document.getElementById('doc-number').value = currentDocument.number;
+            document.getElementById('doc-collection').value = currentDocument.collection;
+            document.getElementById('doc-date').value = currentDocument.date;
+            document.getElementById('doc-author').value = currentDocument.author;
+            document.getElementById('doc-person').value = currentDocument.person;
+            document.getElementById('doc-notes').value = currentDocument.notes;
+            document.getElementById('doc-status').value = currentDocument.status;
+            
+            // テキストエディタに値を設定
+            const currentPageData = currentDocument.pages[currentDocument.currentPage] || { text: "" };
+            document.getElementById('vertical-text').innerHTML = formatTextForDisplay(currentPageData.text || "");
+            
+            // ページ情報を更新
+            document.getElementById('page-info').textContent = `${currentDocument.currentPage + 1} / ${currentDocument.pages.length}`;
+            
+            // 画像URLを設定（ページ切り替え時）
+            if (currentPageData.url) {
+                document.getElementById('image-display').src = currentPageData.url;
+                document.getElementById('review-image-display').src = currentPageData.url;
+            }
+        }
+        
+        // テキスト表示用のフォーマット
+        function formatTextForDisplay(text) {
+            if (!text) return "";
+            
+            // 特殊文字の処理など
+            return text.replace(/\n/g, '<br>');
+        }
+        
+        // テキスト保存用のフォーマット
+        function formatTextForSave() {
+            const textContent = document.getElementById('vertical-text').innerHTML;
+            // HTMLタグを除去してプレーンテキストに変換
+            return textContent.replace(/<br>/g, '\n').replace(/<[^>]*>/g, '');
+        }
+        
+        // ページ切り替え
+        function changePage(direction) {
+            // 現在のページテキストを保存
+            saveCurrentPageText();
+            
+            // ページ番号更新
+            const newPage = currentDocument.currentPage + direction;
+            
+            // 範囲チェック
+            if (newPage < 0 || newPage >= currentDocument.pages.length) {
+                return;
+            }
+            
+            currentDocument.currentPage = newPage;
+            
+            // UI更新
+            updateUI();
+        }
+        
+        // 現在のページテキストを保存
+        function saveCurrentPageText() {
+            const currentText = formatTextForSave();
+            if (currentDocument.pages[currentDocument.currentPage]) {
+                currentDocument.pages[currentDocument.currentPage].text = currentText;
+            }
+        }
+        
+        // 文書の保存
+        async function saveDocument(showReview = true) {
+            try {
+                // 現在のページテキストを保存
+                saveCurrentPageText();
+                
+                // メタデータをフォームから取得
+                currentDocument.title = document.getElementById('doc-title').value;
+                currentDocument.number = document.getElementById('doc-number').value;
+                currentDocument.collection = document.getElementById('doc-collection').value;
+                currentDocument.date = document.getElementById('doc-date').value;
+                currentDocument.author = document.getElementById('doc-author').value;
+                currentDocument.notes = document.getElementById('doc-notes').value;
+                currentDocument.status = document.getElementById('doc-status').value;
+                
+                // 全文テキストを結合
+                currentDocument.text = currentDocument.pages.map(page => page.text).join('\n\n');
+                
+                // Firebaseに保存するデータ
+                const docData = {
+                    fileId: currentDocument.fileId,
+                    title: currentDocument.title,
+                    number: currentDocument.number,
+                    collection: currentDocument.collection,
+                    date: currentDocument.date,
+                    author: currentDocument.author,
+                    person: currentDocument.person,
+                    notes: currentDocument.notes,
+                    status: currentDocument.status,
+                    text: currentDocument.text,
+                    pages: currentDocument.pages,
+                    userId: currentUser.uid,
+                    userName: currentUser.displayName || '',
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // 新規または更新
+                if (currentDocument.id) {
+                    // 文書を更新
+                    await db.collection('transcriptions').doc(currentDocument.id).update(docData);
+                } else {
+                    // 新規文書を作成
+                    docData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                    const docRef = await db.collection('transcriptions').add(docData);
+                    currentDocument.id = docRef.id;
+                }
+                
+                showToast('文書を保存しました', 'success');
+                
+                // 審査モーダルを表示
+                if (showReview) {
+                    openReviewModal();
+                }
+                
+                return true;
+            } catch (error) {
+                console.error("保存エラー:", error);
+                showToast('文書の保存に失敗しました', 'error');
+                return false;
+            }
+        }
+        
+        // 修正3: 承認機能を削除
+        // approveDocument関数は削除
+        
+        // 編集履歴機能を削除
+        
+        // 審査モーダルを開く
+        function openReviewModal() {
+            const reviewModal = document.getElementById('review-modal');
+            const reviewText = document.getElementById('review-vertical-text');
+            
+            // テキストを設定
+            reviewText.textContent = currentDocument.text;
+            
+            // モーダルを表示
+            reviewModal.classList.add('show');
+        }
+        
+        // 審査モーダルを閉じる
+        function closeReviewModal() {
+            const reviewModal = document.getElementById('review-modal');
+            reviewModal.classList.remove('show');
+        }
+        
+        // PDF出力
+        async function exportToPDF(options) {
+            try {
+                // HTML要素を作成して文書をレンダリング
+                const container = document.createElement('div');
+                container.style.width = '210mm';
+                container.style.minHeight = '297mm';
+                container.style.padding = '20mm';
+                container.style.boxSizing = 'border-box';
+                container.style.position = 'fixed';
+                container.style.top = '0';
+                container.style.left = '0';
+                container.style.zIndex = '-9999';
+                container.style.backgroundColor = 'white';
+                container.style.fontFamily = '"Noto Serif JP", serif';
+                
+                // タイトルと基本情報
+                const titleElem = document.createElement('h1');
+                titleElem.textContent = currentDocument.title;
+                titleElem.style.textAlign = 'center';
+                titleElem.style.marginBottom = '15mm';
+                titleElem.style.fontSize = '24pt';
+                container.appendChild(titleElem);
+                
+                // メタデータを含める場合
+                if (options.includeMetadata) {
+                    const metaContainer = document.createElement('div');
+                    metaContainer.style.marginBottom = '20mm';
+                    metaContainer.style.fontSize = '12pt';
+                    metaContainer.style.textAlign = 'center';
+                    
+                    // メタデータ項目を追加
+                    const metaItems = [
+                        { label: '資料番号', value: currentDocument.number },
+                        { label: '所蔵', value: currentDocument.collection },
+                        { label: '年代', value: currentDocument.date },
+                        { label: '作成者', value: currentDocument.author },
+                        { label: '活字化担当者', value: currentDocument.person },
+                        { label: '作成日', value: new Date().toLocaleDateString('ja-JP') }
+                    ];
+                    
+                    metaItems.forEach(item => {
+                        if (item.value) {
+                            const metaItem = document.createElement('p');
+                            metaItem.textContent = `${item.label}: ${item.value}`;
+                            metaItem.style.margin = '5mm 0';
+                            metaContainer.appendChild(metaItem);
+                        }
+                    });
+                    
+                    container.appendChild(metaContainer);
+                }
+                
+                // 画像を含める場合
+                if (options.includeImage && currentDocument.pages.length > 0) {
+                    for (let i = 0; i < currentDocument.pages.length; i++) {
+                        const page = currentDocument.pages[i];
+                        if (page.url) {
+                            const pageContainer = document.createElement('div');
+                            pageContainer.style.pageBreakBefore = i > 0 ? 'always' : 'auto';
+                            pageContainer.style.marginBottom = '20mm';
+                            
+                            // ページタイトル
+                            const pageTitle = document.createElement('h2');
+                            pageTitle.textContent = `ページ ${i + 1}`;
+                            pageTitle.style.textAlign = 'center';
+                            pageTitle.style.marginBottom = '10mm';
+                            pageContainer.appendChild(pageTitle);
+                            
+                            // 画像
+                            const img = document.createElement('img');
+                            img.src = page.url;
+                            img.style.display = 'block';
+                            img.style.maxWidth = '100%';
+                            img.style.height = 'auto';
+                            img.style.marginBottom = '10mm';
+                            img.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                            pageContainer.appendChild(img);
+                            
+                            // テキスト
+                            if (page.text) {
+                                const textContainer = document.createElement('div');
+                                textContainer.style.border = '1px solid #ddd';
+                                textContainer.style.padding = '10mm';
+                                textContainer.style.backgroundColor = '#f9f9f9';
+                                textContainer.style.minHeight = '100mm';
+                                textContainer.style.writingMode = 'vertical-rl';
+                                textContainer.style.textOrientation = 'mixed';
+                                textContainer.style.height = '200mm';
+                                textContainer.style.fontSize = '12pt';
+                                textContainer.style.lineHeight = '1.8';
+                                textContainer.style.whiteSpace = 'pre-wrap';
+                                textContainer.style.overflow = 'hidden';
+                                textContainer.textContent = page.text;
+                                pageContainer.appendChild(textContainer);
+                            }
+                            
+                            container.appendChild(pageContainer);
+                        }
+                    }
+                } else {
+                    // テキストのみの場合
+                    const textContainer = document.createElement('div');
+                    textContainer.style.margin = '0 auto';
+                    textContainer.style.writingMode = 'vertical-rl';
+                    textContainer.style.textOrientation = 'mixed';
+                    textContainer.style.height = '200mm';
+                    textContainer.style.fontSize = '12pt';
+                    textContainer.style.lineHeight = '1.8';
+                    textContainer.style.whiteSpace = 'pre-wrap';
+                    textContainer.style.overflow = 'hidden';
+                    textContainer.textContent = currentDocument.text;
+                    container.appendChild(textContainer);
+                }
+                
+                // DOMに追加して描画
+                document.body.appendChild(container);
+                
+                // html2canvasを使ってPDF化
+                const pdfPromises = [];
+                const pages = container.querySelectorAll('[style*="page-break-before: always"], h1');
+                
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i];
+                    const pageContainer = document.createElement('div');
+                    pageContainer.style.width = '210mm';
+                    pageContainer.style.height = '297mm';
+                    pageContainer.style.position = 'fixed';
+                    pageContainer.style.top = '0';
+                    pageContainer.style.left = '0';
+                    pageContainer.style.backgroundColor = 'white';
+                    
+                    // 現在のページから次のページまでの要素をコピー
+                    let currentElem = page;
+                    while(currentElem && currentElem !== pages[i+1]) {
+                        pageContainer.appendChild(currentElem.cloneNode(true));
+                        currentElem = currentElem.nextElementSibling;
+                    }
+                    
+                    document.body.appendChild(pageContainer);
+                    
+                    pdfPromises.push(html2canvas(pageContainer, {
+                        scale: 2,
+                        useCORS: true,
+                        allowTaint: true
+                    }).then(canvas => {
+                        document.body.removeChild(pageContainer);
+                        return canvas;
+                    }));
+                }
+                
+                // 全ページのキャンバスを生成
+                const canvases = await Promise.all(pdfPromises);
+                
+                // PDFを作成
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                // キャンバスをPDFに追加
+                canvases.forEach((canvas, index) => {
+                    if (index > 0) {
+                        pdf.addPage();
+                    }
+                    
+                    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+                });
+                
+                // ファイル名の設定
+                const fileName = currentDocument.title 
+                    ? `${currentDocument.title}.pdf` 
+                    : `文書_${new Date().toISOString().slice(0, 10)}.pdf`;
+                
+                // PDFをダウンロード
+                pdf.save(fileName);
+                
+                // 一時的な要素を削除
+                document.body.removeChild(container);
+                
+                showToast('PDFエクスポートが完了しました', 'success');
+            } catch (error) {
+                console.error("PDF出力エラー:", error);
+                showToast('PDFエクスポートに失敗しました: ' + error.message, 'error');
+            }
+        }
+        
+        // Excelファイルとしてエクスポート
+        function exportAsExcel(options) {
+            try {
+                // ワークブックを作成
+                const wb = XLSX.utils.book_new();
+                wb.Props = {
+                    Title: currentDocument.title || "文書エクスポート",
+                    Subject: "活字化資料",
+                    Author: currentUser.displayName || currentUser.email || "ユーザー",
+                    CreatedDate: new Date()
+                };
+                
+                // メタデータシートを作成
+                if (options.includeMetadata) {
+                    const metaData = [
+                        ["タイトル", currentDocument.title],
+                        ["資料番号", currentDocument.number],
+                        ["所蔵", currentDocument.collection],
+                        ["年代", currentDocument.date],
+                        ["作成者", currentDocument.author],
+                        ["活字化担当者", currentDocument.person],
+                        ["備考", currentDocument.notes],
+                        ["ステータス", currentDocument.status],
+                        ["エクスポート日時", new Date().toLocaleString('ja-JP')]
+                    ];
+                    
+                    const metaWs = XLSX.utils.aoa_to_sheet(metaData);
+                    XLSX.utils.book_append_sheet(wb, metaWs, "メタデータ");
+                }
+                
+                // 本文テキストシートを作成
+                if (options.separateSheets && currentDocument.pages.length > 0) {
+                    // 各ページを別シートに
+                    currentDocument.pages.forEach((page, index) => {
+                        // 縦書きテキストを横書きに変換する必要があるため、改行で分割
+                        const lines = page.text.split('\n');
+                        const rows = lines.map(line => [line]);
+                        
+                        const ws = XLSX.utils.aoa_to_sheet(rows);
+                        XLSX.utils.book_append_sheet(wb, ws, `ページ${index + 1}`);
+                    });
+                } else {
+                    // すべてのテキストを1つのシートに
+                    const lines = currentDocument.text.split('\n');
+                    const rows = lines.map(line => [line]);
+                    
+                    const ws = XLSX.utils.aoa_to_sheet(rows);
+                    XLSX.utils.book_append_sheet(wb, ws, "本文");
+                }
+                
+                // Excelファイルを出力
+                const fileName = currentDocument.title 
+                    ? `${currentDocument.title}.xlsx` 
+                    : `文書_${new Date().toISOString().slice(0, 10)}.xlsx`;
+                
+                XLSX.writeFile(wb, fileName);
+                showToast('Excelエクスポートが完了しました', 'success');
+            } catch (error) {
+                console.error("Excelエクスポートエラー:", error);
+                showToast('Excelエクスポートに失敗しました: ' + error.message, 'error');
+            }
+        }
+        
+        // テキストファイルとしてエクスポート
+        function exportAsText() {
+            try {
+                const textContent = currentDocument.text;
+                const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                
+                const fileName = currentDocument.title 
+                    ? `${currentDocument.title}.txt` 
+                    : `文書_${new Date().toISOString().slice(0, 10)}.txt`;
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                showToast('テキストエクスポートが完了しました', 'success');
+            } catch (error) {
+                console.error("テキストエクスポートエラー:", error);
+                showToast('テキストエクスポートに失敗しました', 'error');
+            }
+        }
+        
+        // JSONデータとしてエクスポート
+        function exportAsJSON() {
+            try {
+                // 現在のページテキストを保存
+                saveCurrentPageText();
+                
+                // エクスポート用のJSONデータ
+                const exportData = {
+                    title: currentDocument.title,
+                    number: currentDocument.number,
+                    collection: currentDocument.collection,
+                    date: currentDocument.date,
+                    author: currentDocument.author,
+                    person: currentDocument.person,
+                    notes: currentDocument.notes,
+                    text: currentDocument.text,
+                    pages: currentDocument.pages.map(page => ({
+                        text: page.text
+                    })),
+                    exportDate: new Date().toISOString()
+                };
+                
+                const jsonString = JSON.stringify(exportData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                
+                const fileName = currentDocument.title 
+                    ? `${currentDocument.title}.json` 
+                    : `文書_${new Date().toISOString().slice(0, 10)}.json`;
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                a.click();
+                
+                URL.revokeObjectURL(url);
+                showToast('JSONエクスポートが完了しました', 'success');
+            } catch (error) {
+                console.error("JSONエクスポートエラー:", error);
+                showToast('JSONエクスポートに失敗しました', 'error');
+            }
+        }
+        
+        // 通知トーストを表示
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toast-container');
+            
+            // トースト要素を作成
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            // アイコンを設定
+            let iconClass = '';
+            switch (type) {
+                case 'success': iconClass = 'fas fa-check-circle'; break;
+                case 'error': iconClass = 'fas fa-exclamation-circle'; break;
+                case 'warning': iconClass = 'fas fa-exclamation-triangle'; break;
+                default: iconClass = 'fas fa-info-circle';
+            }
+            
+            toast.innerHTML = `
+                <i class="${iconClass} toast-icon"></i>
+                <div>${message}</div>
+            `;
+            
+            // コンテナに追加
+            toastContainer.appendChild(toast);
+            
+            // 一定時間後に削除
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+        
+        // テーマ切替
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // テーマトグルボタンのテキストとアイコンを更新
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                if (newTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+        
+        // テーマの初期化
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // テーマトグルボタンのテキストとアイコンを設定
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+        
+        // サイドバー切替（モバイル用）
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+        
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("ログアウトエラー:", error);
+                showToast('ログアウトに失敗しました', 'error');
+            }
+        }
+        
+        // DOMが読み込まれた時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            // テーマの初期化
+            initTheme();
+            
+            // 要素の参照を取得
+            const sidebar = document.getElementById('sidebar');
+            const sidebarToggle = document.getElementById('sidebar-toggle');
+            const themeToggle = document.getElementById('theme-toggle');
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            const verticalText = document.getElementById('vertical-text');
+            const saveBtn = document.getElementById('save-btn');
+            const hintBtn = document.getElementById('hint-btn');
+                            const exportBtn = document.getElementById('export-btn');
+            
+            const hintPanel = document.getElementById('hint-panel');
+            const hintToggle = document.getElementById('hint-toggle');
+            const hintClose = document.getElementById('hint-close');
+            
+            
+            const reviewModal = document.getElementById('review-modal');
+            const reviewClose = document.getElementById('review-close');
+            const reviewEditBtn = document.getElementById('review-edit-btn');
+            
+            // 修正2: エクスポートモーダルの参照を更新
+            const exportModal = document.getElementById('export-modal');
+            const exportClose = document.getElementById('export-close');
+            const exportCancel = document.getElementById('export-cancel');
+            const exportFormat = document.getElementById('export-format');
+            const exportRange = document.getElementById('export-range');
+            const exportSubmit = document.getElementById('export-submit');
+            const multipleDocsContainer = document.getElementById('multiple-docs-container');
+            
+            const prevPageBtn = document.getElementById('prev-page-btn');
+            const nextPageBtn = document.getElementById('next-page-btn');
+            
+            const zoomInBtn = document.getElementById('zoom-in-btn');
+            const zoomOutBtn = document.getElementById('zoom-out-btn');
+            const zoomResetBtn = document.getElementById('zoom-reset-btn');
+            const zoomValue = document.getElementById('zoom-value');
+            
+            const rotateLeftBtn = document.getElementById('rotate-left-btn');
+            const rotateRightBtn = document.getElementById('rotate-right-btn');
+            const flipHorizontalBtn = document.getElementById('flip-horizontal-btn');
+            const flipVerticalBtn = document.getElementById('flip-vertical-btn');
+            const resetImageBtn = document.getElementById('reset-image-btn');
+            const imageAdjust = document.getElementById('image-adjust');
+            
+            const imageDisplay = document.getElementById('image-display');
+            const imageContainer = document.querySelector('.image-container');
+            
+            const fontSizeSelect = document.getElementById('font-size');
+            const lineHeightSelect = document.getElementById('line-height');
+            
+            const metadataPanel = document.getElementById('metadata-panel');
+            const metadataToggle = document.getElementById('metadata-toggle');
+            
+            // サイドバー切替
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            
+            // テーマ切替
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // ログアウト
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // 保存ボタン
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => saveDocument(true));
+            }
+            
+            // ヒントボタン・パネル
+            if (hintBtn) {
+                hintBtn.addEventListener('click', () => {
+                    hintPanel.classList.toggle('show');
+                });
+            }
+            
+            if (hintToggle) {
+                hintToggle.addEventListener('click', () => {
+                    hintPanel.classList.toggle('show');
+                });
+            }
+            
+            if (hintClose) {
+                hintClose.addEventListener('click', () => {
+                    hintPanel.classList.remove('show');
+                });
+            }
+            
+            // 履歴ボタン・パネル削除
+            
+            // 審査モーダル
+            if (reviewClose) {
+                reviewClose.addEventListener('click', closeReviewModal);
+            }
+            
+            if (reviewEditBtn) {
+                reviewEditBtn.addEventListener('click', closeReviewModal);
+            }
+            
+            // 修正2: エクスポートボタン・モーダル
+            if (exportBtn) {
+                exportBtn.addEventListener('click', () => {
+                    exportModal.classList.add('show');
+                });
+            }
+            
+            if (exportClose) {
+                exportClose.addEventListener('click', () => {
+                    exportModal.classList.remove('show');
+                });
+            }
+            
+            if (exportCancel) {
+                exportCancel.addEventListener('click', () => {
+                    exportModal.classList.remove('show');
+                });
+            }
+            
+            if (exportRange) {
+                exportRange.addEventListener('change', () => {
+                    if (exportRange.value === 'multiple') {
+                        multipleDocsContainer.style.display = 'block';
+                        // 文書リストをロード
+                        loadDocumentList();
+                    } else {
+                        multipleDocsContainer.style.display = 'none';
+                    }
+                });
+            }
+            
+            // エクスポート実行
+            if (exportSubmit) {
+                exportSubmit.addEventListener('click', () => {
+                    const format = exportFormat.value;
+                    const range = exportRange.value;
+                    const includeImage = document.getElementById('include-image').checked;
+                    const includeMetadata = document.getElementById('include-metadata').checked;
+                    
+                    // 現在のページをエクスポート
+                    if (range === 'current') {
+                        if (format === 'pdf') {
+                            exportToPDF({ includeImage, includeMetadata });
+                        } else if (format === 'text') {
+                            exportAsText();
+                        } else if (format === 'json') {
+                            exportAsJSON();
+                        }
+                    } else {
+                        // 複数資料をエクスポート（現在は単一資料のみ）
+                        if (format === 'pdf') {
+                            exportToPDF({ includeImage, includeMetadata });
+                        }
+                    }
+                    
+                    // モーダルを閉じる
+                    exportModal.classList.remove('show');
+                });
+            }
+            
+            // ページナビゲーション
+            if (prevPageBtn) {
+                prevPageBtn.addEventListener('click', () => changePage(-1));
+            }
+            
+            if (nextPageBtn) {
+                nextPageBtn.addEventListener('click', () => changePage(1));
+            }
+            
+            // ズームコントロール
+            let currentZoom = 1.0;
+            
+            if (zoomInBtn) {
+                zoomInBtn.addEventListener('click', () => {
+                    currentZoom = Math.min(currentZoom + 0.1, 3.0);
+                    applyZoom();
+                });
+            }
+            
+            if (zoomOutBtn) {
+                zoomOutBtn.addEventListener('click', () => {
+                    currentZoom = Math.max(currentZoom - 0.1, 0.5);
+                    applyZoom();
+                });
+            }
+            
+            if (zoomResetBtn) {
+                zoomResetBtn.addEventListener('click', () => {
+                    currentZoom = 1.0;
+                    applyZoom();
+                });
+            }
+            
+            function applyZoom() {
+                if (imageDisplay) {
+                    imageDisplay.style.transform = `scale(${currentZoom})`;
+                    zoomValue.textContent = `${Math.round(currentZoom * 100)}%`;
+                }
+            }
+            
+            // 画像変換
+            let rotationAngle = 0;
+            let flipX = 1;
+            let flipY = 1;
+            let filterValue = 'none';
+            
+            if (rotateLeftBtn) {
+                rotateLeftBtn.addEventListener('click', () => {
+                    rotationAngle = (rotationAngle - 90) % 360;
+                    applyImageTransform();
+                });
+            }
+            
+            if (rotateRightBtn) {
+                rotateRightBtn.addEventListener('click', () => {
+                    rotationAngle = (rotationAngle + 90) % 360;
+                    applyImageTransform();
+                });
+            }
+            
+            if (flipHorizontalBtn) {
+                flipHorizontalBtn.addEventListener('click', () => {
+                    flipX *= -1;
+                    applyImageTransform();
+                });
+            }
+            
+            if (flipVerticalBtn) {
+                flipVerticalBtn.addEventListener('click', () => {
+                    flipY *= -1;
+                    applyImageTransform();
+                });
+            }
+            
+            if (resetImageBtn) {
+                resetImageBtn.addEventListener('click', () => {
+                    rotationAngle = 0;
+                    flipX = 1;
+                    flipY = 1;
+                    filterValue = 'none';
+                    currentZoom = 1.0;
+                    
+                    if (imageAdjust) {
+                        imageAdjust.value = 'original';
+                    }
+                    
+                    applyImageTransform();
+                    applyZoom();
+                });
+            }
+            
+            if (imageAdjust) {
+                imageAdjust.addEventListener('change', () => {
+                    const value = imageAdjust.value;
+                    
+                    switch (value) {
+                        case 'original':
+                            filterValue = 'none';
+                            break;
+                        case 'contrast':
+                            filterValue = 'contrast(1.5)';
+                            break;
+                        case 'brightness':
+                            filterValue = 'brightness(1.2)';
+                            break;
+                        case 'grayscale':
+                            filterValue = 'grayscale(1)';
+                            break;
+                        case 'invert':
+                            filterValue = 'invert(1)';
+                            break;
+                        case 'sepia':
+                            filterValue = 'sepia(0.8)';
+                            break;
+                    }
+                    
+                    applyImageTransform();
+                });
+            }
+            
+            function applyImageTransform() {
+                if (imageDisplay) {
+                    imageDisplay.style.transform = `rotate(${rotationAngle}deg) scale(${flipX}, ${flipY})`;
+                    imageDisplay.style.filter = filterValue;
+                }
+            }
+            
+            // フォントサイズ変更
+            if (fontSizeSelect) {
+                fontSizeSelect.addEventListener('change', () => {
+                    if (verticalText) {
+                        verticalText.style.fontSize = fontSizeSelect.value;
+                    }
+                });
+            }
+            
+            // 行間変更
+            if (lineHeightSelect) {
+                lineHeightSelect.addEventListener('change', () => {
+                    if (verticalText) {
+                        verticalText.style.lineHeight = lineHeightSelect.value;
+                    }
+                });
+            }
+            
+            // メタデータパネルの表示/非表示
+            if (metadataToggle) {
+                metadataToggle.addEventListener('click', () => {
+                    if (metadataPanel.classList.contains('collapsed')) {
+                        metadataPanel.classList.remove('collapsed');
+                        metadataPanel.style.height = 'auto';
+                        metadataToggle.innerHTML = '<i class="fas fa-chevron-up"></i>';
+                    } else {
+                        metadataPanel.classList.add('collapsed');
+                        metadataPanel.style.height = '0';
+                        metadataToggle.innerHTML = '<i class="fas fa-chevron-down"></i>';
+                    }
+                });
+            }
+            
+            // 画像ドラッグ機能
+            if (imageContainer && imageDisplay) {
+                let isDragging = false;
+                let startX, startY;
+                let imgLeft = 0, imgTop = 0;
+                
+                imageDisplay.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX - imgLeft;
+                    startY = e.clientY - imgTop;
+                    imageDisplay.style.cursor = 'grabbing';
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    
+                    imgLeft = e.clientX - startX;
+                    imgTop = e.clientY - startY;
+                    
+                    imageDisplay.style.transform = `rotate(${rotationAngle}deg) scale(${flipX}, ${flipY}) translate(${imgLeft}px, ${imgTop}px)`;
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    imageDisplay.style.cursor = 'move';
+                });
+            }
+            
+            // テキストエディタの編集イベント
+            if (verticalText) {
+                let previousContent = '';
+                
+                // 初期化時に現在のコンテンツを保存
+                previousContent = verticalText.innerHTML;
+                
+                verticalText.addEventListener('input', () => {
+                    // 新しいコンテンツを保存
+                    previousContent = verticalText.innerHTML;
+                });
+                
+                // 自動保存（30秒ごと）
+                setInterval(() => {
+                    if (currentDocument.id && previousContent !== verticalText.innerHTML) {
+                        saveDocument(false);
+                    }
+                }, 30000);
+            }
+            
+            // キーボードショートカット
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+S: 保存
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    saveDocument(true);
+                }
+                
+                // Ctrl+Z: 元に戻す（ブラウザネイティブの機能が働く）
+                
+                // Ctrl+Y: やり直す（ブラウザネイティブの機能が働く）
+            });
+        });
+        
+        // 文書リストのロード（エクスポート用）
+        async function loadDocumentList() {
+            try {
+                const documentList = document.getElementById('document-list');
+                documentList.innerHTML = '<p>読み込み中...</p>';
+                
+                // ユーザーの文書一覧を取得
+                const docsQuery = await db.collection('transcriptions')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('updatedAt', 'desc')
+                    .get();
+                
+                if (docsQuery.empty) {
+                    documentList.innerHTML = '<p>文書がありません</p>';
+                    return;
+                }
+                
+                documentList.innerHTML = '';
+                
+                docsQuery.forEach(doc => {
+                    const docData = doc.data();
+                    
+                    const docItem = document.createElement('div');
+                    docItem.className = 'document-item';
+                    docItem.style.padding = '0.5rem';
+                    docItem.style.borderBottom = '1px solid var(--border-color)';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.value = doc.id;
+                    checkbox.style.marginRight = '0.5rem';
+                    
+                    // 現在の文書は自動的に選択
+                    if (doc.id === currentDocument.id) {
+                        checkbox.checked = true;
+                        checkbox.disabled = true;
+                    }
+                    
+                    const docTitle = document.createElement('label');
+                    docTitle.textContent = docData.title || '無題の文書';
+                    docTitle.style.cursor = 'pointer';
+                    docTitle.htmlFor = `doc-${doc.id}`;
+                    
+                    docItem.appendChild(checkbox);
+                    docItem.appendChild(docTitle);
+                    documentList.appendChild(docItem);
+                });
+            } catch (error) {
+                console.error("文書リスト取得エラー:", error);
+                const documentList = document.getElementById('document-list');
+                documentList.innerHTML = '<p>文書リストの取得に失敗しました</p>';
+            }
+        }
+        
+        // 認証状態の監視
+        auth.onAuthStateChanged(async user => {
+            try {
+                if (user) {
+                    // ログイン済み
+                    currentUser = user;
+                    
+                    // ユーザー情報表示
+                    const userNameElement = document.getElementById('sidebar-user-name');
+                    const userInitialElement = document.getElementById('user-initial');
+                    const userAvatarElement = document.getElementById('user-avatar');
+                    
+                    if (userNameElement) {
+                        userNameElement.textContent = user.displayName || user.email || 'ユーザー';
+                    }
+                    
+                    if (userInitialElement && userAvatarElement) {
+                        if (user.photoURL) {
+                            userInitialElement.style.display = 'none';
+                            userAvatarElement.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName || 'ユーザー'}">`;
+                        } else {
+                            const initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+                            userInitialElement.textContent = initial;
+                        }
+                    }
+                    
+                    // 担当者名を設定
+                    const docPersonElement = document.getElementById('doc-person');
+                    if (docPersonElement) {
+                        docPersonElement.value = user.displayName || user.email || 'ユーザー';
+                    }
+                    
+                    // URLからファイルIDを取得
+                    const fileId = getFileIdFromURL();
+                    
+                    if (fileId) {
+                        // 文書データを読み込む
+                        await loadDocument(fileId);
+                    } else {
+                        showToast('ファイルIDが指定されていません', 'warning');
+                    }
+                } else {
+                    // 未ログイン
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error("認証エラー:", error);
+                showToast('認証に失敗しました', 'error');
+            }
+        });
+    </script>
 </body>
 </html>

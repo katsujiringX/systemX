@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KatsujiRingX | 研究者向けPDFリーダー</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PDF.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin var(--transition-normal);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .reader-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background-color: white;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
+        
+        [data-theme="dark"] .reader-header {
+            background-color: #1e293b;
+            border-color: #2d3748;
+        }
+        
+        .header-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        /* PDFリーダー特有のスタイル */
+        .reader-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .books-sidebar {
+            width: 280px;
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        [data-theme="dark"] .books-sidebar {
+            background-color: #1e293b;
+            border-color: #2d3748;
+        }
+        
+        .books-sidebar.collapsed {
+            width: 0;
+        }
+        
+        .books-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .books-title {
+            font-weight: 600;
+        }
+        
+        .books-list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .books-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .books-section-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9375rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .books-list {
+            display: grid;
+            grid-gap: 1rem;
+        }
+        
+        .book-card {
+            background-color: var(--gray-100);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .book-card {
+            background-color: #2d3748;
+        }
+        
+        .book-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+        
+        .book-card.active {
+            border: 2px solid var(--primary);
+        }
+        
+        .book-cover {
+            height: 150px;
+            background-color: var(--gray-200);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .book-cover {
+            background-color: #4a5568;
+        }
+        
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .book-cover-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .book-cover-placeholder i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .book-info {
+            padding: 0.75rem;
+        }
+        
+        .book-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .book-author {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .pdf-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .pdf-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
+            gap: 1rem;
+        }
+        
+        [data-theme="dark"] .pdf-toolbar {
+            background-color: #1e293b;
+            border-color: #2d3748;
+        }
+        
+        .pdf-toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .pdf-toolbar-center {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .page-navigation {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.25rem 0.5rem;
+        }
+        
+        .page-input {
+            width: 3rem;
+            text-align: center;
+            border: none;
+            padding: 0.25rem;
+            background: transparent;
+            color: var(--text-color);
+            font-size: 0.875rem;
+        }
+        
+        .page-input:focus {
+            outline: none;
+        }
+        
+        .page-total {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .pdf-viewer {
+            flex: 1;
+            overflow-y: auto;
+            background-color: var(--gray-100);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 0;
+        }
+        
+        [data-theme="dark"] .pdf-viewer {
+            background-color: #2d3748;
+        }
+        
+        .pdf-page {
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-md);
+            background-color: white;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .pdf-page {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-color);
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+            font-size: 0.875rem;
+        }
+        
+        .btn:hover {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .btn:hover {
+            background-color: #4a5568;
+        }
+        
+        .btn i {
+            font-size: 1rem;
+        }
+        
+        .btn-text {
+            margin-left: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            border-radius: 50%;
+        }
+        
+        .btn-outline {
+            border: 1px solid var(--border-color);
+        }
+        
+        .dropdown {
+            position: relative;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            padding: 0.5rem 0;
+            min-width: 180px;
+            z-index: 100;
+            display: none;
+        }
+        
+        [data-theme="dark"] .dropdown-menu {
+            background-color: #1e293b;
+        }
+        
+        .dropdown.show .dropdown-menu {
+            display: block;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            font-size: 0.875rem;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .dropdown-item:hover {
+            background-color: #2d3748;
+        }
+        
+        .dropdown-item i {
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+        
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* 分析パネル */
+        .analysis-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: var(--shadow-lg);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .analysis-panel {
+            background-color: #1e293b;
+        }
+        
+        .analysis-panel.show {
+            transform: translateX(0);
+        }
+        
+        .analysis-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .analysis-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .analysis-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .analysis-tab {
+            flex: 1;
+            padding: 0.75rem 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-normal);
+        }
+        
+        .analysis-tab.active {
+            border-bottom-color: var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .analysis-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .analysis-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .analysis-section-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9375rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+        }
+        
+        .stat-card {
+            background-color: var(--gray-100);
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+        }
+        
+        [data-theme="dark"] .stat-card {
+            background-color: #2d3748;
+        }
+        
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--radius);
+            background-color: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.75rem;
+        }
+        
+        [data-theme="dark"] .stat-icon {
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .search-container {
+            margin-bottom: 1rem;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 0.875rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .search-results {
+            margin-top: 1rem;
+        }
+        
+        .search-summary {
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .search-item {
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background-color: var(--gray-100);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+        }
+        
+        [data-theme="dark"] .search-item {
+            background-color: #2d3748;
+        }
+        
+        .search-item-caption {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+        
+        .search-item-content {
+            line-height: 1.6;
+        }
+        
+        .highlight {
+            background-color: rgba(249, 115, 22, 0.3);
+            padding: 0.125rem 0;
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.625rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background-color: transparent;
+            color: var(--text-color);
+            font-size: 0.875rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .form-text {
+            display: block;
+            margin-top: 0.375rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        
+        .frequency-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+        
+        .frequency-table th,
+        .frequency-table td {
+            padding: 0.625rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .frequency-table th {
+            font-weight: 600;
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .frequency-table th {
+            background-color: #2d3748;
+        }
+        
+        .frequency-badge {
+            display: inline-block;
+            padding: 0.125rem 0.375rem;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-radius: var(--radius);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        [data-theme="dark"] .frequency-badge {
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        .outline-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .outline-list {
+            list-style: none;
+        }
+        
+        .outline-item {
+            margin-bottom: 0.25rem;
+        }
+        
+        .outline-link {
+            display: block;
+            padding: 0.5rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .outline-link:hover {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .outline-link:hover {
+            background-color: #2d3748;
+        }
+        
+        .outline-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 500;
+        }
+        
+        [data-theme="dark"] .outline-link.active {
+            background-color: rgba(99, 102, 241, 0.2);
+        }
+        
+        .outline-children {
+            padding-left: 1.25rem;
+            margin-top: 0.25rem;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+        }
+        
+        [data-theme="dark"] .loading-spinner {
+            border-color: rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+        
+        .empty-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            max-width: 400px;
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .analysis-panel {
+                width: 100%;
+            }
+            
+            .books-sidebar {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                z-index: 10;
+                transform: translateX(-100%);
+                transition: transform var(--transition-normal);
+                width: 280px;
+            }
+            
+            .books-sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .stat-card {
+                padding: 0.5rem;
+            }
+            
+            .stat-icon {
+                width: 2rem;
+                height: 2rem;
+                font-size: 0.875rem;
+            }
+            
+            .stat-value {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="logo">
+                <img src="/api/placeholder/64/64" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="#" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-edit"></i> 活字化エディタ
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="#" class="menu-item active">
+                <i class="fas fa-book"></i> 本を読む
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="#" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="#" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="#" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="#" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <button id="logout-btn" class="btn" style="width: 100%; margin-top: 1rem; background: rgba(255,255,255,0.1); color: white;">
+                <i class="fas fa-sign-out-alt"></i>
+                <span class="btn-text">ログアウト</span>
+            </button>
+        </div>
+    </aside>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content" id="main-content">
+        <header class="reader-header">
+            <div class="header-title" id="book-title">研究者向けPDFリーダー</div>
+            <div class="header-actions">
+                <button id="show-books-btn" class="btn btn-outline">
+                    <i class="fas fa-book"></i>
+                    <span class="btn-text">ライブラリ</span>
+                </button>
+                <a href="add-book.html" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span class="btn-text">本を追加</span>
+                </a>
+                <div class="dropdown" id="user-dropdown">
+                    <button class="btn">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="btn-text" id="header-user-name">ユーザー名</span>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-user"></i> プロフィール
+                        </a>
+                        <a href="#" class="dropdown-item">
+                            <i class="fas fa-cog"></i> 設定
+                        </a>
+                        <a href="#" class="dropdown-item" id="dropdown-logout">
+                            <i class="fas fa-sign-out-alt"></i> ログアウト
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="reader-container">
+            <!-- 本のライブラリサイドバー -->
+            <div class="books-sidebar" id="books-sidebar">
+                <div class="books-header">
+                    <div class="books-title">ライブラリ</div>
+                    <button class="btn" id="close-books-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="books-list-container">
+                    <div class="books-section">
+                        <div class="books-section-title">
+                            最近読んだ本
+                            <a href="add-book.html" class="btn" title="本を追加">
+                                <i class="fas fa-plus"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="books-list" id="recent-books">
+                            <!-- 本のカードはJavaScriptで動的に生成 -->
+                        </div>
+                    </div>
+                    
+                    <div class="books-section">
+                        <div class="books-section-title">すべての本</div>
+                        <div class="books-list" id="all-books">
+                            <!-- 本のカードはJavaScriptで動的に生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PDFビューア -->
+            <div class="pdf-container">
+                <div class="pdf-toolbar">
+                    <div class="pdf-toolbar-group">
+                        <button class="btn" id="toggle-sidebar-btn" title="サイドメニュー">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <button class="btn" id="toggle-outline-btn" title="目次">
+                            <i class="fas fa-list"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="pdf-toolbar-center">
+                        <div class="page-navigation">
+                            <button class="btn" id="prev-page" title="前のページ">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <input type="number" id="current-page" class="page-input" value="1" min="1">
+                            <span class="page-total">/ <span id="page-count">0</span></span>
+                            <button class="btn" id="next-page" title="次のページ">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="pdf-toolbar-group">
+                        <div class="zoom-control">
+                            <button class="btn" id="zoom-out" title="縮小">
+                                <i class="fas fa-search-minus"></i>
+                            </button>
+                            <span id="zoom-level">100%</span>
+                            <button class="btn" id="zoom-in" title="拡大">
+                                <i class="fas fa-search-plus"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" id="show-analysis-btn">
+                            <i class="fas fa-chart-bar"></i>
+                            <span class="btn-text">文字分析</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="pdf-viewer" id="pdf-viewer">
+                    <!-- PDFページはJavaScriptで動的に生成 -->
+                    <div class="empty-state" id="empty-state">
+                        <i class="fas fa-book-open empty-icon"></i>
+                        <h2 class="empty-title">本が選択されていません</h2>
+                        <p class="empty-description">左側のライブラリから本を選択するか、「本を追加」ボタンをクリックして新しい本を追加してください。</p>
+                        <a href="add-book.html" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            <span class="btn-text">本を追加</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 文字分析パネル -->
+    <div class="analysis-panel" id="analysis-panel">
+        <div class="analysis-header">
+            <div class="analysis-title">文字分析ツール</div>
+            <button class="btn" id="close-analysis-btn">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="analysis-tabs">
+            <div class="analysis-tab active" data-tab="stats">文字統計</div>
+            <div class="analysis-tab" data-tab="search">検索</div>
+            <div class="analysis-tab" data-tab="frequency">出現頻度</div>
+            <div class="analysis-tab" data-tab="outline">目次</div>
+        </div>
+        
+        <div class="analysis-content">
+            <!-- 文字統計タブ -->
+            <div class="analysis-tab-content" id="stats-tab">
+                <div class="analysis-section">
+                    <div class="analysis-section-title">基本統計</div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-font"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="total-chars">0</div>
+                                <div class="stat-label">総文字数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-align-left"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="total-lines">0</div>
+                                <div class="stat-label">総行数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-paragraph"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="total-paragraphs">0</div>
+                                <div class="stat-label">総段落数</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="reading-time">0分</div>
+                                <div class="stat-label">読了時間目安</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="analysis-section-title">文字種別</div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="kanji-count">0</div>
+                                <div class="stat-label">漢字</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="hiragana-count">0</div>
+                                <div class="stat-label">ひらがな</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="katakana-count">0</div>
+                                <div class="stat-label">カタカナ</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="alphabet-count">0</div>
+                                <div class="stat-label">アルファベット</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="number-count">0</div>
+                                <div class="stat-label">数字</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-language"></i>
+                            </div>
+                            <div class="stat-info">
+                                <div class="stat-value" id="symbol-count">0</div>
+                                <div class="stat-label">記号</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 検索タブ -->
+            <div class="analysis-tab-content" id="search-tab" style="display: none;">
+                <div class="search-container">
+                    <input type="text" id="search-input" class="search-input" placeholder="検索したい文字や単語を入力...">
+                    <div class="form-text">Enter キーで検索開始</div>
+                </div>
+                
+                <div class="search-results" id="search-results">
+                    <div class="search-summary" id="search-summary"></div>
+                    <div id="search-results-list"></div>
+                </div>
+            </div>
+            
+            <!-- 出現頻度タブ -->
+            <div class="analysis-tab-content" id="frequency-tab" style="display: none;">
+                <div class="form-group">
+                    <label for="char-type" class="form-label">文字種別</label>
+                    <select id="char-type" class="form-control">
+                        <option value="all">すべて</option>
+                        <option value="kanji">漢字</option>
+                        <option value="hiragana">ひらがな</option>
+                        <option value="katakana">カタカナ</option>
+                        <option value="alphabet">アルファベット</option>
+                        <option value="number">数字</option>
+                        <option value="symbol">記号</option>
+                    </select>
+                </div>
+                
+                <button id="analyze-btn" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-chart-bar"></i>
+                    <span class="btn-text">頻度分析</span>
+                </button>
+                
+                <div id="frequency-results" class="analysis-section" style="margin-top: 1.5rem;">
+                    <div class="analysis-section-title">出現頻度ランキング</div>
+                    <table class="frequency-table">
+                        <thead>
+                            <tr>
+                                <th>順位</th>
+                                <th>文字</th>
+                                <th>出現回数</th>
+                                <th>割合</th>
+                            </tr>
+                        </thead>
+                        <tbody id="frequency-table-body">
+                            <!-- 頻度データはJavaScriptで動的に生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 目次タブ -->
+            <div class="analysis-tab-content" id="outline-tab" style="display: none;">
+                <div class="outline-container" id="outline-container">
+                    <!-- 目次はJavaScriptで動的に生成 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF.jsワーカー -->
+    <script>
+        // PDF.jsのワーカーパスを設定
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+    </script>
+
+    <!-- メインスクリプト -->
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.firebasestorage.app",
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        
+        // DOM要素
+        const sidebar = document.getElementById('sidebar');
+        const booksSidebar = document.getElementById('books-sidebar');
+        const showBooksBtn = document.getElementById('show-books-btn');
+        const closeBooksBtn = document.getElementById('close-books-btn');
+        const toggleSidebarBtn = document.getElementById('toggle-sidebar-btn');
+        const toggleOutlineBtn = document.getElementById('toggle-outline-btn');
+        const pdfViewer = document.getElementById('pdf-viewer');
+        const emptyState = document.getElementById('empty-state');
+        const recentBooks = document.getElementById('recent-books');
+        const allBooks = document.getElementById('all-books');
+        const bookTitle = document.getElementById('book-title');
+        const prevPageBtn = document.getElementById('prev-page');
+        const nextPageBtn = document.getElementById('next-page');
+        const currentPageInput = document.getElementById('current-page');
+        const pageCount = document.getElementById('page-count');
+        const zoomIn = document.getElementById('zoom-in');
+        const zoomOut = document.getElementById('zoom-out');
+        const zoomLevel = document.getElementById('zoom-level');
+        const analysisPanel = document.getElementById('analysis-panel');
+        const showAnalysisBtn = document.getElementById('show-analysis-btn');
+        const closeAnalysisBtn = document.getElementById('close-analysis-btn');
+        const analysisTabs = document.querySelectorAll('.analysis-tab');
+        const analysisContents = document.querySelectorAll('.analysis-tab-content');
+        const totalChars = document.getElementById('total-chars');
+        const totalLines = document.getElementById('total-lines');
+        const totalParagraphs = document.getElementById('total-paragraphs');
+        const readingTime = document.getElementById('reading-time');
+        const kanjiCount = document.getElementById('kanji-count');
+        const hiraganaCount = document.getElementById('hiragana-count');
+        const katakanaCount = document.getElementById('katakana-count');
+        const alphabetCount = document.getElementById('alphabet-count');
+        const numberCount = document.getElementById('number-count');
+        const symbolCount = document.getElementById('symbol-count');
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        const searchSummary = document.getElementById('search-summary');
+        const searchResultsList = document.getElementById('search-results-list');
+        const charType = document.getElementById('char-type');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const frequencyTableBody = document.getElementById('frequency-table-body');
+        const outlineContainer = document.getElementById('outline-container');
+        const themeToggle = document.getElementById('theme-toggle');
+        const logoutBtn = document.getElementById('logout-btn');
+        const dropdownLogout = document.getElementById('dropdown-logout');
+        const userDropdown = document.getElementById('user-dropdown');
+        const userName = document.getElementById('user-name');
+        const headerUserName = document.getElementById('header-user-name');
+        const userAvatar = document.getElementById('user-avatar');
+        const userInitial = document.getElementById('user-initial');
+
+        // 状態変数
+        let currentUser = null;
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let scale = 1.0;
+        let pdfText = '';
+        let currentBookId = null;
+        let books = {};
+
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // ユーザーがログインしている場合
+                currentUser = user;
+                
+                // ユーザー情報を表示
+                userName.textContent = user.displayName || user.email.split('@')[0];
+                headerUserName.textContent = user.displayName || user.email.split('@')[0];
+                
+                // ユーザープロフィール画像を表示（修正）
+                if (user.photoURL) {
+                    // プロフィール画像がある場合
+                    userAvatar.innerHTML = `<img src="${user.photoURL}" alt="${user.displayName || 'ユーザー'}">`;
+                } else {
+                    // プロフィール画像がない場合はイニシャルを表示
+                    const initial = user.displayName 
+                        ? user.displayName.charAt(0).toUpperCase() 
+                        : user.email.charAt(0).toUpperCase();
+                    userInitial.textContent = initial;
+                }
+                
+                // ユーザーの本を取得
+                loadUserBooks();
+            } else {
+                // ログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ユーザーの本を取得
+        async function loadUserBooks() {
+            try {
+                const snapshot = await db.collection('books')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('lastOpened', 'desc')
+                    .get();
+                
+                books = {};
+                let recentBooksHTML = '';
+                let allBooksHTML = '';
+                let count = 0;
+                
+                snapshot.forEach(doc => {
+                    const book = doc.data();
+                    const bookId = doc.id;
+                    books[bookId] = book;
+                    
+                    const bookCard = createBookCard(bookId, book);
+                    
+                    // 最近開いた3冊を表示
+                    if (count < 3) {
+                        recentBooksHTML += bookCard;
+                    }
+                    
+                    allBooksHTML += bookCard;
+                    count++;
+                });
+                
+                if (count === 0) {
+                    recentBooksHTML = `
+                        <div class="empty-state" style="padding: 1rem;">
+                            <i class="fas fa-book empty-icon" style="font-size: 2rem;"></i>
+                            <h3 style="margin: 0.5rem 0; font-size: 1rem;">本がありません</h3>
+                            <p style="margin-bottom: 1rem; font-size: 0.875rem; color: var(--text-muted);">「本を追加」ボタンから本を追加してください</p>
+                        </div>
+                    `;
+                    
+                    allBooksHTML = recentBooksHTML;
+                }
+                
+                recentBooks.innerHTML = recentBooksHTML;
+                allBooks.innerHTML = allBooksHTML;
+                
+                // 本のカードにクリックイベントを追加
+                document.querySelectorAll('.book-card').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const bookId = card.getAttribute('data-book-id');
+                        openBook(bookId);
+                    });
+                });
+                
+                // 最初の本を開く（ある場合）
+                if (count > 0) {
+                    const firstBookId = Object.keys(books)[0];
+                    openBook(firstBookId);
+                }
+            } catch (error) {
+                console.error('本の取得エラー:', error);
+            }
+        }
+
+        // 本のカードHTMLを作成
+        function createBookCard(bookId, book) {
+            const coverHTML = book.coverUrl
+                ? `<img src="${book.coverUrl}" alt="${book.title}">`
+                : `
+                    <div class="book-cover-placeholder">
+                        <i class="fas fa-book"></i>
+                        <span>表紙なし</span>
+                    </div>
+                `;
+            
+            return `
+                <div class="book-card" data-book-id="${bookId}">
+                    <div class="book-cover">
+                        ${coverHTML}
+                    </div>
+                    <div class="book-info">
+                        <div class="book-title">${book.title}</div>
+                        <div class="book-author">${book.author || '著者不明'}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 本を開く
+        async function openBook(bookId) {
+            currentBookId = bookId;
+            const book = books[bookId];
+            
+            if (!book) return;
+            
+            // UIを更新
+            document.querySelectorAll('.book-card').forEach(card => {
+                if (card.getAttribute('data-book-id') === bookId) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+            
+            bookTitle.textContent = book.title;
+            emptyState.style.display = 'none';
+            
+            // 最終閲覧日時を更新
+            await db.collection('books').doc(bookId).update({
+                lastOpened: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            // PDFを読み込む
+            loadPDF(book.path);
+            
+            // モバイル表示の場合、本のサイドバーを閉じる
+            if (window.innerWidth <= 768) {
+                booksSidebar.classList.remove('show');
+            }
+        }
+
+        // PDFを読み込む
+        function loadPDF(path) {
+            // 実際のプロジェクトでは、VSCode環境からPDFファイルを読み込む処理を実装
+            // ここではサンプルとしてデモPDFを使用
+            
+            // デモPDF
+            const pdfUrl = 'https://raw.githubusercontent.com/mozilla/pdf.js/ba2edeae/web/compressed.tracemonkey-pldi-09.pdf';
+            
+            // PDFを読み込む
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            
+            // ローディング表示
+            pdfViewer.innerHTML = `
+                <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                    <div class="loading-spinner"></div>
+                </div>
+            `;
+            
+            loadingTask.promise.then(pdf => {
+                pdfDoc = pdf;
+                pageNum = 1;
+                scale = 1.0;
+                
+                // PDFの情報を表示
+                pageCount.textContent = pdf.numPages;
+                
+                // 目次を取得
+                pdf.getOutline().then(outline => {
+                    if (outline) {
+                        renderOutline(outline);
+                    } else {
+                        outlineContainer.innerHTML = '<p>目次がありません</p>';
+                    }
+                });
+                
+                // すべてのページのテキストを抽出
+                extractAllText(pdf);
+                
+                // 最初のページを表示
+                renderPage(pageNum);
+            }).catch(error => {
+                console.error('PDF読み込みエラー:', error);
+                pdfViewer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle empty-icon" style="color: var(--danger);"></i>
+                        <h2 class="empty-title">PDFの読み込みに失敗しました</h2>
+                        <p class="empty-description">ファイルパスが正しいか確認してください。</p>
+                    </div>
+                `;
+            });
+        }
+
+        // PDFページをレンダリング
+        function renderPage(num) {
+            if (!pdfDoc) return;
+            
+            pageRendering = true;
+            
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({ scale });
+                
+                // キャンバスを作成
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                
+                // ページコンテナを作成
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'pdf-page';
+                pageDiv.appendChild(canvas);
+                
+                // テキストレイヤーを作成
+                const textLayerDiv = document.createElement('div');
+                textLayerDiv.className = 'textLayer';
+                textLayerDiv.style.width = `${viewport.width}px`;
+                textLayerDiv.style.height = `${viewport.height}px`;
+                textLayerDiv.style.position = 'absolute';
+                textLayerDiv.style.top = '0';
+                textLayerDiv.style.left = '0';
+                pageDiv.appendChild(textLayerDiv);
+                
+                // ビューアをクリア
+                pdfViewer.innerHTML = '';
+                pdfViewer.appendChild(pageDiv);
+                
+                // ページをレンダリング
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport
+                };
+                
+                const renderTask = page.render(renderContext);
+                
+                // テキストレイヤーをレンダリング
+                page.getTextContent().then(textContent => {
+                    pdfjsLib.renderTextLayer({
+                        textContent,
+                        container: textLayerDiv,
+                        viewport,
+                        textDivs: []
+                    });
+                });
+                
+                renderTask.promise.then(() => {
+                    pageRendering = false;
+                    
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+                
+                // ページナビゲーションを更新
+                currentPageInput.value = num;
+            });
+        }
+
+        // ページを切り替える
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        // 前のページへ
+        function onPrevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        // 次のページへ
+        function onNextPage() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        // すべてのテキストを抽出
+        async function extractAllText(pdf) {
+            let fullText = '';
+            
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(' ');
+                fullText += pageText + '\n\n';
+            }
+            
+            pdfText = fullText;
+            updateTextStats();
+        }
+
+        // テキスト統計を更新
+        function updateTextStats() {
+            if (!pdfText) return;
+            
+            // 基本統計
+            const chars = pdfText.length;
+            const lines = pdfText.split('\n').length;
+            const paragraphs = pdfText.split(/\n\s*\n/).length;
+            const readMinutes = Math.ceil(chars / 500); // 1分あたり500文字として計算
+            
+            totalChars.textContent = chars.toLocaleString();
+            totalLines.textContent = lines.toLocaleString();
+            totalParagraphs.textContent = paragraphs.toLocaleString();
+            readingTime.textContent = `${readMinutes}分`;
+            
+            // 文字種別
+            const kanji = (pdfText.match(/[\u4E00-\u9FFF]/g) || []).length;
+            const hiragana = (pdfText.match(/[\u3040-\u309F]/g) || []).length;
+            const katakana = (pdfText.match(/[\u30A0-\u30FF]/g) || []).length;
+            const alphabet = (pdfText.match(/[a-zA-Z]/g) || []).length;
+            const numbers = (pdfText.match(/[0-9]/g) || []).length;
+            const symbols = (pdfText.match(/[!-/:-@[-`{-~\u3000-\u303F\uFF00-\uFFEF]/g) || []).length;
+            
+            kanjiCount.textContent = kanji.toLocaleString();
+            hiraganaCount.textContent = hiragana.toLocaleString();
+            katakanaCount.textContent = katakana.toLocaleString();
+            alphabetCount.textContent = alphabet.toLocaleString();
+            numberCount.textContent = numbers.toLocaleString();
+            symbolCount.textContent = symbols.toLocaleString();
+        }
+
+        // テキスト検索
+        function searchText() {
+            const query = searchInput.value.trim();
+            
+            if (!query || !pdfText) {
+                searchSummary.textContent = '検索するテキストを入力してください';
+                searchResultsList.innerHTML = '';
+                return;
+            }
+            
+            // 正規表現でマッチを検索
+            const regex = new RegExp(query, 'gi');
+            const matches = pdfText.match(regex);
+            
+            if (!matches) {
+                searchSummary.textContent = '該当する結果が見つかりませんでした';
+                searchResultsList.innerHTML = '';
+                return;
+            }
+            
+            // 結果サマリーを表示
+            searchSummary.textContent = `"${query}" が ${matches.length} 件見つかりました`;
+            
+            // 検索結果リストを表示
+            let resultsHTML = '';
+            let count = 0;
+            const maxResults = 20; // 最大表示数
+            
+            const tempRegex = new RegExp(query, 'gi');
+            let match;
+            
+            while ((match = tempRegex.exec(pdfText)) !== null && count < maxResults) {
+                const start = Math.max(0, match.index - 50);
+                const end = Math.min(pdfText.length, match.index + match[0].length + 50);
+                let context = pdfText.substring(start, end);
+                
+                // ハイライト処理
+                const matchStart = match.index - start;
+                const matchEnd = matchStart + match[0].length;
+                
+                context = 
+                    context.substring(0, matchStart) + 
+                    '<span class="highlight">' + 
+                    context.substring(matchStart, matchEnd) + 
+                    '</span>' + 
+                    context.substring(matchEnd);
+                
+                resultsHTML += `
+                    <div class="search-item">
+                        <div class="search-item-caption">結果 ${++count}</div>
+                        <div class="search-item-content">...${context}...</div>
+                    </div>
+                `;
+            }
+            
+            if (matches.length > maxResults) {
+                resultsHTML += `
+                    <div style="text-align: center; padding: 1rem; color: var(--text-muted);">
+                        他に ${matches.length - maxResults} 件の結果があります
+                    </div>
+                `;
+            }
+            
+            searchResultsList.innerHTML = resultsHTML;
+        }
+
+        // 文字出現頻度分析
+        function analyzeFrequency() {
+            if (!pdfText) return;
+            
+            const type = charType.value;
+            let targetText = pdfText;
+            
+            // 文字種別によるフィルタリング
+            if (type !== 'all') {
+                let regex;
+                
+                switch (type) {
+                    case 'kanji':
+                        regex = /[\u4E00-\u9FFF]/g;
+                        break;
+                    case 'hiragana':
+                        regex = /[\u3040-\u309F]/g;
+                        break;
+                    case 'katakana':
+                        regex = /[\u30A0-\u30FF]/g;
+                        break;
+                    case 'alphabet':
+                        regex = /[a-zA-Z]/g;
+                        break;
+                    case 'number':
+                        regex = /[0-9]/g;
+                        break;
+                    case 'symbol':
+                        regex = /[!-/:-@[-`{-~\u3000-\u303F\uFF00-\uFFEF]/g;
+                        break;
+                }
+                
+                if (regex) {
+                    const matches = pdfText.match(regex) || [];
+                    targetText = matches.join('');
+                }
+            }
+            
+            // 文字の出現回数をカウント
+            const charCount = {};
+            
+            for (const char of targetText) {
+                if (!char.trim()) continue; // 空白をスキップ
+                
+                charCount[char] = (charCount[char] || 0) + 1;
+            }
+            
+            // 出現回数でソート
+            const sortedChars = Object.keys(charCount).sort((a, b) => charCount[b] - charCount[a]);
+            
+            // テーブルを生成
+            let tableHTML = '';
+            const totalCount = targetText.length;
+            
+            sortedChars.forEach((char, index) => {
+                const count = charCount[char];
+                const percentage = ((count / totalCount) * 100).toFixed(2);
+                
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${char}</td>
+                        <td>${count.toLocaleString()}</td>
+                        <td><span class="frequency-badge">${percentage}%</span></td>
+                    </tr>
+                `;
+            });
+            
+            frequencyTableBody.innerHTML = tableHTML || `
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 2rem 0;">
+                        データがありません
+                    </td>
+                </tr>
+            `;
+        }
+
+        // 目次をレンダリング
+        function renderOutline(outline) {
+            if (!outline || outline.length === 0) {
+                outlineContainer.innerHTML = '<p>目次がありません</p>';
+                return;
+            }
+            
+            let outlineHTML = '<ul class="outline-list">';
+            
+            // 目次をHTMLに変換
+            function processOutlineItems(items, level = 0) {
+                let itemsHTML = '';
+                
+                items.forEach(item => {
+                    let itemHTML = `
+                        <li class="outline-item">
+                            <a href="#" class="outline-link" data-dest="${encodeURIComponent(JSON.stringify(item.dest))}">${item.title}</a>
+                    `;
+                    
+                    // 子項目がある場合は再帰的に処理
+                    if (item.items && item.items.length > 0) {
+                        itemHTML += `
+                            <div class="outline-children">
+                                <ul class="outline-list">
+                                    ${processOutlineItems(item.items, level + 1)}
+                                </ul>
+                            </div>
+                        `;
+                    }
+                    
+                    itemHTML += '</li>';
+                    itemsHTML += itemHTML;
+                });
+                
+                return itemsHTML;
+            }
+            
+            outlineHTML += processOutlineItems(outline);
+            outlineHTML += '</ul>';
+            
+            outlineContainer.innerHTML = outlineHTML;
+            
+            // 目次項目にクリックイベントを追加
+            document.querySelectorAll('.outline-link').forEach(link => {
+                link.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    
+                    const destStr = decodeURIComponent(link.getAttribute('data-dest'));
+                    const dest = JSON.parse(destStr);
+                    
+                    if (!dest) return;
+                    
+                    try {
+                        if (typeof dest === 'number') {
+                            // ページ番号の場合
+                            pageNum = dest;
+                            queueRenderPage(pageNum);
+                        } else if (Array.isArray(dest)) {
+                            // 参照の場合
+                            const ref = dest[0];
+                            const pageIndex = await pdfDoc.getPageIndex(ref);
+                            pageNum = pageIndex + 1;
+                            queueRenderPage(pageNum);
+                        } else if (typeof dest === 'string') {
+                            // 名前付き参照の場合
+                            const destRef = await pdfDoc.getDestination(dest);
+                            const ref = destRef[0];
+                            const pageIndex = await pdfDoc.getPageIndex(ref);
+                            pageNum = pageIndex + 1;
+                            queueRenderPage(pageNum);
+                        }
+                    } catch (error) {
+                        console.error('目次ナビゲーションエラー:', error);
+                    }
+                });
+            });
+        }
+
+        // テーマの切り替え
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            
+            body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            
+            // テーマ設定を保存
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            
+            // ボタンのテキストとアイコンを更新
+            themeToggle.innerHTML = isDark 
+                ? '<i class="fas fa-moon"></i> ダークモード'
+                : '<i class="fas fa-sun"></i> ライトモード';
+        }
+
+        // 初期テーマを設定
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            themeToggle.innerHTML = savedTheme === 'dark'
+                ? '<i class="fas fa-sun"></i> ライトモード'
+                : '<i class="fas fa-moon"></i> ダークモード';
+        }
+
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error('ログアウトエラー:', error);
+            }
+        }
+
+        // 分析タブの切り替え
+        function switchAnalysisTab(tabName) {
+            analysisTabs.forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            document.querySelectorAll('.analysis-tab-content').forEach(content => {
+                if (content.id === `${tabName}-tab`) {
+                    content.style.display = 'block';
+                } else {
+                    content.style.display = 'none';
+                }
+            });
+        }
+
+        // イベントリスナー
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初期テーマを設定
+            initTheme();
+            
+            // サイドバー切替
+            toggleSidebarBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('show');
+            });
+            
+            // 本サイドバー切替
+            showBooksBtn.addEventListener('click', () => {
+                booksSidebar.classList.toggle('show');
+            });
+            
+            closeBooksBtn.addEventListener('click', () => {
+                booksSidebar.classList.remove('show');
+            });
+            
+            // ページナビゲーション
+            prevPageBtn.addEventListener('click', onPrevPage);
+            
+            nextPageBtn.addEventListener('click', onNextPage);
+            
+            currentPageInput.addEventListener('change', () => {
+                const page = parseInt(currentPageInput.value);
+                if (page && page >= 1 && page <= pdfDoc.numPages) {
+                    pageNum = page;
+                    queueRenderPage(pageNum);
+                } else {
+                    currentPageInput.value = pageNum;
+                }
+            });
+            
+            // ズーム
+            zoomIn.addEventListener('click', () => {
+                scale += 0.25;
+                zoomLevel.textContent = `${Math.round(scale * 100)}%`;
+                queueRenderPage(pageNum);
+            });
+            
+            zoomOut.addEventListener('click', () => {
+                if (scale <= 0.5) return;
+                scale -= 0.25;
+                zoomLevel.textContent = `${Math.round(scale * 100)}%`;
+                queueRenderPage(pageNum);
+            });
+            
+            // 分析パネル
+            showAnalysisBtn.addEventListener('click', () => {
+                analysisPanel.classList.add('show');
+                updateTextStats();
+            });
+            
+            closeAnalysisBtn.addEventListener('click', () => {
+                analysisPanel.classList.remove('show');
+            });
+            
+            // 分析タブ
+            analysisTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    switchAnalysisTab(tab.getAttribute('data-tab'));
+                });
+            });
+            
+            // 検索
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchText();
+                }
+            });
+            
+            // 出現頻度分析
+            analyzeBtn.addEventListener('click', analyzeFrequency);
+            
+            // テーマ切替
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            // ログアウト
+            logoutBtn.addEventListener('click', logout);
+            dropdownLogout.addEventListener('click', (e) => {
+                e.preventDefault();
+                logout();
+            });
+            
+            // ドロップダウンメニュー
+            userDropdown.addEventListener('click', () => {
+                userDropdown.classList.toggle('show');
+            });
+            
+            // 画面クリック時にドロップダウンを閉じる
+            document.addEventListener('click', (e) => {
+                if (!userDropdown.contains(e.target)) {
+                    userDropdown.classList.remove('show');
+                }
+            });
+            
+            // 目次切替
+            toggleOutlineBtn.addEventListener('click', () => {
+                switchAnalysisTab('outline');
+                analysisPanel.classList.add('show');
+            });
+            
+            // ウィンドウリサイズ対応
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 768) {
+                    sidebar.classList.remove('show');
+                }
+            });
+        });
+        
+        // キーボードショートカット
+        document.addEventListener('keydown', (e) => {
+            // 入力フィールドにフォーカスがある場合はショートカットを無効化
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            
+            switch (e.key) {
+                case 'ArrowLeft':
+                    onPrevPage();
+                    break;
+                case 'ArrowRight':
+                    onNextPage();
+                    break;
+                case '+':
+                case '=':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        scale += 0.25;
+                        zoomLevel.textContent = `${Math.round(scale * 100)}%`;
+                        queueRenderPage(pageNum);
+                    }
+                    break;
+                case '-':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        if (scale > 0.5) {
+                            scale -= 0.25;
+                            zoomLevel.textContent = `${Math.round(scale * 100)}%`;
+                            queueRenderPage(pageNum);
+                        }
+                    }
+                    break;
+                case 'f':
+                    if (e.ctrlKey || e.metaKey) {
+                        e.preventDefault();
+                        // 検索パネルを表示
+                        analysisPanel.classList.add('show');
+                        switchAnalysisTab('search');
+                        searchInput.focus();
+                    }
+                    break;
+                case 'Escape':
+                    // パネルやモーダルを閉じる
+                    analysisPanel.classList.remove('show');
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>
