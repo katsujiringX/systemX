@@ -862,6 +862,11 @@
             <a href="feedback.html" class="menu-item">
                 <i class="fas fa-comment-dots"></i>フィードバック
             </a>
+
+            <p class="menu-label">管理者</p>
+            <a href="admin.html" class="menu-item">
+                <i class="fas fa-user-cog"></i>管理ページ
+            </a>
         </div>
         
         <div class="sidebar-footer">
@@ -1092,6 +1097,8 @@
                 window.location.href = 'login.html';
             }
         });
+
+
 
         // ユーザーデータの取得
         async function fetchUserData(userId) {
@@ -1537,9 +1544,14 @@
             });
         });
 
-// お知らせと通知を読み込む
+       // mainpage.html のJavaScriptの適切な位置（ページ読み込み時の処理部分）に追加
+
+// お知らせを読み込む関数
 async function loadAnnouncements() {
     try {
+        const announcementList = document.getElementById('announcement-list');
+        const announcementLoading = document.getElementById('announcement-loading');
+        
         if (!announcementList) return;
         
         // ローディング表示
@@ -1547,84 +1559,192 @@ async function loadAnnouncements() {
             announcementLoading.style.display = 'block';
         }
         
-        // お知らせの取得
-        const announcementsSnapshot = await db.collection('announcements')
-            .orderBy('createdAt', 'desc')
-            .limit(3)
-            .get();
+        console.log("お知らせを読み込み中...");
         
-        // Debug logging to see what we're getting from Firebase
-        console.log("Announcements data:", announcementsSnapshot.docs.map(doc => doc.data()));
-        
-        // Rest of your existing code...
-        
-        // お知らせがあれば表示
-        if (!announcementsSnapshot.empty) {
-            announcementsSnapshot.forEach(doc => {
-                const announcement = doc.data();
-                
-                // Handle missing fields gracefully
-                const title = announcement.title || "お知らせ";
-                const content = announcement.content || announcement.message || announcement.text || "詳細はありません";
-                
-                // 日時フォーマット
-                const timestamp = announcement.createdAt ? announcement.createdAt.toDate() : new Date();
-                const formattedDate = new Intl.DateTimeFormat('ja-JP', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
-                }).format(timestamp);
-                
-                const announcementHTML = `
-                    <li class="notice-item">
-                        <h4 class="notice-title"><i class="fas fa-bullhorn"></i> ${title}</h4>
-                        <p class="notice-content">${content}</p>
-                        <div class="notice-date">${formattedDate}</div>
-                    </li>
-                `;
-                
-                announcementList.innerHTML += announcementHTML;
-            });
+        // 現在のユーザーID
+        const currentUser = auth.currentUser;
+        if (!currentUser) {
+            console.error("ユーザーがログインしていません");
+            return;
         }
         
-        // Rest of your existing code...
+        // 現在の日付を取得
+        const now = new Date();
+        
+        // ユーザーデータを取得（ロール・グループ情報のため）
+        const userDoc = await db.collection('users').doc(currentUser.uid).get();
+        const userData = userDoc.data() || {};
+        const userRoles = userData.roles || [];
+        const userGroups = userData.groups || [];
+        
+        // 登録日からの経過日数を計算
+        const userCreatedAt = userData.createdAt ? userData.createdAt.toDate() : now;
+        const daysSinceRegistration = Math.floor((now - userCreatedAt) / (1000 * 60 * 60 * 24));
+        const isNewUser = daysSinceRegistration <= 30; // 30日以内のユーザー
+        
+        // お知らせのクエリを構築
+        console.log("お知らせクエリを構築中...");
+        
+        let announcementQuery = db.collection('announcements')
+            .where('active', '==', true)
+            .where('startDate', '<=', now);
+        
+        // お知らせの取得とフィルタリング
+        const announcementsSnapshot = await announcementQuery.get();
+        
+        console.log(`${announcementsSnapshot.size} 件のお知らせを取得しました`);
+        
+        // ローディング表示を非表示
+        if (announcementLoading) {
+            announcementLoading.style.display = 'none';
+        }
+        
+        // 何も表示するものがない場合
+        if (announcementsSnapshot.empty) {
+            announcementList.innerHTML = `
+                <div style="text-align: center; padding: 2rem 0;">
+                    <i class="fas fa-bell-slash" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 0.5rem;"></i>
+                    <p style="color: var(--text-muted);">現在、お知らせはありません</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // 表示するお知らせを収集
+        const validAnnouncements = [];
+        
+        announcementsSnapshot.forEach(doc => {
+            const announcement = doc.data();
+            
+            // 終了日をチェック
+            if (announcement.endDate && announcement.endDate.toDate() < now) {
+                return; // 終了日を過ぎたお知らせはスキップ
+            }
+            
+            // 対象ユーザーをチェック
+            if (announcement.targetUsers === 'specific') {
+                const specificTargets = announcement.specificTargets || [];
+                
+                // 対象に含まれているかチェック
+                const isTargeted = specificTargets.some(target => {
+                    // ロールターゲット
+                    if (target === 'students' && userRoles.includes('student')) return true;
+                    if (target === 'teachers' && userRoles.includes('teacher')) return true;
+                    if (target === 'researchers' && userRoles.includes('researcher')) return true;
+                    if (target === 'new-users' && isNewUser) return true;
+                    
+                    // 特定ユーザーIDターゲット
+                    if (target === currentUser.uid) return true;
+                    
+                    // グループターゲット
+                    if (userGroups.includes(target)) return true;
+                    
+                    return false;
+                });
+                
+                if (!isTargeted) {
+                    return; // このユーザーが対象外ならスキップ
+                }
+            }
+            
+            // 表示するお知らせに追加
+            validAnnouncements.push({
+                id: doc.id,
+                ...announcement
+            });
+        });
+        
+        console.log(`${validAnnouncements.length} 件の有効なお知らせがあります`);
+        
+        // お知らせの優先度でソート
+        validAnnouncements.sort((a, b) => {
+            const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
+            const priorityA = priorityOrder[a.priority] || 999;
+            const priorityB = priorityOrder[b.priority] || 999;
+            
+            // 優先度が同じなら日付の降順
+            if (priorityA === priorityB) {
+                const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
+                const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                return dateB - dateA;
+            }
+            
+            return priorityA - priorityB;
+        });
+        
+        // 表示するお知らせ（上位5件）
+        const displayAnnouncements = validAnnouncements.slice(0, 5);
+        
+        // お知らせリストをクリア
+        announcementList.innerHTML = '';
+        
+        // お知らせをリストに追加
+        displayAnnouncements.forEach(announcement => {
+            // 日時フォーマット
+            const timestamp = announcement.createdAt ? announcement.createdAt.toDate() : new Date();
+            const formattedDate = new Intl.DateTimeFormat('ja-JP', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            }).format(timestamp);
+            
+            // 優先度に応じたスタイル
+            let priorityClass = '';
+            
+            switch(announcement.priority) {
+                case 'high':
+                    priorityClass = 'border-left: 3px solid var(--warning);';
+                    break;
+                case 'urgent':
+                    priorityClass = 'border-left: 3px solid var(--danger); background-color: var(--danger-light);';
+                    break;
+            }
+            
+            const announcementHTML = `
+                <li class="notice-item" style="${priorityClass}" data-announcement-id="${announcement.id}">
+                    <h4 class="notice-title"><i class="fas fa-bullhorn"></i> ${announcement.title}</h4>
+                    <p class="notice-content">${announcement.content}</p>
+                    <div class="notice-date">${formattedDate}</div>
+                </li>
+            `;
+            
+            announcementList.innerHTML += announcementHTML;
+        });
+        
+        console.log("お知らせの表示が完了しました");
         
     } catch (error) {
         console.error("お知らせ取得エラー:", error);
-        // Error handling code...
+        
+        const announcementList = document.getElementById('announcement-list');
+        if (announcementList) {
+            announcementList.innerHTML = `
+                <div style="text-align: center; padding: 2rem 0;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: var(--danger); margin-bottom: 0.5rem;"></i>
+                    <p style="color: var(--text-muted);">お知らせの読み込み中にエラーが発生しました</p>
+                </div>
+            `;
+        }
+        
+        const announcementLoading = document.getElementById('announcement-loading');
+        if (announcementLoading) {
+            announcementLoading.style.display = 'none';
+        }
     }
-    // Add this to your DOMContentLoaded event listener
-document.addEventListener('DOMContentLoaded', () => {
-    // Existing code...
-    
-    // Theme initialization
-    initTheme();
-    
-    // Event listeners...
-    
-    // Add this line to load announcements when the page loads
-    loadAnnouncements();
-});
-// Remove this one
-document.addEventListener('DOMContentLoaded', () => {
-    // Existing code...
-    initTheme();
-    
-    // Remove this line
-    loadAnnouncements();
-});
-
-// Keep this one
-auth.onAuthStateChanged(user => {
-    if (user) {
-        fetchUserData(user.uid);
-        loadAnnouncements();
-    } else {
-        // Redirect to login...
-    }
-});
 }
 
-    </script>
+// auth.onAuthStateChanged の中から呼び出す（既存のコードと置き換え）
+auth.onAuthStateChanged(user => {
+    if (user) {
+        // 既存の処理...
+        fetchUserData(user.uid);
+        
+        // お知らせを読み込む
+        loadAnnouncements();
+    } else {
+        // ログインページにリダイレクト...
+    }
+});
+</script>
 </body>
 </html>
