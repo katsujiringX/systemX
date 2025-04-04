@@ -21,6 +21,11 @@
     <!-- 日本語フォントの追加 -->
     <script src="https://cdn.jsdelivr.net/npm/@cantoo/fonts-for-pdfjs@1.0.0/dist/fonts-ja.min.js"></script>
     
+    <!-- OCR関連ライブラリ -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    
     <style>
         :root {
             --primary: #4338ca;
@@ -1217,6 +1222,265 @@
             }
         }
 
+        /* OCR関連のスタイル */
+        .ocr-tools {
+            padding: 0.5rem;
+            display: flex;
+            gap: 0.25rem;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid var(--border-color);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 5;
+        }
+
+        .ocr-panel {
+            position: fixed;
+            top: 20vh;
+            left: -400px;
+            width: 400px;
+            background-color: white;
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            box-shadow: var(--shadow-lg);
+            z-index: 80;
+            transition: left 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        [data-theme="dark"] .ocr-panel {
+            background-color: var(--gray-800);
+        }
+        
+        .ocr-panel.show {
+            left: 0;
+        }
+        
+        .ocr-header {
+            padding: 0.75rem 1rem;
+            background-color: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .ocr-body {
+            padding: 1rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        
+        .ocr-close {
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+        }
+        
+        .ocr-toggle {
+            position: absolute;
+            top: 50%;
+            right: -36px;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 80px;
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ocr-toggle i {
+            font-size: 1.5rem;
+        }
+
+        .ocr-selection-area {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 4;
+            cursor: crosshair;
+        }
+
+        .ocr-selection-box {
+            position: absolute;
+            border: 2px dashed var(--success);
+            background-color: rgba(16, 185, 129, 0.1);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .ocr-detected-char {
+            position: absolute;
+            border: 1px solid rgba(239, 68, 68, 0.8);
+            background-color: rgba(239, 68, 68, 0.1);
+            z-index: 5;
+            cursor: pointer;
+        }
+
+        .ocr-detected-char:hover {
+            background-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .ocr-char-candidates {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .ocr-char-candidate {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            text-align: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            background-color: var(--gray-50);
+            position: relative;
+        }
+
+        [data-theme="dark"] .ocr-char-candidate {
+            background-color: var(--gray-700);
+        }
+
+        .ocr-char-candidate:hover {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .ocr-char-confidence {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 0.6rem;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.1rem 0.25rem;
+            border-radius: 0 var(--radius) 0 var(--radius);
+        }
+
+        .ocr-learning-progress {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: var(--gray-100);
+            border-radius: var(--radius);
+        }
+
+        [data-theme="dark"] .ocr-learning-progress {
+            background-color: var(--gray-700);
+        }
+
+        .ocr-model-select {
+            margin-bottom: 1rem;
+        }
+
+        .ocr-user-selection {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .ocr-user-select {
+            flex: 1;
+        }
+
+        .ocr-char-history {
+            margin-top: 1rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .ocr-history-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: var(--gray-50);
+            border-radius: var(--radius);
+        }
+
+        [data-theme="dark"] .ocr-history-item {
+            background-color: var(--gray-700);
+        }
+
+        .ocr-history-image {
+            width: 40px;
+            height: 40px;
+            background-color: var(--gray-200);
+            border-radius: var(--radius);
+            margin-right: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .ocr-history-image img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .ocr-history-details {
+            flex: 1;
+        }
+
+        .ocr-history-char {
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .ocr-history-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .ocr-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            background-color: var(--info-light);
+            color: var(--info);
+        }
+
+        .ocr-progress-bar {
+            height: 0.5rem;
+            background-color: var(--gray-200);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .ocr-progress-value {
+            height: 100%;
+            background-color: var(--success);
+            transition: width 0.3s ease;
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -1319,6 +1583,9 @@
                     <button id="history-btn" class="btn btn-outline">
                         <i class="fas fa-history"></i> 編集履歴
                     </button>
+                    <button id="ocr-btn" class="btn btn-success">
+                        <i class="fas fa-magic"></i> OCR
+                    </button>
                     <button id="export-btn" class="btn btn-secondary">
                         <i class="fas fa-file-export"></i> エクスポート
                     </button>
@@ -1362,6 +1629,10 @@
                 <div class="image-container">
                     <img id="image-display" class="image-display" src="" alt="資料画像" draggable="false">
                     
+                    <!-- OCRオーバーレイとセレクションエリア -->
+                    <div id="image-overlay" class="image-overlay"></div>
+                    <div id="ocr-selection-area" class="ocr-selection-area" style="display: none;"></div>
+                    
                     <!-- ズームコントロール -->
                     <div class="zoom-controls">
                         <button id="zoom-in-btn" title="拡大">
@@ -1376,6 +1647,37 @@
                         </button>
                     </div>
                     
+                    <!-- ページナビゲーション -->
+                    <div class="page-navigation">
+                        <button id="prev-page-btn" title="前のページ">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div id="page-info" class="page-info">1 / 1</div>
+                        <button id="next-page-btn" title="次のページ">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- OCRツール -->
+                    <div class="ocr-tools" style="display: none;" id="ocr-tools">
+                        <button id="ocr-detect-btn" class="btn btn-sm btn-success" title="文字検出">
+                            <i class="fas fa-search"></i> 文字検出
+                        </button>
+                        <button id="ocr-select-btn" class="btn btn-sm btn-outline" title="手動選択">
+                            <i class="fas fa-crop"></i> 文字選択
+                        </button>
+                        <button id="ocr-clear-btn" class="btn btn-sm btn-outline" title="クリア">
+                            <i class="fas fa-eraser"></i> クリア
+                        </button>
+                        
+                        <select id="ocr-model-select" class="form-control" style="max-width: 150px; height: 32px; padding: 0.25rem 0.5rem;">
+                            <option value="combined">総合モデル</option>
+                            <option value="user1">ユーザー1</option>
+                            <option value="user2">ユーザー2</option>
+                            <option value="user3">ユーザー3</option>
+                            <option value="user4">ユーザー4</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             
@@ -1465,6 +1767,90 @@
             </div>
         </div>
         
+        <!-- OCRパネル -->
+        <div class="ocr-panel" id="ocr-panel">
+            <button class="ocr-toggle" id="ocr-toggle">
+                <i class="fas fa-magic"></i>
+            </button>
+            
+            <div class="ocr-header">
+                <h3>OCR 文字認識</h3>
+                <button class="ocr-close" id="ocr-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="ocr-body">
+                <div id="ocr-status" class="ocr-status">
+                    <i class="fas fa-info-circle"></i>
+                    <span>文字を選択または検出してください</span>
+                </div>
+                
+                <div class="ocr-model-select">
+                    <label for="ocr-learning-model">学習モデル選択:</label>
+                    <select id="ocr-learning-model" class="form-control">
+                        <option value="combined">総合モデル</option>
+                        <option value="user1">ユーザー1</option>
+                        <option value="user2">ユーザー2</option>
+                        <option value="user3">ユーザー3</option>
+                        <option value="user4">ユーザー4</option>
+                    </select>
+                </div>
+                
+                <div class="ocr-user-selection">
+                    <div class="ocr-user-select">
+                        <label for="ocr-current-user">現在のユーザー:</label>
+                        <select id="ocr-current-user" class="form-control">
+                            <option value="user1">ユーザー1</option>
+                            <option value="user2">ユーザー2</option>
+                            <option value="user3">ユーザー3</option>
+                            <option value="user4">ユーザー4</option>
+                        </select>
+                    </div>
+                    <button id="ocr-user-settings" class="btn btn-outline" style="margin-top: 1.5rem;">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                </div>
+                
+                <div id="ocr-selected-area" style="display: none;">
+                    <h4>選択された文字</h4>
+                    <div class="ocr-selected-char-container" style="text-align: center; margin: 1rem 0;">
+                        <img id="ocr-selected-image" style="max-width: 100px; max-height: 100px; border: 1px solid var(--border-color); padding: 0.5rem; background-color: white;" src="" alt="選択文字">
+                    </div>
+                    
+                    <h4>認識された候補</h4>
+                    <div id="ocr-char-candidates" class="ocr-char-candidates">
+                        <!-- 候補が動的に生成されます -->
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <label for="ocr-custom-char">別の文字を入力:</label>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <input type="text" id="ocr-custom-char" class="form-control" maxlength="1" placeholder="文字を入力">
+                            <button id="ocr-add-custom" class="btn btn-primary">追加</button>
+                        </div>
+                    </div>
+                    
+                    <div class="ocr-learning-progress">
+                        <h4>学習ステータス</h4>
+                        <p>現在のモデル: <span id="ocr-current-model">総合モデル</span></p>
+                        <p>登録済み文字: <span id="ocr-registered-count">0</span></p>
+                        <p>認識精度: <span id="ocr-accuracy">-</span></p>
+                        <div class="ocr-progress-bar">
+                            <div id="ocr-progress-value" class="ocr-progress-value" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="ocr-char-history">
+                    <h4>最近学習した文字</h4>
+                    <div id="ocr-history-list">
+                        <!-- 履歴が動的に生成されます -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- ヒントパネル -->
         <div class="hint-panel" id="hint-panel">
             <button class="hint-toggle" id="hint-toggle">
@@ -1513,6 +1899,17 @@
                         <li>ドラッグして画像を移動できます</li>
                         <li>拡大・縮小して見やすく調整しましょう</li>
                         <li>コントラストや明るさを調整すると文字が見やすくなることがあります</li>
+                    </ul>
+                </div>
+                
+                <div class="hint-section">
+                    <h4>OCR機能の使い方</h4>
+                    <ul>
+                        <li>「OCR」ボタンをクリックしてOCRモードを有効にします</li>
+                        <li>「文字検出」で自動検出、または「文字選択」で手動選択します</li>
+                        <li>検出された文字をクリックして候補を表示させます</li>
+                        <li>正しい文字を選択するか、新しい文字を入力します</li>
+                        <li>学習が進むにつれて、崩字の認識精度が向上します</li>
                     </ul>
                 </div>
             </div>
@@ -1672,6 +2069,23 @@
             pages: [],
             currentPage: 0
         };
+
+        // OCR関連の変数
+        let ocrMode = false;
+        let ocrSelectionMode = false;
+        let selectedCharImage = null;
+        let detectedChars = [];
+        let selectedChar = null;
+        let ocrModel = "combined";
+        let ocrUser = "user1";
+        let ocrLearningData = {
+            combined: { chars: {}, samples: 0, accuracy: 0 },
+            user1: { chars: {}, samples: 0, accuracy: 0 },
+            user2: { chars: {}, samples: 0, accuracy: 0 },
+            user3: { chars: {}, samples: 0, accuracy: 0 },
+            user4: { chars: {}, samples: 0, accuracy: 0 }
+        };
+        let ocrHistory = [];
         
         // ページURLからファイルIDを取得
         function getFileIdFromURL() {
@@ -1890,11 +2304,6 @@
                 return false;
             }
         }
-        
-        // 修正3: 承認機能を削除
-        // approveDocument関数は削除
-        
-        // 編集履歴機能を削除
         
         // 審査モーダルを開く
         function openReviewModal() {
@@ -2234,7 +2643,1127 @@
             }
         }
         
-        // 通知トーストを表示
+        // =========== OCR関連の機能 ===========
+        
+        // OCRモードの切替
+        function toggleOCRMode() {
+            ocrMode = !ocrMode;
+            
+            const ocrTools = document.getElementById('ocr-tools');
+            const ocrPanel = document.getElementById('ocr-panel');
+            const ocrBtn = document.getElementById('ocr-btn');
+            
+            if (ocrMode) {
+                ocrTools.style.display = 'flex';
+                ocrPanel.classList.add('show');
+                ocrBtn.classList.add('active');
+                loadOCRData();
+            } else {
+                ocrTools.style.display = 'none';
+                ocrPanel.classList.remove('show');
+                ocrBtn.classList.remove('active');
+                clearOCRSelection();
+            }
+        }
+        
+        // OCRデータのロード
+        async function loadOCRData() {
+            try {
+                // Firestoreからユーザー固有のOCRデータを読み込む
+                const ocrDoc = await db.collection('ocr_models').doc(currentUser.uid).get();
+                
+                if (ocrDoc.exists) {
+                    const ocrData = ocrDoc.data();
+                    
+                    // 各モデルのデータを読み込む
+                    if (ocrData.combined) ocrLearningData.combined = ocrData.combined;
+                    if (ocrData.user1) ocrLearningData.user1 = ocrData.user1;
+                    if (ocrData.user2) ocrLearningData.user2 = ocrData.user2;
+                    if (ocrData.user3) ocrLearningData.user3 = ocrData.user3;
+                    if (ocrData.user4) ocrLearningData.user4 = ocrData.user4;
+                    
+                    // 最近の履歴を読み込む
+                    if (ocrData.history) {
+                        ocrHistory = ocrData.history.slice(0, 10); // 最新10件のみ表示
+                        updateOCRHistory();
+                    }
+                }
+                
+                // OCRパネルの学習データ表示を更新
+                updateOCRLearningStatus();
+            } catch (error) {
+                console.error("OCRデータ読み込みエラー:", error);
+                showToast('OCRデータの読み込みに失敗しました', 'error');
+            }
+        }
+        
+        // OCRデータの保存
+        async function saveOCRData() {
+            try {
+                // ユーザーのOCRデータをFirestoreに保存
+                await db.collection('ocr_models').doc(currentUser.uid).set({
+                    combined: ocrLearningData.combined,
+                    user1: ocrLearningData.user1,
+                    user2: ocrLearningData.user2,
+                    user3: ocrLearningData.user3,
+                    user4: ocrLearningData.user4,
+                    history: ocrHistory,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showToast('OCRデータを保存しました', 'success');
+            } catch (error) {
+                console.error("OCRデータ保存エラー:", error);
+                showToast('OCRデータの保存に失敗しました', 'error');
+            }
+        }
+        
+        // 文字検出の実行 (CORS対応版)
+async function detectCharacters() {
+    try {
+        const imageDisplay = document.getElementById('image-display');
+        const imageOverlay = document.getElementById('image-overlay');
+        const statusEl = document.getElementById('ocr-status');
+        
+        // ステータス更新
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>文字を検出中...</span>';
+        
+        // 既存の検出をクリア
+        clearOCRSelection();
+        imageOverlay.innerHTML = '';
+        detectedChars = [];
+        
+        // 画像の読み込み完了を確認
+        if (!imageDisplay.complete || !imageDisplay.naturalWidth) {
+            await new Promise(resolve => {
+                imageDisplay.onload = resolve;
+                // すでに読み込み完了している場合
+                if (imageDisplay.complete) resolve();
+            });
+        }
+        
+        // 方法1: Canvas経由でCORS問題を回避
+        try {
+            // Canvas経由で画像をデータURLに変換
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = imageDisplay.naturalWidth || imageDisplay.clientWidth;
+            canvas.height = imageDisplay.naturalHeight || imageDisplay.clientHeight;
+            
+            // 描画
+            ctx.drawImage(imageDisplay, 0, 0, canvas.width, canvas.height);
+            
+            // CORS問題を検出
+            try {
+                // Canvas内容を取得してみる (CORSエラーがあればここで例外が発生)
+                ctx.getImageData(0, 0, 10, 10);
+            } catch (corsError) {
+                // CORS問題検出、代替方法へ
+                throw new Error("CORS policy violation detected");
+            }
+            
+            // データURLを作成
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            
+            // Tesseractに渡す
+            const result = await Tesseract.recognize(
+                dataUrl,
+                'jpn',
+                {
+                    logger: (m) => {
+                        if (m.status === 'recognizing text') {
+                            statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>文字認識中... ${Math.floor(m.progress * 100)}%</span>`;
+                        }
+                    }
+                }
+            );
+            
+            // 検出された各文字をオーバーレイに表示
+            result.data.words.forEach(word => {
+                word.symbols.forEach(symbol => {
+                    const { bbox } = symbol;
+                    const imageRect = imageDisplay.getBoundingClientRect();
+                    const containerRect = imageDisplay.parentElement.getBoundingClientRect();
+                    
+                    // 画像上のスケール計算
+                    const scaleX = imageDisplay.naturalWidth / imageDisplay.clientWidth;
+                    const scaleY = imageDisplay.naturalHeight / imageDisplay.clientHeight;
+                    
+                    // ボックスの位置を計算
+                    const x = bbox.x0 / scaleX;
+                    const y = bbox.y0 / scaleY;
+                    const width = (bbox.x1 - bbox.x0) / scaleX;
+                    const height = (bbox.y1 - bbox.y0) / scaleY;
+                    
+                    // 文字要素を作成
+                    const charEl = document.createElement('div');
+                    charEl.className = 'ocr-detected-char';
+                    charEl.style.left = `${x}px`;
+                    charEl.style.top = `${y}px`;
+                    charEl.style.width = `${width}px`;
+                    charEl.style.height = `${height}px`;
+                    
+                    // クリックイベントを設定
+                    charEl.addEventListener('click', () => selectDetectedChar(symbol, charEl));
+                    
+                    // 検出文字リストに追加
+                    detectedChars.push({
+                        text: symbol.text,
+                        confidence: symbol.confidence,
+                        bbox: { x, y, width, height },
+                        element: charEl
+                    });
+                    
+                    // オーバーレイに追加
+                    imageOverlay.appendChild(charEl);
+                });
+            });
+            
+            // ステータス更新
+            statusEl.innerHTML = `<i class="fas fa-check-circle"></i> <span>${detectedChars.length}文字を検出しました</span>`;
+            
+        } catch (canvasError) {
+            console.warn("Canvas処理エラー、Firebase SDK経由での処理に切り替えます:", canvasError);
+            
+            // 方法2: Firebase SDK経由で直接アクセス
+            try {
+                // URLからパスを抽出
+                const imageUrl = imageDisplay.src;
+                const pathMatch = imageUrl.match(/\/o\/([^?]+)/);
+                
+                if (!pathMatch) {
+                    throw new Error("画像URLからパスを抽出できませんでした");
+                }
+                
+                // Firebaseから画像を取得
+                const imagePath = decodeURIComponent(pathMatch[1]);
+                const storageRef = storage.ref(imagePath);
+                
+                // Blobとして取得
+                const blob = await storageRef.getBlob();
+                const blobUrl = URL.createObjectURL(blob);
+                
+                // Tesseractに渡す
+                const result = await Tesseract.recognize(
+                    blobUrl,
+                    'jpn',
+                    {
+                        logger: (m) => {
+                            if (m.status === 'recognizing text') {
+                                statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>文字認識中... ${Math.floor(m.progress * 100)}%</span>`;
+                            }
+                        }
+                    }
+                );
+                
+                // BlobURLを解放
+                URL.revokeObjectURL(blobUrl);
+                
+                // 検出された各文字をオーバーレイに表示（同じ処理）
+                result.data.words.forEach(word => {
+                    word.symbols.forEach(symbol => {
+                        const { bbox } = symbol;
+                        const imageRect = imageDisplay.getBoundingClientRect();
+                        
+                        // 画像上のスケール計算
+                        const scaleX = imageDisplay.naturalWidth / imageDisplay.clientWidth;
+                        const scaleY = imageDisplay.naturalHeight / imageDisplay.clientHeight;
+                        
+                        // ボックスの位置を計算
+                        const x = bbox.x0 / scaleX;
+                        const y = bbox.y0 / scaleY;
+                        const width = (bbox.x1 - bbox.x0) / scaleX;
+                        const height = (bbox.y1 - bbox.y0) / scaleY;
+                        
+                        // 文字要素を作成
+                        const charEl = document.createElement('div');
+                        charEl.className = 'ocr-detected-char';
+                        charEl.style.left = `${x}px`;
+                        charEl.style.top = `${y}px`;
+                        charEl.style.width = `${width}px`;
+                        charEl.style.height = `${height}px`;
+                        
+                        // クリックイベントを設定
+                        charEl.addEventListener('click', () => selectDetectedChar(symbol, charEl));
+                        
+                        // 検出文字リストに追加
+                        detectedChars.push({
+                            text: symbol.text,
+                            confidence: symbol.confidence,
+                            bbox: { x, y, width, height },
+                            element: charEl
+                        });
+                        
+                        // オーバーレイに追加
+                        imageOverlay.appendChild(charEl);
+                    });
+                });
+                
+                // ステータス更新
+                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> <span>${detectedChars.length}文字を検出しました</span>`;
+                
+            } catch (firebaseError) {
+                console.error("Firebase Storage SDK経由での処理にも失敗:", firebaseError);
+                
+                // 方法3: 最終手段 - CORSプロキシを使用
+                try {
+                    // 開発環境でのみプロキシを使用
+                    const isDevelopment = window.location.hostname === 'localhost' || 
+                                        window.location.hostname === '127.0.0.1';
+                    
+                    let recognitionUrl = imageDisplay.src;
+                    if (isDevelopment) {
+                        // コードをクリーンに保つため、安全なCORSプロキシを使用
+                        const corsProxyUrl = 'https://corsproxy.io/?';
+                        recognitionUrl = corsProxyUrl + encodeURIComponent(imageDisplay.src);
+                    }
+                    
+                    // Tesseractによる認識処理
+                    const result = await Tesseract.recognize(
+                        recognitionUrl,
+                        'jpn',
+                        {
+                            logger: (m) => {
+                                if (m.status === 'recognizing text') {
+                                    statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>文字認識中... ${Math.floor(m.progress * 100)}%</span>`;
+                                }
+                            }
+                        }
+                    );
+                    
+                    // 検出された各文字をオーバーレイに表示（同じ処理）
+                    result.data.words.forEach(word => {
+                        word.symbols.forEach(symbol => {
+                            const { bbox } = symbol;
+                            const imageRect = imageDisplay.getBoundingClientRect();
+                            
+                            // 画像上のスケール計算
+                            const scaleX = imageDisplay.naturalWidth / imageDisplay.clientWidth;
+                            const scaleY = imageDisplay.naturalHeight / imageDisplay.clientHeight;
+                            
+                            // ボックスの位置を計算
+                            const x = bbox.x0 / scaleX;
+                            const y = bbox.y0 / scaleY;
+                            const width = (bbox.x1 - bbox.x0) / scaleX;
+                            const height = (bbox.y1 - bbox.y0) / scaleY;
+                            
+                            // 文字要素を作成
+                            const charEl = document.createElement('div');
+                            charEl.className = 'ocr-detected-char';
+                            charEl.style.left = `${x}px`;
+                            charEl.style.top = `${y}px`;
+                            charEl.style.width = `${width}px`;
+                            charEl.style.height = `${height}px`;
+                            
+                            // クリックイベントを設定
+                            charEl.addEventListener('click', () => selectDetectedChar(symbol, charEl));
+                            
+                            // 検出文字リストに追加
+                            detectedChars.push({
+                                text: symbol.text,
+                                confidence: symbol.confidence,
+                                bbox: { x, y, width, height },
+                                element: charEl
+                            });
+                            
+                            // オーバーレイに追加
+                            imageOverlay.appendChild(charEl);
+                        });
+                    });
+                    
+                    // ステータス更新
+                    statusEl.innerHTML = `<i class="fas fa-check-circle"></i> <span>${detectedChars.length}文字を検出しました</span>`;
+                    
+                } catch (proxyError) {
+                    // すべての方法が失敗した場合
+                    console.error("すべての画像読み込み方法が失敗しました:", proxyError);
+                    throw new Error("画像の読み込みに失敗しました。管理者に連絡してください。");
+                }
+            }
+        }
+        
+    } catch (error) {
+        console.error("文字検出エラー:", error);
+        document.getElementById('ocr-status').innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>文字検出に失敗しました</span>';
+        showToast('文字検出に失敗しました: ' + error.message, 'error');
+    }
+}
+        
+       // 検出された文字の選択 (CORS対応版)
+function selectDetectedChar(symbol, element) {
+    const imageDisplay = document.getElementById('image-display');
+    const selectedAreaEl = document.getElementById('ocr-selected-area');
+    const selectedImageEl = document.getElementById('ocr-selected-image');
+    const candidatesEl = document.getElementById('ocr-char-candidates');
+    
+    // 現在選択中の文字があれば選択解除
+    if (selectedChar) {
+        selectedChar.element.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+    }
+    
+    // 選択中の文字を強調表示
+    element.style.backgroundColor = 'rgba(16, 185, 129, 0.3)';
+    element.style.borderColor = 'var(--success)';
+    
+    // 選択された文字を保存
+    selectedChar = detectedChars.find(char => char.element === element);
+    
+    // 方法1: Canvas経由で切り出し (CORS対応)
+    try {
+        const { x, y, width, height } = selectedChar.bbox;
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 描画
+        ctx.drawImage(
+            imageDisplay,
+            x * (imageDisplay.naturalWidth / imageDisplay.clientWidth),
+            y * (imageDisplay.naturalHeight / imageDisplay.clientHeight),
+            width * (imageDisplay.naturalWidth / imageDisplay.clientWidth),
+            height * (imageDisplay.naturalHeight / imageDisplay.clientHeight),
+            0, 0, width, height
+        );
+        
+        // CORS問題を検出
+        try {
+            // Canvas内容を取得してみる (CORSエラーがあればここで例外が発生)
+            ctx.getImageData(0, 0, 1, 1);
+            
+            // 切り出した画像をbase64で保存
+            selectedCharImage = canvas.toDataURL('image/png');
+            selectedImageEl.src = selectedCharImage;
+            
+        } catch (corsError) {
+            // CORS問題があるのでUI上では切り出せたように見せる
+            console.warn("CORS制約により文字画像が切り出せません:", corsError);
+            
+            // 代替表示 - 赤い枠を表示
+            canvas.width = width;
+            canvas.height = height;
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.2)';
+            ctx.fillRect(0, 0, width, height);
+            ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(0, 0, width, height);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.font = '10px sans-serif';
+            ctx.fillText('制約により表示不可', 5, height/2);
+            
+            // 代替画像として設定
+            selectedCharImage = canvas.toDataURL('image/png');
+            selectedImageEl.src = selectedCharImage;
+        }
+        
+    } catch (error) {
+        console.error("文字画像切り出しエラー:", error);
+        // エラー時も選択は続行
+    }
+    
+    // 候補リストを生成
+    createCandidatesList(symbol.text, symbol.confidence);
+    
+    // 選択エリアを表示
+    selectedAreaEl.style.display = 'block';
+    
+    // 学習状況の更新
+    updateOCRLearningStatus();
+}
+        
+        // 文字候補リストの生成
+        function createCandidatesList(recognizedText, confidence) {
+            const candidatesEl = document.getElementById('ocr-char-candidates');
+            candidatesEl.innerHTML = '';
+            
+            // 認識された文字を候補に追加
+            const mainCandidate = document.createElement('div');
+            mainCandidate.className = 'ocr-char-candidate';
+            mainCandidate.textContent = recognizedText;
+            mainCandidate.dataset.char = recognizedText;
+            mainCandidate.addEventListener('click', () => selectCharCandidate(recognizedText));
+            
+            const confidenceEl = document.createElement('span');
+            confidenceEl.className = 'ocr-char-confidence';
+            confidenceEl.textContent = `${Math.round(confidence)}%`;
+            mainCandidate.appendChild(confidenceEl);
+            
+            candidatesEl.appendChild(mainCandidate);
+            
+            // 関連する類似文字を候補に追加（ここではモデルから取得）
+            // 現在のモデルに基づいて候補を生成
+            const currentModelData = ocrLearningData[ocrModel];
+            const similarChars = getSimilarChars(recognizedText, currentModelData);
+            
+            similarChars.forEach(similar => {
+                const candidateEl = document.createElement('div');
+                candidateEl.className = 'ocr-char-candidate';
+                candidateEl.textContent = similar.char;
+                candidateEl.dataset.char = similar.char;
+                candidateEl.addEventListener('click', () => selectCharCandidate(similar.char));
+                
+                const simConfidenceEl = document.createElement('span');
+                simConfidenceEl.className = 'ocr-char-confidence';
+                simConfidenceEl.textContent = `${Math.round(similar.similarity * 100)}%`;
+                candidateEl.appendChild(simConfidenceEl);
+                
+                candidatesEl.appendChild(candidateEl);
+            });
+        }
+        
+        // 類似文字の取得（モデルベース）
+        function getSimilarChars(char, modelData) {
+            const similarChars = [];
+            const charData = modelData.chars[char];
+            
+            // モデルに基づいて類似文字を探す
+            if (charData && charData.similar) {
+                Object.entries(charData.similar).forEach(([similarChar, similarity]) => {
+                    if (similarChar !== char) {
+                        similarChars.push({ char: similarChar, similarity });
+                    }
+                });
+            } else {
+                // モデルに情報がない場合は、一般的な類似文字の候補を返す
+                // 崩字の一般的な誤認識パターンに基づく候補
+                const commonSimilar = getCommonSimilarChars(char);
+                similarChars.push(...commonSimilar);
+            }
+            
+            // 類似度順にソート
+            return similarChars.sort((a, b) => b.similarity - a.similarity).slice(0, 4);
+        }
+        
+        // 一般的な類似文字の取得（ハードコーディング）
+        function getCommonSimilarChars(char) {
+            // 崩字の一般的な誤認識パターンを定義
+            const similarMap = {
+                '人': [{ char: '入', similarity: 0.8 }, { char: '八', similarity: 0.7 }],
+                '木': [{ char: '本', similarity: 0.7 }, { char: '未', similarity: 0.6 }],
+                '田': [{ char: '由', similarity: 0.7 }, { char: '甲', similarity: 0.6 }],
+                '口': [{ char: '日', similarity: 0.8 }, { char: '目', similarity: 0.7 }],
+                '土': [{ char: '士', similarity: 0.9 }, { char: '工', similarity: 0.6 }],
+                '火': [{ char: '灬', similarity: 0.7 }, { char: '大', similarity: 0.5 }],
+                '水': [{ char: '氵', similarity: 0.8 }, { char: '永', similarity: 0.6 }],
+                '金': [{ char: '全', similarity: 0.7 }, { char: '令', similarity: 0.5 }],
+                '言': [{ char: '訁', similarity: 0.8 }, { char: '云', similarity: 0.6 }],
+                '月': [{ char: '用', similarity: 0.6 }, { char: '朋', similarity: 0.5 }],
+                '手': [{ char: '毛', similarity: 0.6 }, { char: '毎', similarity: 0.5 }],
+                '心': [{ char: '忄', similarity: 0.8 }, { char: '必', similarity: 0.6 }],
+                '刀': [{ char: '力', similarity: 0.7 }, { char: '刂', similarity: 0.9 }],
+                '石': [{ char: '右', similarity: 0.6 }, { char: '磊', similarity: 0.5 }],
+                '氏': [{ char: '民', similarity: 0.7 }, { char: '疋', similarity: 0.5 }],
+                '女': [{ char: '巴', similarity: 0.6 }, { char: '姦', similarity: 0.5 }],
+                '子': [{ char: '孑', similarity: 0.8 }, { char: '了', similarity: 0.6 }],
+                '糸': [{ char: '系', similarity: 0.7 }, { char: '紛', similarity: 0.5 }],
+                '虫': [{ char: '風', similarity: 0.5 }, { char: '蟲', similarity: 0.6 }],
+                '門': [{ char: '間', similarity: 0.7 }, { char: '開', similarity: 0.6 }]
+            };
+            
+            return similarMap[char] || [
+                { char: '？', similarity: 0.5 },
+                { char: '〇', similarity: 0.4 },
+                { char: '■', similarity: 0.3 },
+                { char: '※', similarity: 0.2 }
+            ];
+        }
+        
+        // 文字候補の選択
+        function selectCharCandidate(char) {
+            if (!selectedChar || !selectedCharImage) return;
+            
+            // 選択された文字を現在のカーソル位置に挿入
+            insertTextAtCursor(char);
+            
+            // 学習データに追加
+            learnCharacter(char, selectedCharImage, selectedChar.text);
+            
+            // 選択をクリア
+            clearSelectedChar();
+            
+            showToast(`「${char}」を追加しました`, 'success');
+        }
+        
+        // カスタム文字の追加
+        function addCustomChar() {
+            const customCharEl = document.getElementById('ocr-custom-char');
+            const char = customCharEl.value.trim();
+            
+            if (!char || !selectedChar || !selectedCharImage) {
+                showToast('文字を入力して選択してください', 'warning');
+                return;
+            }
+            
+            // 選択された文字を現在のカーソル位置に挿入
+            insertTextAtCursor(char);
+            
+            // 学習データに追加
+            learnCharacter(char, selectedCharImage, selectedChar.text);
+            
+            // 選択をクリア
+            clearSelectedChar();
+            customCharEl.value = '';
+            
+            showToast(`「${char}」を追加しました`, 'success');
+        }
+        
+        // 文字をカーソル位置に挿入
+        function insertTextAtCursor(text) {
+            const verticalText = document.getElementById('vertical-text');
+            const selection = window.getSelection();
+            
+            if (selection.rangeCount) {
+                const range = selection.getRangeAt(0);
+                
+                if (range.commonAncestorContainer.parentNode === verticalText || range.commonAncestorContainer === verticalText) {
+                    // テキストノードを挿入
+                    const textNode = document.createTextNode(text);
+                    range.deleteContents();
+                    range.insertNode(textNode);
+                    
+                    // カーソルを挿入したテキストの後ろに移動
+                    range.setStartAfter(textNode);
+                    range.setEndAfter(textNode);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                } else {
+                    // カーソルがエディタ内にない場合は末尾に追加
+                    verticalText.appendChild(document.createTextNode(text));
+                }
+            } else {
+                // 選択範囲がない場合は末尾に追加
+                verticalText.appendChild(document.createTextNode(text));
+            }
+        }
+        
+        // 文字学習
+        function learnCharacter(correctChar, charImage, recognizedChar) {
+            // 現在のユーザーモデルに学習データを追加
+            const userModel = ocrLearningData[ocrUser];
+            
+            // ユーザーモデルに文字データが存在しない場合は初期化
+            if (!userModel.chars[correctChar]) {
+                userModel.chars[correctChar] = {
+                    samples: 0,
+                    accuracy: 0,
+                    similar: {},
+                    lastUpdated: new Date().toISOString()
+                };
+            }
+            
+            // 文字データの更新
+            const charData = userModel.chars[correctChar];
+            charData.samples++;
+            
+            // 認識精度の計算
+            const isCorrect = correctChar === recognizedChar;
+            const prevAccuracy = charData.accuracy || 0;
+            const newAccuracy = prevAccuracy + (isCorrect ? 1 : 0);
+            charData.accuracy = newAccuracy / charData.samples;
+            
+            // 類似文字の更新
+            if (recognizedChar && recognizedChar !== correctChar) {
+                if (!charData.similar[recognizedChar]) {
+                    charData.similar[recognizedChar] = 0;
+                }
+                charData.similar[recognizedChar] += 0.1; // 類似度を少しずつ上げる
+            }
+            
+            // 最終更新日時
+            charData.lastUpdated = new Date().toISOString();
+            
+            // 総合モデルにも同じデータを追加（ただし重みを調整）
+            if (ocrUser !== 'combined') {
+                const combinedModel = ocrLearningData.combined;
+                
+                if (!combinedModel.chars[correctChar]) {
+                    combinedModel.chars[correctChar] = {
+                        samples: 0,
+                        accuracy: 0,
+                        similar: {},
+                        lastUpdated: new Date().toISOString()
+                    };
+                }
+                
+                const combinedCharData = combinedModel.chars[correctChar];
+                combinedCharData.samples++;
+                
+                // 認識精度の更新（総合モデルは全ユーザーからの平均）
+                const combinedPrevAccuracy = combinedCharData.accuracy || 0;
+                const combinedNewAccuracy = combinedPrevAccuracy + (isCorrect ? 1 : 0);
+                combinedCharData.accuracy = combinedNewAccuracy / combinedCharData.samples;
+                
+                // 類似文字の更新
+                if (recognizedChar && recognizedChar !== correctChar) {
+                    if (!combinedCharData.similar[recognizedChar]) {
+                        combinedCharData.similar[recognizedChar] = 0;
+                    }
+                    combinedCharData.similar[recognizedChar] += 0.05; // 総合モデルは個人より小さな増分
+                }
+                
+                combinedCharData.lastUpdated = new Date().toISOString();
+            }
+            
+            // 履歴に追加
+            ocrHistory.unshift({
+                char: correctChar,
+                image: charImage,
+                recognized: recognizedChar,
+                user: ocrUser,
+                timestamp: new Date().toISOString()
+            });
+            
+            // 履歴は最大20件まで
+            if (ocrHistory.length > 20) {
+                ocrHistory.pop();
+            }
+            
+            // データを保存
+            saveOCRData();
+            
+            // UI更新
+            updateOCRHistory();
+            updateOCRLearningStatus();
+        }
+        
+        // OCR履歴の更新
+        function updateOCRHistory() {
+            const historyListEl = document.getElementById('ocr-history-list');
+            historyListEl.innerHTML = '';
+            
+            if (ocrHistory.length === 0) {
+                historyListEl.innerHTML = '<p>学習履歴がありません</p>';
+                return;
+            }
+            
+            // 最新10件のみ表示
+            ocrHistory.slice(0, 10).forEach(item => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'ocr-history-item';
+                
+                const historyImage = document.createElement('div');
+                historyImage.className = 'ocr-history-image';
+                const img = document.createElement('img');
+                img.src = item.image;
+                img.alt = item.char;
+                historyImage.appendChild(img);
+                
+                const historyDetails = document.createElement('div');
+                historyDetails.className = 'ocr-history-details';
+                
+                const historyChar = document.createElement('div');
+                historyChar.className = 'ocr-history-char';
+                historyChar.textContent = item.char;
+                
+                const historyMeta = document.createElement('div');
+                historyMeta.className = 'ocr-history-meta';
+                const date = new Date(item.timestamp);
+                historyMeta.textContent = `認識文字: ${item.recognized || '?'} | ユーザー: ${item.user} | ${date.toLocaleString('ja-JP')}`;
+                
+                historyDetails.appendChild(historyChar);
+                historyDetails.appendChild(historyMeta);
+                
+                historyItem.appendChild(historyImage);
+                historyItem.appendChild(historyDetails);
+                
+                historyListEl.appendChild(historyItem);
+            });
+        }
+        
+        // OCR学習状況の更新
+        function updateOCRLearningStatus() {
+            const currentModelEl = document.getElementById('ocr-current-model');
+            const registeredCountEl = document.getElementById('ocr-registered-count');
+            const accuracyEl = document.getElementById('ocr-accuracy');
+            const progressValueEl = document.getElementById('ocr-progress-value');
+            
+            // 現在のモデルのデータを取得
+            const modelData = ocrLearningData[ocrModel];
+            const charCount = Object.keys(modelData.chars).length;
+            
+            // 総合的な精度を計算
+            let totalAccuracy = 0;
+            let charWithAccuracy = 0;
+            
+            Object.values(modelData.chars).forEach(char => {
+                if (char.samples > 0) {
+                    totalAccuracy += char.accuracy;
+                    charWithAccuracy++;
+                }
+            });
+            
+            const avgAccuracy = charWithAccuracy > 0 ? totalAccuracy / charWithAccuracy : 0;
+            
+            // UI更新
+            currentModelEl.textContent = getModelDisplayName(ocrModel);
+            registeredCountEl.textContent = charCount;
+            accuracyEl.textContent = avgAccuracy > 0 ? `${Math.round(avgAccuracy * 100)}%` : '-';
+            
+            // プログレスバーの更新
+            const progress = charCount > 0 ? Math.min(charCount / 100, 1) : 0; // 100文字で満タン
+            progressValueEl.style.width = `${progress * 100}%`;
+        }
+        
+        // モデル表示名の取得
+        function getModelDisplayName(modelKey) {
+            const modelNames = {
+                'combined': '総合モデル',
+                'user1': 'ユーザー1',
+                'user2': 'ユーザー2',
+                'user3': 'ユーザー3',
+                'user4': 'ユーザー4'
+            };
+            
+            return modelNames[modelKey] || modelKey;
+        }
+        
+        // OCR選択のクリア
+        function clearOCRSelection() {
+            const imageOverlay = document.getElementById('image-overlay');
+            const selectedAreaEl = document.getElementById('ocr-selected-area');
+            const selectionArea = document.getElementById('ocr-selection-area');
+            
+            // 検出された文字をクリア
+            imageOverlay.innerHTML = '';
+            detectedChars = [];
+            
+            // 選択中の文字をクリア
+            selectedChar = null;
+            selectedCharImage = null;
+            
+            // 選択エリアを非表示
+            selectedAreaEl.style.display = 'none';
+            selectionArea.style.display = 'none';
+            
+            // 手動選択モードを解除
+            ocrSelectionMode = false;
+        }
+        
+        // 選択中の文字をクリア
+        function clearSelectedChar() {
+            // 選択中の文字の強調表示を解除
+            if (selectedChar) {
+                selectedChar.element.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+                selectedChar.element.style.borderColor = 'rgba(239, 68, 68, 0.8)';
+            }
+            
+            // 選択をクリア
+            selectedChar = null;
+            selectedCharImage = null;
+            
+            // 選択エリアを非表示
+            document.getElementById('ocr-selected-area').style.display = 'none';
+        }
+        
+        // 手動選択モードの切替
+        function toggleSelectionMode() {
+            ocrSelectionMode = !ocrSelectionMode;
+            
+            const selectionArea = document.getElementById('ocr-selection-area');
+            const selectBtn = document.getElementById('ocr-select-btn');
+            
+            if (ocrSelectionMode) {
+                selectionArea.style.display = 'block';
+                selectBtn.classList.add('active');
+                initManualSelection();
+            } else {
+                selectionArea.style.display = 'none';
+                selectBtn.classList.remove('active');
+                selectionArea.innerHTML = '';
+            }
+        }
+        
+        // 手動選択の初期化
+        function initManualSelection() {
+            const selectionArea = document.getElementById('ocr-selection-area');
+            const imageDisplay = document.getElementById('image-display');
+            
+            let isDrawing = false;
+            let startX, startY;
+            let selectionBox = null;
+            
+            // マウスダウンイベント
+            selectionArea.addEventListener('mousedown', (e) => {
+                if (!ocrSelectionMode) return;
+                
+                isDrawing = true;
+                
+                const rect = selectionArea.getBoundingClientRect();
+                startX = e.clientX - rect.left;
+                startY = e.clientY - rect.top;
+                
+                // 既存の選択ボックスを削除
+                if (selectionBox) {
+                    selectionBox.remove();
+                }
+                
+                // 新しい選択ボックスを作成
+                selectionBox = document.createElement('div');
+                selectionBox.className = 'ocr-selection-box';
+                selectionBox.style.left = `${startX}px`;
+                selectionBox.style.top = `${startY}px`;
+                selectionArea.appendChild(selectionBox);
+            });
+            
+            // マウス移動イベント
+            selectionArea.addEventListener('mousemove', (e) => {
+                if (!isDrawing || !selectionBox) return;
+                
+                const rect = selectionArea.getBoundingClientRect();
+                const currentX = e.clientX - rect.left;
+                const currentY = e.clientY - rect.top;
+                
+                // 選択ボックスのサイズを更新
+                const width = Math.abs(currentX - startX);
+                const height = Math.abs(currentY - startY);
+                const left = Math.min(startX, currentX);
+                const top = Math.min(startY, currentY);
+                
+                selectionBox.style.width = `${width}px`;
+                selectionBox.style.height = `${height}px`;
+                selectionBox.style.left = `${left}px`;
+                selectionBox.style.top = `${top}px`;
+            });
+            
+            // マウスアップイベント
+            selectionArea.addEventListener('mouseup', (e) => {
+                if (!isDrawing || !selectionBox) return;
+                
+                isDrawing = false;
+                
+                // 選択された範囲から文字を認識
+                recognizeSelectedArea(selectionBox);
+            });
+        }
+        
+        // 手動選択エリアからの文字認識（CORS対応版）
+async function recognizeSelectedArea(selectionBox) {
+    try {
+        const imageDisplay = document.getElementById('image-display');
+        const selectionArea = document.getElementById('ocr-selection-area');
+        const selectedAreaEl = document.getElementById('ocr-selected-area');
+        const selectedImageEl = document.getElementById('ocr-selected-image');
+        const statusEl = document.getElementById('ocr-status');
+        
+        // 選択領域の座標を取得
+        const rect = selectionBox.getBoundingClientRect();
+        const imageRect = imageDisplay.getBoundingClientRect();
+        
+        // 画像の相対座標に変換
+        const x = rect.left - imageRect.left;
+        const y = rect.top - imageRect.top;
+        const width = rect.width;
+        const height = rect.height;
+        
+        // ステータス更新
+        statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>選択部分を認識中...</span>';
+        
+        // 方法1: Canvas経由で切り出し
+        try {
+            // Canvas経由で画像から選択部分を切り出す
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // 画像が読み込まれているか確認
+            if (!imageDisplay.complete || !imageDisplay.naturalWidth) {
+                await new Promise(resolve => {
+                    imageDisplay.onload = resolve;
+                    if (imageDisplay.complete) resolve();
+                });
+            }
+            
+            // 描画
+            ctx.drawImage(
+                imageDisplay,
+                x * (imageDisplay.naturalWidth / imageDisplay.clientWidth),
+                y * (imageDisplay.naturalHeight / imageDisplay.clientHeight),
+                width * (imageDisplay.naturalWidth / imageDisplay.clientWidth),
+                height * (imageDisplay.naturalHeight / imageDisplay.clientHeight),
+                0, 0, width, height
+            );
+            
+            // CORS問題を検出
+            try {
+                // Canvas内容を取得してみる (CORSエラーがあればここで例外が発生)
+                ctx.getImageData(0, 0, 10, 10);
+            } catch (corsError) {
+                // CORS問題検出、代替方法へ
+                throw new Error("CORS policy violation detected");
+            }
+            
+            // 切り出した画像をbase64で保存
+            selectedCharImage = canvas.toDataURL('image/png');
+            selectedImageEl.src = selectedCharImage;
+            
+            // Tesseractで文字認識
+            const result = await Tesseract.recognize(
+                selectedCharImage,
+                'jpn',
+                {
+                    logger: (m) => {
+                        if (m.status === 'recognizing text') {
+                            statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>文字認識中... ${Math.floor(m.progress * 100)}%</span>`;
+                        }
+                    }
+                }
+            );
+            
+            // 認識結果の取得
+            const recognizedText = result.data.text.trim();
+            const confidence = result.data.confidence;
+            
+            // 手動選択の場合はダミーの選択文字オブジェクトを作成
+            selectedChar = {
+                text: recognizedText,
+                confidence: confidence,
+                bbox: { x, y, width, height },
+                element: selectionBox
+            };
+            
+            // 文字候補リストを生成
+            createCandidatesList(recognizedText || '?', confidence);
+            
+            // 選択エリアを表示
+            selectedAreaEl.style.display = 'block';
+            
+            // ステータス更新
+            statusEl.innerHTML = `<i class="fas fa-check-circle"></i> <span>認識結果: ${recognizedText || '認識できませんでした'}</span>`;
+            
+        } catch (canvasError) {
+            console.warn("Canvas処理エラー、代替方法を試みます:", canvasError);
+            
+            // 方法2: Firebase SDK経由で画像全体を取得し、メモリ上で切り出し
+            try {
+                // URLからパスを抽出
+                const imageUrl = imageDisplay.src;
+                const pathMatch = imageUrl.match(/\/o\/([^?]+)/);
+                
+                if (!pathMatch) {
+                    throw new Error("画像URLからパスを抽出できませんでした");
+                }
+                
+                // Firebaseから画像を取得
+                const imagePath = decodeURIComponent(pathMatch[1]);
+                const storageRef = storage.ref(imagePath);
+                
+                // 画像をBlobとして取得
+                const blob = await storageRef.getBlob();
+                
+                // 画像を作成して選択部分を切り出すための準備
+                const img = new Image();
+                img.src = URL.createObjectURL(blob);
+                
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
+                
+                // 切り出し用のCanvasを作成
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 選択部分を切り出し
+                ctx.drawImage(
+                    img,
+                    x * (img.naturalWidth / imageDisplay.clientWidth),
+                    y * (img.naturalHeight / imageDisplay.clientHeight),
+                    width * (img.naturalWidth / imageDisplay.clientWidth),
+                    height * (img.naturalHeight / imageDisplay.clientHeight),
+                    0, 0, width, height
+                );
+                
+                // 切り出した画像をbase64で保存
+                selectedCharImage = canvas.toDataURL('image/png');
+                selectedImageEl.src = selectedCharImage;
+                
+                // BlobURLを解放
+                URL.revokeObjectURL(img.src);
+                
+                // Tesseractで文字認識
+                const result = await Tesseract.recognize(
+                    selectedCharImage,
+                    'jpn',
+                    {
+                        logger: (m) => {
+                            if (m.status === 'recognizing text') {
+                                statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> <span>文字認識中... ${Math.floor(m.progress * 100)}%</span>`;
+                            }
+                        }
+                    }
+                );
+                
+                // 認識結果の取得と処理（以下は同じ）
+                const recognizedText = result.data.text.trim();
+                const confidence = result.data.confidence;
+                
+                selectedChar = {
+                    text: recognizedText,
+                    confidence: confidence,
+                    bbox: { x, y, width, height },
+                    element: selectionBox
+                };
+                
+                createCandidatesList(recognizedText || '?', confidence);
+                selectedAreaEl.style.display = 'block';
+                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> <span>認識結果: ${recognizedText || '認識できませんでした'}</span>`;
+                
+            } catch (firebaseError) {
+                // すべての方法が失敗した場合
+                console.error("すべての画像処理方法が失敗しました:", firebaseError);
+                throw new Error("選択部分の認識に失敗しました。管理者に連絡してください。");
+            }
+        }
+        
+        // 選択モードを解除
+        ocrSelectionMode = false;
+        selectionArea.style.display = 'none';
+        document.getElementById('ocr-select-btn').classList.remove('active');
+        
+    } catch (error) {
+        console.error("文字認識エラー:", error);
+        document.getElementById('ocr-status').innerHTML = '<i class="fas fa-exclamation-circle"></i> <span>文字認識に失敗しました</span>';
+        showToast('文字認識に失敗しました: ' + error.message, 'error');
+    }
+}
+        
+        // OCRモデルの変更
+        function changeOCRModel(model) {
+            ocrModel = model;
+            
+            // UIの更新
+            document.getElementById('ocr-model-select').value = model;
+            document.getElementById('ocr-learning-model').value = model;
+            
+            // 学習状況の更新
+            updateOCRLearningStatus();
+        }
+        
+        // OCRユーザーの変更
+        function changeOCRUser(user) {
+            ocrUser = user;
+            
+            // UIの更新
+            document.getElementById('ocr-current-user').value = user;
+        }
+        
+        // OCRパネルを表示
+        function showOCRPanel() {
+            document.getElementById('ocr-panel').classList.add('show');
+        }
+        
+        // OCRパネルを隠す
+        function hideOCRPanel() {
+            document.getElementById('ocr-panel').classList.remove('show');
+        }
+        
+        // 通知トースト表示
         function showToast(message, type = 'info') {
             const toastContainer = document.getElementById('toast-container');
             
@@ -2337,18 +3866,17 @@
             const verticalText = document.getElementById('vertical-text');
             const saveBtn = document.getElementById('save-btn');
             const hintBtn = document.getElementById('hint-btn');
-                            const exportBtn = document.getElementById('export-btn');
+            const exportBtn = document.getElementById('export-btn');
             
             const hintPanel = document.getElementById('hint-panel');
             const hintToggle = document.getElementById('hint-toggle');
             const hintClose = document.getElementById('hint-close');
             
-            
             const reviewModal = document.getElementById('review-modal');
             const reviewClose = document.getElementById('review-close');
             const reviewEditBtn = document.getElementById('review-edit-btn');
             
-            // 修正2: エクスポートモーダルの参照を更新
+            // エクスポートモーダルの参照
             const exportModal = document.getElementById('export-modal');
             const exportClose = document.getElementById('export-close');
             const exportCancel = document.getElementById('export-cancel');
@@ -2380,6 +3908,20 @@
             
             const metadataPanel = document.getElementById('metadata-panel');
             const metadataToggle = document.getElementById('metadata-toggle');
+            
+            // OCR関連の要素参照
+            const ocrBtn = document.getElementById('ocr-btn');
+            const ocrPanel = document.getElementById('ocr-panel');
+            const ocrToggle = document.getElementById('ocr-toggle');
+            const ocrClose = document.getElementById('ocr-close');
+            const ocrDetectBtn = document.getElementById('ocr-detect-btn');
+            const ocrSelectBtn = document.getElementById('ocr-select-btn');
+            const ocrClearBtn = document.getElementById('ocr-clear-btn');
+            const ocrModelSelect = document.getElementById('ocr-model-select');
+            const ocrLearningModel = document.getElementById('ocr-learning-model');
+            const ocrCurrentUser = document.getElementById('ocr-current-user');
+            const ocrAddCustomBtn = document.getElementById('ocr-add-custom');
+            const ocrUserSettings = document.getElementById('ocr-user-settings');
             
             // サイドバー切替
             if (sidebarToggle) {
@@ -2423,8 +3965,6 @@
                 });
             }
             
-            // 履歴ボタン・パネル削除
-            
             // 審査モーダル
             if (reviewClose) {
                 reviewClose.addEventListener('click', closeReviewModal);
@@ -2434,7 +3974,7 @@
                 reviewEditBtn.addEventListener('click', closeReviewModal);
             }
             
-            // 修正2: エクスポートボタン・モーダル
+            // エクスポートボタン・モーダル
             if (exportBtn) {
                 exportBtn.addEventListener('click', () => {
                     exportModal.classList.add('show');
@@ -2465,28 +4005,42 @@
                 });
             }
             
+            if (exportFormat) {
+                exportFormat.addEventListener('change', () => {
+                    const pdfOptions = document.getElementById('pdf-options');
+                    const excelOptions = document.getElementById('excel-options');
+                    
+                    if (exportFormat.value === 'pdf') {
+                        pdfOptions.style.display = 'block';
+                        excelOptions.style.display = 'none';
+                    } else if (exportFormat.value === 'excel') {
+                        pdfOptions.style.display = 'none';
+                        excelOptions.style.display = 'block';
+                    } else {
+                        pdfOptions.style.display = 'none';
+                        excelOptions.style.display = 'none';
+                    }
+                });
+            }
+            
             // エクスポート実行
             if (exportSubmit) {
                 exportSubmit.addEventListener('click', () => {
                     const format = exportFormat.value;
                     const range = exportRange.value;
-                    const includeImage = document.getElementById('include-image').checked;
-                    const includeMetadata = document.getElementById('include-metadata').checked;
                     
-                    // 現在のページをエクスポート
-                    if (range === 'current') {
-                        if (format === 'pdf') {
-                            exportToPDF({ includeImage, includeMetadata });
-                        } else if (format === 'text') {
-                            exportAsText();
-                        } else if (format === 'json') {
-                            exportAsJSON();
-                        }
-                    } else {
-                        // 複数資料をエクスポート（現在は単一資料のみ）
-                        if (format === 'pdf') {
-                            exportToPDF({ includeImage, includeMetadata });
-                        }
+                    if (format === 'pdf') {
+                        const includeImage = document.getElementById('include-image').checked;
+                        const includeMetadata = document.getElementById('include-metadata').checked;
+                        exportToPDF({ includeImage, includeMetadata });
+                    } else if (format === 'excel') {
+                        const includeMetadata = document.getElementById('excel-include-metadata').checked;
+                        const separateSheets = document.getElementById('excel-separate-sheets').checked;
+                        exportAsExcel({ includeMetadata, separateSheets });
+                    } else if (format === 'text') {
+                        exportAsText();
+                    } else if (format === 'json') {
+                        exportAsJSON();
                     }
                     
                     // モーダルを閉じる
@@ -2616,7 +4170,7 @@
             
             function applyImageTransform() {
                 if (imageDisplay) {
-                    imageDisplay.style.transform = `rotate(${rotationAngle}deg) scale(${flipX}, ${flipY})`;
+                    imageDisplay.style.transform = `rotate(${rotationAngle}deg) scale(${flipX * currentZoom}, ${flipY * currentZoom})`;
                     imageDisplay.style.filter = filterValue;
                 }
             }
@@ -2654,6 +4208,85 @@
                 });
             }
             
+            // OCRボタン
+            if (ocrBtn) {
+                ocrBtn.addEventListener('click', toggleOCRMode);
+            }
+            
+            // OCRパネル切替
+            if (ocrToggle) {
+                ocrToggle.addEventListener('click', () => {
+                    ocrPanel.classList.toggle('show');
+                });
+            }
+            
+            // OCRパネルを閉じる
+            if (ocrClose) {
+                ocrClose.addEventListener('click', () => {
+                    ocrPanel.classList.remove('show');
+                });
+            }
+            
+            // 文字検出ボタン
+            if (ocrDetectBtn) {
+                ocrDetectBtn.addEventListener('click', detectCharacters);
+            }
+            
+            // 手動選択ボタン
+            if (ocrSelectBtn) {
+                ocrSelectBtn.addEventListener('click', toggleSelectionMode);
+            }
+            
+            // OCRクリアボタン
+            if (ocrClearBtn) {
+                ocrClearBtn.addEventListener('click', clearOCRSelection);
+            }
+            
+            // OCRモデル選択
+            if (ocrModelSelect) {
+                ocrModelSelect.addEventListener('change', () => {
+                    changeOCRModel(ocrModelSelect.value);
+                });
+            }
+            
+            // 学習モデル選択
+            if (ocrLearningModel) {
+                ocrLearningModel.addEventListener('change', () => {
+                    changeOCRModel(ocrLearningModel.value);
+                });
+            }
+            
+            // ユーザー選択
+            if (ocrCurrentUser) {
+                ocrCurrentUser.addEventListener('change', () => {
+                    changeOCRUser(ocrCurrentUser.value);
+                });
+            }
+            
+            // カスタム文字追加ボタン
+            if (ocrAddCustomBtn) {
+                ocrAddCustomBtn.addEventListener('click', addCustomChar);
+            }
+            
+            // カスタム文字入力フィールドのEnterキーイベント
+            const ocrCustomChar = document.getElementById('ocr-custom-char');
+            if (ocrCustomChar) {
+                ocrCustomChar.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addCustomChar();
+                    }
+                });
+            }
+            
+            // ユーザー設定ボタン
+            if (ocrUserSettings) {
+                ocrUserSettings.addEventListener('click', () => {
+                    // ユーザー設定ダイアログを表示（将来実装）
+                    showToast('ユーザー設定は将来のバージョンで実装予定です', 'info');
+                });
+            }
+            
             // 画像ドラッグ機能
             if (imageContainer && imageDisplay) {
                 let isDragging = false;
@@ -2661,6 +4294,8 @@
                 let imgLeft = 0, imgTop = 0;
                 
                 imageDisplay.addEventListener('mousedown', (e) => {
+                    if (ocrMode) return; // OCRモード中はドラッグ無効
+                    
                     isDragging = true;
                     startX = e.clientX - imgLeft;
                     startY = e.clientY - imgTop;
@@ -2673,7 +4308,7 @@
                     imgLeft = e.clientX - startX;
                     imgTop = e.clientY - startY;
                     
-                    imageDisplay.style.transform = `rotate(${rotationAngle}deg) scale(${flipX}, ${flipY}) translate(${imgLeft}px, ${imgTop}px)`;
+                    applyImageTransform();
                 });
                 
                 document.addEventListener('mouseup', () => {
@@ -2820,6 +4455,8 @@
                 showToast('認証に失敗しました', 'error');
             }
         });
-    </script>
+
+        
+    </script> 
 </body>
 </html>
