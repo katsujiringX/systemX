@@ -5,19 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#4338ca">
     <title>活字化エディタ | KatsujiRingX</title>
-    
-    <!-- Google Fonts -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    <!-- Tesseract.js を追加 -->
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
-    
     <style>
+        /* documents.html からのスタイルを流用・調整 */
         :root {
             --primary: #4338ca;
             --primary-hover: #3730a3;
@@ -40,7 +36,7 @@
             --info: #3b82f6;
             --info-hover: #2563eb;
             --info-light: #eff6ff;
-            
+
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -51,21 +47,20 @@
             --gray-700: #374151;
             --gray-800: #1f2937;
             --gray-900: #111827;
-            
+
             --bg-color: var(--gray-50);
             --text-color: var(--gray-800);
             --text-muted: var(--gray-500);
             --border-color: var(--gray-200);
-            
+
             --header-height: 4rem;
-            --sidebar-width: 280px;
             --transition-normal: 0.3s ease;
-            
+
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            
+
             --radius-sm: 0.25rem;
             --radius: 0.375rem;
             --radius-md: 0.5rem;
@@ -73,29 +68,29 @@
             --radius-xl: 1rem;
             --radius-full: 9999px;
         }
-        
+
         [data-theme="dark"] {
             --primary: #6366f1;
             --primary-hover: #4f46e5;
             --primary-light: #2d2a63;
-            
+
             --bg-color: #0f172a;
             --text-color: #f3f4f6;
             --text-muted: #9ca3af;
             --border-color: #1f2937;
-            
+
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
             --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Noto Sans JP', sans-serif;
             background-color: var(--bg-color);
@@ -104,610 +99,229 @@
             line-height: 1.5;
             min-height: 100vh;
             display: flex;
+            flex-direction: column; /* ヘッダーとコンテンツを縦に並べる */
             transition: background-color var(--transition-normal), color var(--transition-normal);
         }
-        
-        /* サイドバー */
-        .sidebar {
-            width: var(--sidebar-width);
-            background-color: var(--primary);
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            color: white;
-            z-index: 50;
-            transition: transform var(--transition-normal), width var(--transition-normal);
-            box-shadow: var(--shadow);
-        }
-        
-        .sidebar-header {
+
+        /* ヘッダー */
+        .editor-header {
+            height: var(--header-height);
+            background-color: white;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            padding: 1.5rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0 1.5rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky; /* ヘッダーを固定 */
+            top: 0;
+            z-index: 50;
+            transition: background-color var(--transition-normal), border-color var(--transition-normal);
         }
-        
-        .logo {
+
+        [data-theme="dark"] .editor-header {
+            background-color: var(--gray-800);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .editor-header .logo {
             font-size: 1.25rem;
             font-weight: 700;
-            color: white;
+            color: var(--primary);
             text-decoration: none;
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
-        
-        .logo img {
+
+        .editor-header .logo img {
             width: 2rem;
             height: 2rem;
         }
-        
-        .sidebar-menu {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
-        }
-        
-        .menu-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
-            padding: 0.75rem 1.5rem 0.5rem;
-        }
-        
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 1.5rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: background-color var(--transition-normal);
-            position: relative;
-            margin: 0.125rem 0.75rem;
-            border-radius: var(--radius);
-        }
-        
-        .menu-item:hover, .menu-item.active {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .menu-item.active {
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-        
-        .menu-item.active::before {
-            content: '';
-            position: absolute;
-            left: -0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0.25rem;
-            height: 1.5rem;
-            background-color: white;
-            border-radius: 0 var(--radius) var(--radius) 0;
-        }
-        
-        .menu-item i {
-            margin-right: 0.75rem;
-            width: 1.25rem;
-            text-align: center;
-        }
-        
-        .sidebar-footer {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        /* ダークモードトグル */
-        .theme-toggle {
-            display: flex;
-            align-items: center;
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.875rem;
-            cursor: pointer;
-            padding: 0.5rem 0;
-            width: 100%;
-            transition: color var(--transition-normal);
-        }
-        
-        .theme-toggle:hover {
-            color: white;
-        }
-        
-        .theme-toggle i {
-            margin-right: 0.5rem;
-        }
-        
-        /* メインコンテンツ */
-        .main-content {
-            flex: 1;
-            margin-left: var(--sidebar-width);
-            transition: margin var(--transition-normal);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        /* エディタヘッダー */
-        .editor-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            z-index: 10;
-        }
-        
-        .editor-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-        }
-        
-        .editor-title .document-name {
-            margin-left: 0.5rem;
-            max-width: 300px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .editor-actions {
+
+        .editor-header .actions {
+            margin-left: auto;
             display: flex;
             gap: 0.5rem;
         }
-        
-        /* タブナビゲーション */
-        .editor-tabs {
-            display: flex;
-            background-color: var(--bg-color);
-            border-bottom: 1px solid var(--border-color);
-            z-index: 10;
-        }
-        
-        .editor-tab {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            position: relative;
-            font-weight: 500;
-            color: var(--text-muted);
-            transition: color var(--transition-normal);
-        }
-        
-        .editor-tab:hover {
-            color: var(--text-color);
-        }
-        
-        .editor-tab.active {
-            color: var(--primary);
-        }
-        
-        .editor-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: var(--primary);
-        }
-        
-        .editor-tab i {
-            margin-right: 0.5rem;
-        }
-        
-        /* メインエディタレイアウト */
+
+        /* メインコンテンツエリア */
         .editor-container {
             display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        /* タブコンテンツ */
-        .tab-content {
-            flex: 1;
-            overflow: auto;
-            display: none;
-            height: 100%;
-        }
-        
-        .tab-content.active {
-            display: flex;
-        }
-        
-        /* OCR編集画面 - メインレイアウト */
-        .ocr-editing-layout {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-        
-        /* 画像エリア */
-        .image-editor-panel {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid var(--border-color);
-        }
-        
-        .image-toolbar {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-            background-color: var(--bg-color);
-        }
-        
-        .toolbar-group {
-            display: flex;
-            gap: 0.25rem;
-            align-items: center;
-            padding-right: 0.75rem;
-            border-right: 1px solid var(--border-color);
-        }
-        
-        .toolbar-group:last-child {
-            border-right: none;
-        }
-        
-        .image-workspace {
-            flex: 1;
-            overflow: auto;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #333;
-            padding: 2rem;
-        }
-        
-        .image-container {
-            position: relative;
-            box-shadow: var(--shadow-lg);
-            background-color: white;
-            max-height: 100%;
-            overflow: hidden;
-            cursor: move;
-        }
-        
-        .image-container img {
-            display: block;
-            max-width: 100%;
-            pointer-events: none;
-        }
-        
-        .selection-box {
-            position: absolute;
-            border: 2px dashed var(--primary);
-            background-color: rgba(67, 56, 202, 0.1);
-            pointer-events: none;
-        }
-        
-        /* 文字編集エリア */
-        .text-editor-panel {
-            width: 50%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .text-editor-toolbar {
-            padding: 0.75rem;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--bg-color);
-        }
-        
-        .text-direction-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .text-editor-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        
-        .text-editor {
-            flex: 1;
+            flex: 1; /* 残りの高さをすべて使う */
+            overflow: hidden; /* スクロールをコンテナ内で制御 */
             padding: 1.5rem;
-            overflow: auto;
-            line-height: 1.8;
-            font-family: 'Noto Serif JP', serif;
-            outline: none;
-            background-color: white;
-            color: #333;
+            gap: 1.5rem;
         }
-        
+
+        /* 左側: 画像表示エリア */
+        .image-pane {
+            flex: 1; /* 幅を可変にする */
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: auto; /* 画像が大きい場合にスクロール可能に */
+            padding: 1rem;
+            transition: background-color var(--transition-normal);
+            position: relative; /* ローディング表示のため */
+            min-width: 300px; /* 最小幅 */
+        }
+
+        [data-theme="dark"] .image-pane {
+            background-color: var(--gray-800);
+        }
+
+        .image-pane img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain; /* アスペクト比を保つ */
+            display: block;
+        }
+
+        .image-pane .loading-spinner { /* ローディングスピナー */
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            position: absolute; /* 中央に配置 */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        [data-theme="dark"] .image-pane .loading-spinner {
+            border-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+
+        /* 右側: テキスト・メタデータエリア */
+        .text-pane {
+            flex: 1; /* 幅を可変にする */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow: hidden; /* スクロールを内部で制御 */
+            min-width: 300px; /* 最小幅 */
+        }
+
+        .metadata-form, .text-editor {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            transition: background-color var(--transition-normal);
+        }
+
+        [data-theme="dark"] .metadata-form,
         [data-theme="dark"] .text-editor {
             background-color: var(--gray-800);
-            color: var(--gray-100);
         }
-        
-        .text-editor.vertical {
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            padding: 1.5rem;
-            height: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-        
-        .text-editor.vertical span.kana {
-            text-combine-upright: all;
-        }
-        
-        .text-editor[contenteditable="true"] {
-            caret-color: var(--primary);
-        }
-        
-        /* OCR候補パネル */
-        .ocr-candidate-panel {
-            border-top: 1px solid var(--border-color);
-            padding: 0.75rem;
-            max-height: 250px;
-            overflow-y: auto;
-            background-color: var(--bg-color);
-        }
-        
-        .ocr-candidate-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.75rem;
-        }
-        
-        .ocr-candidate-title {
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        
-        .candidate-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-        
-        .candidate-item {
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 0.25rem 0.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: white;
-            transition: all var(--transition-normal);
-        }
-        
-        [data-theme="dark"] .candidate-item {
-            background-color: var(--gray-800);
-        }
-        
-        .candidate-item:hover {
-            border-color: var(--primary);
-        }
-        
-        .candidate-item.selected {
-            background-color: var(--primary-light);
-            border-color: var(--primary);
-        }
-        
-        [data-theme="dark"] .candidate-item.selected {
-            background-color: var(--primary-light);
-        }
-        
-        .candidate-char {
-            font-family: 'Noto Serif JP', serif;
-            font-size: 1.25rem;
-            font-weight: 500;
-        }
-        
-        .candidate-confidence {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        
-        .ocr-position-indicator {
-            margin-top: 0.5rem;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-        
-        /* メタデータタブ */
-        .metadata-editor {
-            padding: 1.5rem;
-            overflow: auto;
-        }
-        
-        .metadata-section {
-            margin-bottom: 2rem;
-        }
-        
-        .metadata-title {
+
+        /* メタデータフォーム */
+        .metadata-form h2 {
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid var(--border-color);
         }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
+
+        .metadata-form .form-group {
+            margin-bottom: 0.75rem;
         }
-        
-        .form-full-width {
-            grid-column: 1 / -1;
-        }
-        
-        .form-group {
-            margin-bottom: 1.25rem;
-        }
-        
-        .form-label {
+
+        .metadata-form .form-label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
             font-weight: 500;
+            font-size: 0.8125rem;
         }
-        
-        .form-control {
+
+        .metadata-form .form-control {
             width: 100%;
-            padding: 0.625rem 0.75rem;
+            padding: 0.5rem 0.75rem;
             border-radius: var(--radius);
             border: 1px solid var(--border-color);
-            background-color: var(--bg-color);
+            background-color: var(--bg-color); /* 背景色を少し変える */
             color: var(--text-color);
-            transition: border-color var(--transition-normal);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal), background-color var(--transition-normal);
         }
-        
-        .form-control:focus {
+
+        .metadata-form .form-control:focus {
             outline: none;
             border-color: var(--primary);
+            background-color: white; /* フォーカス時に白く */
         }
-        
-        textarea.form-control {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        /* 学習データタブ */
-        .learning-editor {
-            padding: 1.5rem;
-            overflow: auto;
-        }
-        
-        .learning-section {
-            margin-bottom: 2rem;
-        }
-        
-        .character-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .character-item {
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            overflow: hidden;
-        }
-        
-        .character-image {
-            height: 80px;
-            background-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-        
-        .character-image img {
-            max-width: 100%;
-            max-height: 100%;
-        }
-        
-        .character-info {
-            padding: 0.5rem;
-            text-align: center;
-            border-top: 1px solid var(--border-color);
-            background-color: var(--gray-50);
-        }
-        
-        [data-theme="dark"] .character-info {
-            background-color: var(--gray-800);
-        }
-        
-        .character-actions {
-            display: flex;
-            justify-content: center;
-            margin-top: 0.25rem;
-            gap: 0.25rem;
-        }
-        
-        .confidence-badge {
-            position: absolute;
-            top: 0.25rem;
-            right: 0.25rem;
-            padding: 0.125rem 0.375rem;
-            font-size: 0.625rem;
-            border-radius: var(--radius-full);
-            background-color: var(--success);
-            color: white;
-        }
-        
-        .confidence-badge.low {
-            background-color: var(--warning);
-        }
-        
-        .confidence-badge.very-low {
-            background-color: var(--danger);
-        }
-        
-        /* ズームコントロール */
-        .zoom-control {
-            position: absolute;
-            bottom: 1rem;
-            right: 1rem;
-            background-color: var(--bg-color);
-            border-radius: var(--radius);
-            display: flex;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        
-        .zoom-btn {
-            width: 2.5rem;
-            height: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color var(--transition-normal);
-            color: var(--text-color);
-            border: none;
-            background-color: transparent;
-        }
-        
-        .zoom-btn:hover {
-            background-color: var(--gray-200);
-        }
-        
-        [data-theme="dark"] .zoom-btn:hover {
+
+        [data-theme="dark"] .metadata-form .form-control {
             background-color: var(--gray-700);
+            border-color: var(--gray-600);
         }
-        
-        .zoom-level {
+        [data-theme="dark"] .metadata-form .form-control:focus {
+             background-color: var(--gray-800);
+             border-color: var(--primary);
+        }
+
+
+        /* 縦書きテキストエディタ */
+        .text-editor {
+            flex: 1; /* 残りの高さをすべて使う */
             display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 4rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border-left: 1px solid var(--border-color);
-            border-right: 1px solid var(--border-color);
+            flex-direction: column;
+            overflow: hidden; /* スクロールをtextareaで制御 */
         }
-        
+
+        .text-editor h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .text-editor textarea {
+            flex: 1; /* 高さをコンテナに合わせる */
+            width: 100%;
+            height: 100%; /* 重要 */
+            padding: 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem; /* 少し大きめに */
+            font-family: 'Noto Serif JP', serif; /* 明朝体 */
+            line-height: 1.8;
+            writing-mode: vertical-rl; /* 縦書き（右から左へ） */
+            text-orientation: upright; /* 文字を正立 */
+            resize: none; /* リサイズ不可 */
+            overflow-x: auto; /* 横スクロールを有効に */
+            white-space: pre; /* 改行やスペースを保持 */
+            transition: border-color var(--transition-normal), background-color var(--transition-normal);
+            min-height: 200px; /* 最小高さ */
+        }
+
+        .text-editor textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: white;
+        }
+
+        [data-theme="dark"] .text-editor textarea {
+            background-color: var(--gray-700);
+            border-color: var(--gray-600);
+        }
+        [data-theme="dark"] .text-editor textarea:focus {
+            background-color: var(--gray-800);
+            border-color: var(--primary);
+        }
+
+
         /* ボタンスタイル */
         .btn {
             display: inline-flex;
@@ -717,678 +331,173 @@
             border-radius: var(--radius);
             font-size: 0.875rem;
             font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
             cursor: pointer;
-            transition: all var(--transition-normal);
-            border: 1px solid transparent;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            border: none;
+            line-height: 1.5;
         }
-        
-        .btn:hover {
-            background-color: var(--gray-200);
+
+        .btn i {
+            margin-right: 0.5rem;
         }
-        
-        [data-theme="dark"] .btn:hover {
-            background-color: var(--gray-700);
-        }
-        
+
         .btn-primary {
             background-color: var(--primary);
             color: white;
         }
-        
+
         .btn-primary:hover {
             background-color: var(--primary-hover);
         }
-        
-        .btn-secondary {
-            background-color: var(--secondary);
-            color: white;
+
+         .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
         }
-        
-        .btn-secondary:hover {
-            background-color: var(--secondary-hover);
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: var(--success-hover);
-        }
-        
-        .btn-danger {
-            background-color: var(--danger);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background-color: var(--danger-hover);
-        }
-        
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-        
-        .btn-outline {
-            border-color: var(--border-color);
-        }
-        
+
         .btn-outline:hover {
             border-color: var(--primary);
             color: var(--primary);
+            background-color: var(--primary-light);
         }
-        
-        .btn-icon {
-            width: 2.25rem;
-            height: 2.25rem;
-            padding: 0;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        [data-theme="dark"] .btn-outline:hover {
+             background-color: rgba(99, 102, 241, 0.1);
+             color: var(--primary);
         }
-        
-        .btn-icon.btn-sm {
-            width: 1.75rem;
-            height: 1.75rem;
+
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column; /* 縦並びにする */
+                padding: 1rem;
+                gap: 1rem;
+            }
+            .image-pane, .text-pane {
+                 min-width: unset; /* 最小幅解除 */
+                 height: auto; /* 高さを自動に */
+            }
+            .image-pane {
+                max-height: 50vh; /* 画像エリアの高さを制限 */
+            }
+            .text-editor textarea {
+                min-height: 300px; /* モバイルでの最小高さを確保 */
+            }
+            .editor-header .actions {
+                 /* 必要に応じて調整 */
+            }
         }
-        
-        .btn i {
-            font-size: 0.875rem;
-        }
-        
-        .btn-icon i {
-            margin-right: 0;
-        }
-        
-        .btn-icon-text i {
-            margin-right: 0.5rem;
-        }
-        
-        /* スイッチ */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 2.5rem;
-            height: 1.25rem;
-            margin: 0;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .switch-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: var(--gray-300);
-            transition: .4s;
-            border-radius: var(--radius-full);
-        }
-        
-        .switch-slider:before {
-            position: absolute;
-            content: "";
-            height: 0.875rem;
-            width: 0.875rem;
-            left: 0.2rem;
-            bottom: 0.2rem;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .switch-slider {
-            background-color: var(--primary);
-        }
-        
-        input:focus + .switch-slider {
-            box-shadow: 0 0 1px var(--primary);
-        }
-        
-        input:checked + .switch-slider:before {
-            transform: translateX(1.25rem);
-        }
-        
-        /* OCR処理中表示 */
-        .processing-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            color: white;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 1rem;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* トースト通知 */
+
+        /* トースト通知コンテナ (documents.htmlから流用) */
         .toast-container {
             position: fixed;
             bottom: 1.5rem;
             right: 1.5rem;
-            z-index: 1000;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
-        
+         /* トースト (documents.htmlから流用) */
         .toast {
-            max-width: 350px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            box-shadow: var(--shadow-md);
+            padding: 1rem 1.5rem;
             border-radius: var(--radius);
-            padding: 1rem;
-            margin-top: 0.75rem;
-            animation: slide-in 0.3s ease, fade-out 0.5s ease 4.5s forwards;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .toast.success::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 0.25rem;
-            background-color: var(--success);
-        }
-        
-        .toast.error::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 0.25rem;
-            background-color: var(--danger);
-        }
-        
-        .toast.info::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 0.25rem;
-            background-color: var(--info);
+            background-color: white;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 400px;
+            transform: translateX(120%);
+            animation: slideIn 0.3s forwards, slideOut 0.3s forwards 4.7s; /* 表示時間を少し長く */
         }
 
-        .toast.warning::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 0.25rem;
-            background-color: var(--warning);
-        }
-        
-        @keyframes slide-in {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
-        }
-        
-        @keyframes fade-out {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        
-        /* モバイル対応 */
-        @media (max-width: 992px) {
-            .ocr-editing-layout {
-                flex-direction: column;
-            }
-            
-            .image-editor-panel,
-            .text-editor-panel {
-                width: 100%;
-                height: 50%;
-            }
-            
-            .image-editor-panel {
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
+        [data-theme="dark"] .toast {
+            background-color: var(--gray-800);
         }
 
-        /* チャーカーオーバーレイと認識領域表示 */
-        .char-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
+        @keyframes slideIn { to { transform: translateX(0); } }
+        @keyframes slideOut { to { transform: translateX(120%); } }
 
-        .char-box {
-            position: absolute;
-            border: 1px solid rgba(67, 56, 202, 0.5);
-            background-color: rgba(67, 56, 202, 0.1);
-            cursor: pointer;
-            pointer-events: all;
-        }
-
-        .char-box:hover {
-            background-color: rgba(67, 56, 202, 0.3);
-            border: 2px solid rgba(67, 56, 202, 0.8);
-        }
-
-        .char-box.active {
-            background-color: rgba(67, 56, 202, 0.3);
-            border: 2px solid rgb(67, 56, 202);
-        }
-
-        /* アニメーション */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .float-animation {
-            animation: float 2s ease-in-out infinite;
-        }
+        .toast-icon { margin-right: 0.75rem; font-size: 1.25rem; }
+        .toast-success .toast-icon { color: var(--success); }
+        .toast-error .toast-icon { color: var(--danger); }
+        .toast-warning .toast-icon { color: var(--warning); }
+        .toast-info .toast-icon { color: var(--info); }
     </style>
 </head>
 <body>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-    
-    <!-- サイドバー -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <a href="mainpage.html" class="logo">
-                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
-                <span>KatsujiRingX</span>
-            </a>
-        </div>
-        
-        <div class="sidebar-menu">
-            <p class="menu-label">メインメニュー</p>
-            <a href="mainpage.html" class="menu-item">
-                <i class="fas fa-home"></i> ダッシュボード
-            </a>
-            <a href="documents.html" class="menu-item">
-                <i class="fas fa-file-alt"></i> 資料管理
-            </a>
-            <a href="books.html" class="menu-item">
-                <i class="fas fa-book"></i> 完成本を見る
-            </a>
-            
-            <p class="menu-label">学習・コミュニティ</p>
-            <a href="learning.html" class="menu-item">
-                <i class="fas fa-gamepad"></i> 学習ゲーム
-            </a>
-            <a href="community.html" class="menu-item">
-                <i class="fas fa-users"></i> コミュニティ広場
-            </a>
-            <a href="blog.html" class="menu-item">
-                <i class="fas fa-pen"></i> ブログ
-            </a>
-            
-            <p class="menu-label">ユーザー</p>
-            <a href="profile.html" class="menu-item">
-                <i class="fas fa-user"></i> プロフィール
-            </a>
-            
-            <p class="menu-label">サポート</p>
-            <a href="helpcenter.html" class="menu-item">
-                <i class="fas fa-question-circle"></i>ヘルプデスク
-            </a>
-            <a href="feedback.html" class="menu-item">
-                <i class="fas fa-comment-dots"></i>フィードバック
-            </a>
-        </div>
-        
-        <div class="sidebar-footer">
-            <button id="theme-toggle" class="theme-toggle">
-                <i class="fas fa-moon"></i> ダークモード
+
+    <header class="editor-header">
+        <a href="mainpage.html" class="logo">
+            <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+            <span>KatsujiRingX エディタ</span>
+        </a>
+        <div class="actions">
+             <button id="back-to-documents" class="btn btn-outline">
+                <i class="fas fa-arrow-left"></i> 資料管理へ戻る
             </button>
-            
-            <div class="user-profile">
-                <div class="user-avatar" id="user-avatar">
-                    <span id="user-initial">U</span>
+            <button id="save-button" class="btn btn-primary">
+                <i class="fas fa-save"></i> 保存
+            </button>
+            <button id="theme-toggle-editor" class="btn btn-outline">
+                 <i class="fas fa-moon"></i> <span class="theme-label">ダークモード</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="editor-container">
+        <div class="image-pane" id="image-pane">
+            <div class="loading-spinner" id="image-loading"></div>
+            <img id="editor-image" src="" alt="活字化対象画像" style="display: none;">
+        </div>
+
+        <div class="text-pane">
+            <div class="metadata-form">
+                <h2>資料情報</h2>
+                <div class="form-group">
+                    <label for="metadata-doc-number" class="form-label">資料番号</label>
+                    <input type="text" id="metadata-doc-number" class="form-control" placeholder="例: 12345 (半角数字)">
                 </div>
-                <div class="user-info">
-                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
-                    <div class="user-status">オンライン</div>
+                <div class="form-group">
+                    <label for="metadata-doc-name" class="form-label">資料名</label>
+                    <input type="text" id="metadata-doc-name" class="form-control" placeholder="資料名を入力">
                 </div>
+                <div class="form-group">
+                    <label for="metadata-era" class="form-label">年代</label>
+                    <input type="text" id="metadata-era" class="form-control" placeholder="例: 明治時代, 1900年代">
+                </div>
+                <div class="form-group">
+                    <label for="metadata-source" class="form-label">所蔵</label>
+                    <input type="text" id="metadata-source" class="form-control" placeholder="所蔵機関名などを入力">
+                </div>
+                </div>
+
+            <div class="text-editor">
+                <h2>活字化テキスト (縦書き)</h2>
+                <textarea id="vertical-text" placeholder="ここに活字化したテキストを入力します..."></textarea>
             </div>
         </div>
-    </aside>
-    
-    <!-- メインコンテンツ -->
-    <div class="main-content">
-        <!-- エディタヘッダー -->
-        <div class="editor-header">
-            <div class="editor-title">
-                <i class="fas fa-edit"></i>
-                <span class="document-name" id="document-name">活字化エディタ</span>
-            </div>
-            <div class="editor-actions">
-                <button id="save-btn" class="btn btn-primary btn-icon-text">
-                    <i class="fas fa-save"></i> 保存
-                </button>
-                <button id="back-btn" class="btn btn-outline btn-icon-text">
-                    <i class="fas fa-arrow-left"></i> 戻る
-                </button>
-            </div>
-        </div>
-        
-        <!-- タブナビゲーション -->
-        <div class="editor-tabs">
-            <div class="editor-tab active" data-tab="ocr">
-                <i class="fas fa-font"></i> OCR編集
-            </div>
-            <div class="editor-tab" data-tab="metadata">
-                <i class="fas fa-info-circle"></i> メタデータ
-            </div>
-            <div class="editor-tab" data-tab="learning">
-                <i class="fas fa-graduation-cap"></i> 学習データ
-            </div>
-        </div>
-        
-        <!-- エディタ本体 -->
-        <div class="editor-container">
-            <!-- OCR編集タブ -->
-            <div class="tab-content active" id="tab-ocr">
-                <div class="ocr-editing-layout">
-                    <!-- 画像編集パネル -->
-                    <div class="image-editor-panel">
-                        <div class="image-toolbar">
-                            <div class="toolbar-group">
-                                <button id="select-ocr-btn" class="btn btn-primary btn-icon-text">
-                                    <i class="fas fa-magic"></i> 自動OCR
-                                </button>
-                                <button id="manual-ocr-btn" class="btn btn-outline btn-icon-text">
-                                    <i class="fas fa-crop"></i> 選択OCR
-                                </button>
-                            </div>
-                            
-                            <div class="toolbar-group">
-                                <button id="rotate-left-btn" class="btn btn-outline btn-icon" title="左に回転">
-                                    <i class="fas fa-undo"></i>
-                                </button>
-                                <button id="rotate-right-btn" class="btn btn-outline btn-icon" title="右に回転">
-                                    <i class="fas fa-redo"></i>
-                                </button>
-                                <button id="flip-h-btn" class="btn btn-outline btn-icon" title="水平反転">
-                                    <i class="fas fa-arrows-alt-h"></i>
-                                </button>
-                                <button id="flip-v-btn" class="btn btn-outline btn-icon" title="垂直反転">
-                                    <i class="fas fa-arrows-alt-v"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="toolbar-group">
-                                <button id="brightness-btn" class="btn btn-outline btn-icon" title="明るさ">
-                                    <i class="fas fa-sun"></i>
-                                </button>
-                                <button id="contrast-btn" class="btn btn-outline btn-icon" title="コントラスト">
-                                    <i class="fas fa-adjust"></i>
-                                </button>
-                                <button id="threshold-btn" class="btn btn-outline btn-icon" title="しきい値">
-                                    <i class="fas fa-sliders-h"></i>
-                                </button>
-                                <button id="reset-btn" class="btn btn-outline btn-icon" title="リセット">
-                                    <i class="fas fa-sync"></i>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="image-workspace" id="image-workspace">
-                            <div class="image-container" id="image-container">
-                                <img id="source-image" src="" alt="元画像" crossorigin="anonymous">
-                                <div class="selection-box" id="selection-box" style="display: none;"></div>
-                                <div class="char-overlay" id="char-overlay"></div>
-                            </div>
-                            
-                            <div class="zoom-control">
-                                <button class="zoom-btn" id="zoom-out-btn">
-                                    <i class="fas fa-search-minus"></i>
-                                </button>
-                                <div class="zoom-level" id="zoom-level">100%</div>
-                                <button class="zoom-btn" id="zoom-in-btn">
-                                    <i class="fas fa-search-plus"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- テキスト編集パネル -->
-                    <div class="text-editor-panel">
-                        <div class="text-editor-toolbar">
-                            <div class="text-direction-toggle">
-                                <span>縦書き</span>
-                                <label class="switch">
-                                    <input type="checkbox" id="vertical-toggle">
-                                    <span class="switch-slider"></span>
-                                </label>
-                            </div>
-                            <div>
-                                <button id="copy-text-btn" class="btn btn-sm btn-outline">
-                                    <i class="fas fa-copy"></i> コピー
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="text-editor-container">
-                            <div class="text-editor" id="text-editor" contenteditable="true">
-                                <!-- OCRテキストがここに表示されます -->
-                            </div>
-                        </div>
-                        
-                        <div class="ocr-candidate-panel" id="ocr-candidate-panel">
-                            <div class="ocr-candidate-header">
-                                <span class="ocr-candidate-title">OCR認識候補</span>
-                                <button id="close-candidates-btn" class="btn btn-sm btn-icon">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                            
-                            <div class="candidate-list" id="candidate-list">
-                                <!-- 候補文字がここに表示されます -->
-                            </div>
-                            
-                            <div class="ocr-position-indicator" id="ocr-position-indicator">
-                                <!-- 現在位置の情報がここに表示されます -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- メタデータタブ -->
-            <div class="tab-content" id="tab-metadata">
-                <div class="metadata-editor">
-                    <div class="metadata-section">
-                        <h2 class="metadata-title">基本情報</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="doc-id" class="form-label">資料番号</label>
-                                <input type="text" id="doc-id" class="form-control" placeholder="資料番号を入力">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-title" class="form-label">タイトル</label>
-                                <input type="text" id="doc-title" class="form-control" placeholder="文書のタイトルを入力">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-author" class="form-label">作成者</label>
-                                <input type="text" id="doc-author" class="form-control" placeholder="作成者名を入力">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-year" class="form-label">作成年</label>
-                                <input type="text" id="doc-year" class="form-control" placeholder="作成年を入力（西暦または和暦）">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-type" class="form-label">資料タイプ</label>
-                                <select id="doc-type" class="form-control">
-                                    <option value="">タイプを選択</option>
-                                    <option value="makimono">巻物</option>
-                                    <option value="letter">書簡</option>
-                                    <option value="diary">日記</option>
-                                    <option value="account">帳簿</option>
-                                    <option value="waka">和歌</option>
-                                    <option value="other">その他</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-language" class="form-label">言語</label>
-                                <select id="doc-language" class="form-control">
-                                    <option value="ja">日本語</option>
-                                    <option value="en">英語</option>
-                                    <option value="zh">中国語</option>
-                                    <option value="ko">韓国語</option>
-                                    <option value="other">その他</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="metadata-section">
-                        <h2 class="metadata-title">物理的形態</h2>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="doc-size" class="form-label">サイズ</label>
-                                <input type="text" id="doc-size" class="form-control" placeholder="例: 縦25cm×横18cm">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-pages" class="form-label">ページ数</label>
-                                <input type="number" id="doc-pages" class="form-control" placeholder="ページ数を入力">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-material" class="form-label">素材</label>
-                                <input type="text" id="doc-material" class="form-control" placeholder="例: 和紙、羊皮紙など">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-condition" class="form-label">状態</label>
-                                <select id="doc-condition" class="form-control">
-                                    <option value="">状態を選択</option>
-                                    <option value="excellent">良好</option>
-                                    <option value="good">やや良好</option>
-                                    <option value="fair">普通</option>
-                                    <option value="poor">やや不良</option>
-                                    <option value="bad">不良</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-location" class="form-label">保存場所</label>
-                                <input type="text" id="doc-location" class="form-control" placeholder="保存場所を入力">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="doc-institution" class="form-label">所蔵機関</label>
-                                <input type="text" id="doc-institution" class="form-control" placeholder="所蔵機関を入力">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="metadata-section">
-                        <h2 class="metadata-title">詳細情報</h2>
-                        <div class="form-group">
-                            <label for="doc-description" class="form-label">説明</label>
-                            <textarea id="doc-description" class="form-control" placeholder="文書の説明を入力"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="doc-tags" class="form-label">タグ</label>
-                            <input type="text" id="doc-tags" class="form-control" placeholder="カンマ区切りでタグを入力">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- 学習データタブ -->
-            <div class="tab-content" id="tab-learning">
-                <div class="learning-editor">
-                    <div class="learning-section">
-                        <h2 class="metadata-title">学習データ</h2>
-                        <p>OCRで検出した文字のサンプルを確認・修正し、精度向上のための学習データを作成できます。</p>
-                        
-                        <div class="character-list" id="learning-characters">
-                            <!-- 学習データがここに表示されます -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- OCR処理中のオーバーレイ -->
-        <div class="processing-overlay" id="processing-overlay" style="display: none;">
-            <div class="spinner"></div>
-            <div>OCR処理中...</div>
-            <div id="processing-status" style="margin-top: 0.5rem; font-size: 0.875rem;">文字を認識しています</div>
-        </div>
-    </div>
-    
-    <!-- トースト通知コンテナ -->
-    <div class="toast-container" id="toast-container">
-        <!-- トースト通知はここに動的に追加されます -->
     </div>
 
+     <div class="toast-container" id="toast-container"></div>
+
     <script>
-        // Firebase設定
+        // Firebase設定 (documents.html と同じもの)
         const firebaseConfig = {
-            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
-            authDomain: "katsujiringx.firebaseapp.com",
-            projectId: "katsujiringx",
-            storageBucket: "katsujiringx.firebasestorage.app",
-            messagingSenderId: "831784731743",
-            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
-            measurementId: "G-LPCRE3WYZR"
+           apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+           authDomain: "katsujiringx.firebaseapp.com",
+           projectId: "katsujiringx",
+           storageBucket: "katsujiringx.firebasestorage.app",
+           messagingSenderId: "831784731743",
+           appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+           measurementId: "G-LPCRE3WYZR"
         };
 
         // Firebase初期化
@@ -1401,1523 +510,226 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
 
-        // 日本語ロケールの設定
-        auth.languageCode = 'ja';
+        // DOM要素
+        const imagePane = document.getElementById('image-pane');
+        const editorImage = document.getElementById('editor-image');
+        const imageLoading = document.getElementById('image-loading');
+        const verticalText = document.getElementById('vertical-text');
+        const docNumberInput = document.getElementById('metadata-doc-number');
+        const docNameInput = document.getElementById('metadata-doc-name');
+        const eraInput = document.getElementById('metadata-era');
+        const sourceInput = document.getElementById('metadata-source');
+        const saveButton = document.getElementById('save-button');
+        const backButton = document.getElementById('back-to-documents');
+        const themeToggleButton = document.getElementById('theme-toggle-editor');
+        const toastContainer = document.getElementById('toast-container');
 
-        // グローバル変数
-        let currentUser = null;
         let currentFileId = null;
         let currentFile = null;
-        let ocrResults = [];
-        let currentOcrIndex = -1;
-        let ocrCandidates = [];
-        let learningData = [];
-        let editorMode = 'horizontal'; // horizontal または vertical
-        let currentZoom = 1;
-        let isSelecting = false;
-        let selectionStart = { x: 0, y: 0 };
-        let imageState = {
-            rotation: 0,
-            flipH: false,
-            flipV: false,
-            brightness: 100,
-            contrast: 100,
-            threshold: 0
-        };
+        let currentUser = null;
 
-        // DOM要素の参照
-        const documentNameElement = document.getElementById('document-name');
-        const sourceImage = document.getElementById('source-image');
-        const imageContainer = document.getElementById('image-container');
-        const imageWorkspace = document.getElementById('image-workspace');
-        const selectionBox = document.getElementById('selection-box');
-        const charOverlay = document.getElementById('char-overlay');
-        const textEditor = document.getElementById('text-editor');
-        const verticalToggle = document.getElementById('vertical-toggle');
-        const candidateList = document.getElementById('candidate-list');
-        const ocrPositionIndicator = document.getElementById('ocr-position-indicator');
-        const ocrCandidatePanel = document.getElementById('ocr-candidate-panel');
-        const learningCharactersContainer = document.getElementById('learning-characters');
-        const processingOverlay = document.getElementById('processing-overlay');
-        const processingStatus = document.getElementById('processing-status');
-        const zoomLevel = document.getElementById('zoom-level');
-        const tabs = document.querySelectorAll('.editor-tab');
-        const tabContents = document.querySelectorAll('.tab-content');
-        const themeToggle = document.getElementById('theme-toggle');
-        const saveBtn = document.getElementById('save-btn');
-        const backBtn = document.getElementById('back-btn');
-        const selectOcrBtn = document.getElementById('select-ocr-btn');
-        const manualOcrBtn = document.getElementById('manual-ocr-btn');
-        const rotateLeftBtn = document.getElementById('rotate-left-btn');
-        const rotateRightBtn = document.getElementById('rotate-right-btn');
-        const flipHBtn = document.getElementById('flip-h-btn');
-        const flipVBtn = document.getElementById('flip-v-btn');
-        const brightnessBtn = document.getElementById('brightness-btn');
-        const contrastBtn = document.getElementById('contrast-btn');
-        const thresholdBtn = document.getElementById('threshold-btn');
-        const resetBtn = document.getElementById('reset-btn');
-        const zoomInBtn = document.getElementById('zoom-in-btn');
-        const zoomOutBtn = document.getElementById('zoom-out-btn');
-        const copyTextBtn = document.getElementById('copy-text-btn');
-        const closeCandidatesBtn = document.getElementById('close-candidates-btn');
-
-        // メタデータフォーム要素
-        const docId = document.getElementById('doc-id');
-        const docTitle = document.getElementById('doc-title');
-        const docAuthor = document.getElementById('doc-author');
-        const docYear = document.getElementById('doc-year');
-        const docType = document.getElementById('doc-type');
-        const docLanguage = document.getElementById('doc-language');
-        const docSize = document.getElementById('doc-size');
-        const docPages = document.getElementById('doc-pages');
-        const docMaterial = document.getElementById('doc-material');
-        const docCondition = document.getElementById('doc-condition');
-        const docLocation = document.getElementById('doc-location');
-        const docInstitution = document.getElementById('doc-institution');
-        const docDescription = document.getElementById('doc-description');
-        const docTags = document.getElementById('doc-tags');
-
-        // TesseractWorkerの設定
-        const createTesseractWorker = async () => {
-            try {
-                const worker = await Tesseract.createWorker('jpn', 1, {
-                    logger: progress => {
-                        if (progress.status === 'recognizing text') {
-                            processingStatus.textContent = `OCR処理中... ${Math.round(progress.progress * 100)}%`;
-                        } else {
-                            processingStatus.textContent = `${progress.status}...`;
-                        }
-                    }
-                });
-
-                await worker.setParameters({
-                    tessedit_pageseg_mode: '6', // 単語単位で分析
-                    tessedit_char_whitelist: '', // すべての文字を許可
-                    preserve_interword_spaces: '1'
-                });
-
-                return worker;
-            } catch (error) {
-                console.error("Tesseract初期化エラー:", error);
-                showToast('OCRエンジンの初期化に失敗しました', 'error');
-                throw error;
-            }
-        };
-
-        // 初期化処理
-        async function init() {
-            // URLからファイルIDを取得
-            const urlParams = new URLSearchParams(window.location.search);
-            const fileId = urlParams.get('file');
-            
-            if (fileId) {
-                currentFileId = fileId;
-                
-                // ファイル情報の読み込み
-                loadFile(fileId);
-            } else {
-                showToast('ファイルIDが指定されていません', 'error');
-            }
-            
-            // イベントリスナーの設定
-            setupEventListeners();
-            
-            // テーマの初期化
-            initTheme();
-
-            // 候補パネルを初期状態で非表示に
-            ocrCandidatePanel.style.display = 'none';
-        }
-
-        // ファイル読み込み
-        async function loadFile(fileId) {
-            try {
-                showProcessing('ファイルを読み込み中...');
-                
-                // Firestoreからファイル情報を取得
-                const fileDoc = await db.collection('files').doc(fileId).get();
-                
-                if (!fileDoc.exists) {
-                    hideProcessing();
-                    showToast('ファイルが見つかりません', 'error');
-                    return;
-                }
-                
-                currentFile = { id: fileDoc.id, ...fileDoc.data() };
-                
-                // 画像タイプ以外はエラー
-                if (currentFile.fileType !== 'image') {
-                    hideProcessing();
-                    showToast('このファイルは画像ではありません', 'error');
-                    return;
-                }
-                
-               
-                
-                // ドキュメント名を表示
-                documentNameElement.textContent = currentFile.name;
-                
-                // CORSエラー対策 - crossOrigin属性を設定
-                sourceImage.crossOrigin = "anonymous";
-                
-                // 画像を読み込む
-                sourceImage.src = `${currentFile.url}?${new Date().getTime()}`; // キャッシュバスティング
-                sourceImage.onload = function() {
-                    hideProcessing();
-                    
-                    // 画像読み込み後、関連データがあれば読み込む
-                    loadRelatedData();
-                };
-                sourceImage.onerror = function(error) {
-                    console.error("画像読み込みエラー:", error);
-                    hideProcessing();
-                    showToast('画像の読み込みに失敗しました。CORS設定を確認してください。', 'error');
-                };
-                
-                // メタデータがあれば表示
-                if (currentFile.metadata) {
-                    populateMetadata(currentFile.metadata);
-                }
-            } catch (error) {
-                console.error("ファイル読み込みエラー:", error);
-                hideProcessing();
-                showToast('ファイルの読み込みに失敗しました', 'error');
-            }
-        }
-
-        // 関連データの読み込み（OCR結果や学習データなど）
-        async function loadRelatedData() {
-            try {
-                // OCR結果があれば読み込む
-                const ocrDoc = await db.collection('ocr_results').doc(currentFileId).get();
-                if (ocrDoc.exists) {
-                    const ocrData = ocrDoc.data();
-                    
-                    // 配列チェック
-                    if (ocrData.results && Array.isArray(ocrData.results)) {
-                        ocrResults = ocrData.results;
-                        
-                        // 文字認識領域の表示
-                        displayCharBoxes();
-                    } else {
-                        ocrResults = [];
-                    }
-                    
-                    // テキストエディタに表示
-                    if (ocrData.text) {
-                        textEditor.innerHTML = ocrData.text;
-                    }
-                    
-                    // テキスト方向設定
-                    if (ocrData.vertical) {
-                        editorMode = 'vertical';
-                        textEditor.classList.add('vertical');
-                        verticalToggle.checked = true;
-                    }
-                }
-                
-                // 学習データがあれば読み込む
-                const learningDoc = await db.collection('learning_data').doc(currentFileId).get();
-                if (learningDoc.exists && learningDoc.data().characters) {
-                    learningData = learningDoc.data().characters;
-                    updateLearningDataDisplay();
-                }
-            } catch (error) {
-                console.error("関連データ読み込みエラー:", error);
-                showToast('OCRデータの読み込みに失敗しました', 'warning');
-            }
-        }
-
-        // メタデータをフォームに表示
-        function populateMetadata(metadata) {
-            if (metadata.docId) docId.value = metadata.docId;
-            if (metadata.title) docTitle.value = metadata.title;
-            if (metadata.author) docAuthor.value = metadata.author;
-            if (metadata.year) docYear.value = metadata.year;
-            if (metadata.type) docType.value = metadata.type;
-            if (metadata.language) docLanguage.value = metadata.language;
-            if (metadata.size) docSize.value = metadata.size;
-            if (metadata.pages) docPages.value = metadata.pages;
-            if (metadata.material) docMaterial.value = metadata.material;
-            if (metadata.condition) docCondition.value = metadata.condition;
-            if (metadata.location) docLocation.value = metadata.location;
-            if (metadata.institution) docInstitution.value = metadata.institution;
-            if (metadata.description) docDescription.value = metadata.description;
-            if (metadata.tags) docTags.value = metadata.tags.join(', ');
-        }
-
-        // メタデータをフォームから取得
-        function getMetadataFromForm() {
-            return {
-                docId: docId.value.trim(),
-                title: docTitle.value.trim(),
-                author: docAuthor.value.trim(),
-                year: docYear.value.trim(),
-                type: docType.value,
-                language: docLanguage.value,
-                size: docSize.value.trim(),
-                pages: docPages.value,
-                material: docMaterial.value.trim(),
-                condition: docCondition.value,
-                location: docLocation.value.trim(),
-                institution: docInstitution.value.trim(),
-                description: docDescription.value.trim(),
-                tags: docTags.value.split(',').map(tag => tag.trim()).filter(tag => tag)
-            };
-        }
-
-        // OCR処理（自動）
-        async function performAutoOcr() {
-            try {
-                showProcessing('自動OCR処理を開始しています...');
-                
-                try {
-                    // Tesseractワーカーの初期化
-                    const worker = await createTesseractWorker();
-                    
-                    // 画像前処理
-                    processingStatus.textContent = '画像を処理中...';
-                    const processedImageData = await preprocessImageForOcr(sourceImage);
-                    
-                    // OCR実行
-                    processingStatus.textContent = '文字認識中...';
-                    const result = await worker.recognize(processedImageData);
-                    console.log("OCR結果:", result);
-                    
-                    // 結果の変換と処理
-                    ocrResults = convertTesseractResults(result);
-                    
-                    // 文字認識領域の表示
-                    displayCharBoxes();
-                    
-                    // テキストを更新
-                    updateTextFromOcrResults();
-                    
-                    // 学習データを更新
-                    updateLearningData(ocrResults);
-                    
-                    // リソース解放
-                    await worker.terminate();
-                    
-                    hideProcessing();
-                    showToast('OCR処理が完了しました', 'success');
-                } catch (tesseractError) {
-                    console.error("Tesseract OCRエラー:", tesseractError);
-                    
-                    // フォールバック: モック処理
-                    processingStatus.textContent = '代替処理を実行中...';
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // モックデータを生成
-                    const mockResults = generateMockOcrResults();
-                    ocrResults = mockResults;
-                    
-                    // 文字認識領域の表示
-                    displayCharBoxes();
-                    
-                    // テキストを更新
-                    updateTextFromOcrResults();
-                    
-                    // 学習データを更新
-                    updateLearningData(mockResults);
-                    
-                    hideProcessing();
-                    showToast('OCR処理が完了しました（代替処理を使用）', 'warning');
-                }
-            } catch (error) {
-                console.error("OCR処理エラー:", error);
-                hideProcessing();
-                showToast('OCR処理に失敗しました: ' + error.message, 'error');
-            }
-        }
-
-        // OCR処理（選択領域）
-        async function performSelectiveOcr(rect) {
-            try {
-                showProcessing('選択領域のOCR処理を開始しています...');
-                
-                // 選択領域の切り出し
-                processingStatus.textContent = '選択領域を処理中...';
-                
-                try {
-                    // Tesseractワーカーの初期化
-                    const worker = await createTesseractWorker();
-                    
-                    // 選択範囲の切り取り
-                    const canvas = document.createElement('canvas');
-                    const ctx = canvas.getContext('2d');
-                    canvas.width = rect.width;
-                    canvas.height = rect.height;
-                    
-                    // 画像の縮尺を考慮
-                    const scale = sourceImage.naturalWidth / (sourceImage.width * currentZoom);
-                    
-                    try {
-                        // 選択領域を描画
-                        ctx.drawImage(
-                            sourceImage,
-                            rect.x * scale, rect.y * scale, rect.width * scale, rect.height * scale,
-                            0, 0, rect.width, rect.height
-                        );
-                        
-                        // OCR実行
-                        processingStatus.textContent = '選択領域を認識中...';
-                        const result = await worker.recognize(canvas);
-                        console.log("選択OCR結果:", result);
-                        
-                        // 結果を変換
-                        const selectiveResults = convertTesseractResults(result, rect);
-                        
-                        // 既存結果に追加
-                        ocrResults = [...ocrResults, ...selectiveResults];
-                        
-                        // 文字認識領域の表示
-                        displayCharBoxes();
-                        
-                        // テキストを更新
-                        updateTextFromOcrResults();
-                        
-                        // 学習データを更新
-                        updateLearningData(selectiveResults);
-                        
-                        // リソース解放
-                        await worker.terminate();
-                        
-                        hideProcessing();
-                        showToast('選択領域のOCR処理が完了しました', 'success');
-                        
-                    } catch (canvasError) {
-                        console.error("Canvas操作エラー:", canvasError);
-                        
-                        // CORSエラーの場合はモック処理
-                        processingStatus.textContent = '代替処理を実行中...';
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        
-                        // モックデータを生成
-                        const mockResults = generateSelectiveMockResults(rect);
-                        
-                        // 既存結果に追加
-                        ocrResults = [...ocrResults, ...mockResults];
-                        
-                        // 文字認識領域の表示
-                        displayCharBoxes();
-                        
-                        // テキストを更新
-                        updateTextFromOcrResults();
-                        
-                        // 学習データを更新
-                        updateLearningData(mockResults);
-                        
-                        hideProcessing();
-                        showToast('選択OCR完了（代替処理使用）', 'warning');
-                    }
-                    
-                } catch (tesseractError) {
-                    console.error("Tesseract選択OCRエラー:", tesseractError);
-                    
-                    // フォールバック: モック処理
-                    processingStatus.textContent = '代替処理を実行中...';
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // モックデータを生成
-                    const mockResults = generateSelectiveMockResults(rect);
-                    
-                    // 既存結果に追加
-                    ocrResults = [...ocrResults, ...mockResults];
-                    
-                    // 文字認識領域の表示
-                    displayCharBoxes();
-                    
-                    // テキストを更新
-                    updateTextFromOcrResults();
-                    
-                    // 学習データを更新
-                    updateLearningData(mockResults);
-                    
-                    hideProcessing();
-                    showToast('選択OCR完了（代替処理使用）', 'warning');
-                }
-                
-            } catch (error) {
-                console.error("選択OCR処理エラー:", error);
-                hideProcessing();
-                showToast('選択領域のOCR処理に失敗しました: ' + error.message, 'error');
-            }
-        }
-
-        // Tesseract結果をアプリ形式に変換
-        function convertTesseractResults(result, areaRect = null) {
-            const converted = [];
-            const baseX = areaRect ? areaRect.x : 0;
-            const baseY = areaRect ? areaRect.y : 0;
-            
-            // 単語を処理
-            if (result.data && result.data.words && Array.isArray(result.data.words)) {
-                result.data.words.forEach((word, wordIndex) => {
-                    if (!word.text || !word.bbox) return;
-                    
-                    // 日本語の場合、単語を文字に分割（スペースやカーソル位置を正確に扱うための処理）
-                    const chars = word.text.split('');
-                    const charWidth = word.bbox.width / chars.length;
-                    
-                    chars.forEach((char, charIndex) => {
-                        if (!char.trim()) return; // 空白文字はスキップ
-                        
-                        // 文字位置の計算
-                        const x = baseX + word.bbox.x0 + (charWidth * charIndex);
-                        const y = baseY + word.bbox.y0;
-                        
-                        // 認識信頼度
-                        const confidence = word.confidence / 100;
-                        
-                        // 類似文字の候補生成（Tesseractは候補を提供しないので模擬的に生成）
-                        const similarChars = getSimilarCharacters(char);
-                        const candidates = [
-                            { char: char, score: confidence }
-                        ];
-                        
-                        // 他の候補を追加（最大4つまで）
-                        for (let i = 0; i < Math.min(4, similarChars.length); i++) {
-                            candidates.push({
-                                char: similarChars[i],
-                                score: Math.max(0.1, confidence - 0.2 - (i * 0.1))
-                            });
-                        }
-                        
-                        converted.push({
-                            text: char,
-                            candidates: candidates,
-                            confidence: confidence,
-                            box: {
-                                x: x,
-                                y: y,
-                                width: charWidth,
-                                height: word.bbox.height
-                            }
-                        });
-                    });
-                });
-            }
-            
-            return converted;
-        }
-
-        // 類似文字を取得（簡易実装）
-        function getSimilarCharacters(char) {
-            // 簡易的な類似文字セット（実際には学習データや字形の類似性から導出）
-            const similaritySets = {
-                '山': ['出', '小', '止'],
-                '川': ['州', '訓', '順'],
-                '田': ['由', '甲', '申'],
-                '木': ['本', '未', '末'],
-                '土': ['士', '壬', '圭'],
-                '月': ['日', '目', '冒'],
-                '人': ['入', '木', '大'],
-                '火': ['大', '太', '灬'],
-                '水': ['氷', '永', '泳'],
-                '日': ['白', '自', '百'],
-                '年': ['午', '牛', '生'],
-                '大': ['太', '犬', '天'],
-                '文': ['交', '父', '支'],
-                '口': ['日', '目', '田'],
-                '手': ['毛', '長', '争'],
-                '言': ['訁', '音', '話'],
-                '心': ['忄', '必', '息'],
-                '生': ['牛', '午', '先']
-            };
-            
-            // 類似文字がマップにあればそれを返し、なければランダムな文字を生成
-            if (similaritySets[char]) {
-                return similaritySets[char];
-            } else {
-                // ランダムな漢字コードポイントの生成（基本的な漢字範囲）
-                const randomChars = [];
-                for (let i = 0; i < 4; i++) {
-                    const codePoint = 0x4E00 + Math.floor(Math.random() * 2500);
-                    randomChars.push(String.fromCodePoint(codePoint));
-                }
-                return randomChars;
-            }
-        }
-
-        // モックOCR結果の生成
-        function generateMockOcrResults() {
-            const mockResults = [];
-            
-            // 画像サイズに基づいて文字グリッドを計算
-            const imageWidth = sourceImage.naturalWidth;
-            const imageHeight = sourceImage.naturalHeight;
-            
-            // 文字グリッドの計算（約20文字相当のグリッド）
-            const cols = 5;
-            const rows = Math.ceil(20 / cols);
-            const charWidth = imageWidth / cols;
-            const charHeight = imageHeight / rows;
-            
-            // サンプル文字
-            const characters = [
-                '春', '夏', '秋', '冬', '花',
-                '鳥', '風', '月', '雪', '星',
-                '山', '川', '海', '空', '雲',
-                '光', '影', '木', '草', '水'
-            ];
-            
-            // 各文字の候補を生成
-            for (let i = 0; i < Math.min(characters.length, rows * cols); i++) {
-                const row = Math.floor(i / cols);
-                const col = i % cols;
-                
-                const x = col * charWidth;
-                const y = row * charHeight;
-                
-                // 主候補の文字
-                const mainChar = characters[i];
-                
-                // 類似文字の取得
-                const similarChars = getSimilarCharacters(mainChar);
-                
-                // 候補の生成
-                const confidence = 0.7 + Math.random() * 0.25;
-                const candidates = [
-                    { char: mainChar, score: confidence }
-                ];
-                
-                // 他の候補を追加
-                for (let j = 0; j < Math.min(4, similarChars.length); j++) {
-                    candidates.push({
-                        char: similarChars[j],
-                        score: Math.max(0.1, confidence - 0.2 - (j * 0.1))
-                    });
-                }
-                
-                mockResults.push({
-                    text: mainChar,
-                    candidates: candidates,
-                    confidence: confidence,
-                    box: {
-                        x: x,
-                        y: y,
-                        width: charWidth,
-                        height: charHeight
-                    }
-                });
-            }
-            
-            return mockResults;
-        }
-
-        // 選択領域のモックOCR結果生成
-        function generateSelectiveMockResults(rect) {
-            const mockResults = [];
-            
-            // 選択領域内のグリッド計算
-            const cols = Math.ceil(rect.width / 40); // 約40pxごとに文字
-            const rows = Math.ceil(rect.height / 40);
-            const charWidth = rect.width / cols;
-            const charHeight = rect.height / rows;
-            
-            // サンプル文字（選択領域用）
-            const characters = [
-                '文', '字', '認', '識', '崩',
-                '字', '活', '字', '化', '処',
-                '理', '中', '日', '本', '語',
-                '漢', '字', '活', '字', '化'
-            ];
-            
-            // 各文字の候補を生成
-            const charCount = Math.min(characters.length, rows * cols);
-            
-            for (let i = 0; i < charCount; i++) {
-                const row = Math.floor(i / cols);
-                const col = i % cols;
-                
-                const x = rect.x + (col * charWidth);
-                const y = rect.y + (row * charHeight);
-                
-                // 主候補の文字
-                const mainChar = characters[i];
-                
-                // 類似文字の取得
-                const similarChars = getSimilarCharacters(mainChar);
-                
-                // 候補の生成
-                const confidence = 0.7 + Math.random() * 0.25;
-                const candidates = [
-                    { char: mainChar, score: confidence }
-                ];
-                
-                // 他の候補を追加
-                for (let j = 0; j < Math.min(4, similarChars.length); j++) {
-                    candidates.push({
-                        char: similarChars[j],
-                        score: Math.max(0.1, confidence - 0.2 - (j * 0.1))
-                    });
-                }
-                
-                mockResults.push({
-                    text: mainChar,
-                    candidates: candidates,
-                    confidence: confidence,
-                    box: {
-                        x: x,
-                        y: y,
-                        width: charWidth,
-                        height: charHeight
-                    }
-                });
-            }
-            
-            return mockResults;
-        }
-
-        // 文字認識領域を表示
-        function displayCharBoxes() {
-            // 既存の文字ボックスをクリア
-            charOverlay.innerHTML = '';
-            
-            if (!ocrResults || !Array.isArray(ocrResults) || ocrResults.length === 0) {
-                return;
-            }
-            
-            // 元画像に対する表示スケール計算
-            const scale = sourceImage.width / sourceImage.naturalWidth;
-            
-            // 各文字の領域を表示
-            ocrResults.forEach((result, index) => {
-                if (!result.box) return;
-                
-                const box = result.box;
-                const charBox = document.createElement('div');
-                charBox.className = 'char-box';
-                charBox.dataset.index = index;
-                
-                // 座標をスケール調整
-                charBox.style.left = `${box.x * scale}px`;
-                charBox.style.top = `${box.y * scale}px`;
-                charBox.style.width = `${box.width * scale}px`;
-                charBox.style.height = `${box.height * scale}px`;
-                
-                // クリック時にOCR候補を表示
-                charBox.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    
-                    // すべてのcharBoxからactiveクラスを削除
-                    document.querySelectorAll('.char-box').forEach(box => {
-                        box.classList.remove('active');
-                    });
-                    
-                    // クリックされたboxをactiveに
-                    charBox.classList.add('active');
-                    
-                    // OCR候補を表示
-                    showOcrCandidates(index);
-                });
-                
-                charOverlay.appendChild(charBox);
-            });
-        }
-
-        // OCR結果からテキストを更新
-        function updateTextFromOcrResults() {
-            if (!ocrResults || !Array.isArray(ocrResults) || ocrResults.length === 0) {
-                return;
-            }
-            
-            // 各文字を位置情報でソート (縦書きか横書きに合わせて)
-            const sortedResults = [...ocrResults];
-            
-            if (editorMode === 'vertical') {
-                // 縦書きの場合は、x座標で右から左へ、同じ列なら上から下へソート
-                sortedResults.sort((a, b) => {
-                    if (!a.box || !b.box) return 0;
-                    
-                    const colWidth = 30; // 近似の列幅
-                    const aCol = Math.floor(a.box.x / colWidth);
-                    const bCol = Math.floor(b.box.x / colWidth);
-                    
-                    if (aCol !== bCol) return bCol - aCol; // 右から左へ
-                    return a.box.y - b.box.y; // 上から下へ
-                });
-            } else {
-                // 横書きの場合は、y座標で上から下へ、同じ行なら左から右へソート
-                sortedResults.sort((a, b) => {
-                    if (!a.box || !b.box) return 0;
-                    
-                    const rowHeight = 30; // 近似の行高さ
-                    const aRow = Math.floor(a.box.y / rowHeight);
-                    const bRow = Math.floor(b.box.y / rowHeight);
-                    
-                    if (aRow !== bRow) return aRow - bRow; // 上から下へ
-                    return a.box.x - b.box.x; // 左から右へ
-                });
-            }
-            
-            // テキストの生成
-            const text = sortedResults.map(r => r.text || '').join('');
-            textEditor.innerHTML = text;
-        }
-
-        // OCR候補を表示
-        function showOcrCandidates(index) {
-            if (!ocrResults || !Array.isArray(ocrResults) || 
-                index < 0 || index >= ocrResults.length) {
-                ocrCandidatePanel.style.display = 'none';
-                return;
-            }
-            
-            currentOcrIndex = index;
-            const result = ocrResults[index];
-            
-            // 候補リストをクリア
-            candidateList.innerHTML = '';
-            
-            // 候補が配列形式で存在するか確認
-            if (!result.candidates || !Array.isArray(result.candidates) || result.candidates.length === 0) {
-                // 候補がなければ主要な文字だけで生成
-                const confidence = result.confidence || 0.8;
-                ocrCandidates = [
-                    { char: result.text, score: confidence }
-                ];
-                
-                // 類似文字も追加
-                const similarChars = getSimilarCharacters(result.text);
-                similarChars.forEach((char, i) => {
-                    ocrCandidates.push({
-                        char: char,
-                        score: Math.max(0.1, confidence - 0.2 - (i * 0.1))
-                    });
-                });
-            } else {
-                ocrCandidates = result.candidates;
-            }
-            
-            // 各候補をリストに追加
-            ocrCandidates.forEach((candidate, i) => {
-                const item = document.createElement('div');
-                item.className = 'candidate-item';
-                if (i === 0) item.classList.add('selected');
-                
-                const confidence = Math.round((candidate.score || 0) * 100);
-                
-                item.innerHTML = `
-                    <span class="candidate-char">${candidate.char}</span>
-                    <span class="candidate-confidence">${confidence}%</span>
-                `;
-                
-                // クリックイベント
-                item.addEventListener('click', () => {
-                    selectOcrCandidate(i);
-                });
-                
-                candidateList.appendChild(item);
-            });
-            
-            // 位置表示を更新
-            ocrPositionIndicator.textContent = `文字 ${index + 1} / ${ocrResults.length}`;
-            
-            // パネルを表示
-            ocrCandidatePanel.style.display = 'block';
-        }
-
-        // OCR候補を選択
-        function selectOcrCandidate(candidateIndex) {
-            if (currentOcrIndex < 0 || currentOcrIndex >= ocrResults.length ||
-                candidateIndex < 0 || candidateIndex >= ocrCandidates.length) {
-                return;
-            }
-            
-            // 選択項目の更新
-            const selectedCandidate = ocrCandidates[candidateIndex];
-            const candidateItems = candidateList.querySelectorAll('.candidate-item');
-            
-            candidateItems.forEach((item, i) => {
-                if (i === candidateIndex) {
-                    item.classList.add('selected');
-                } else {
-                    item.classList.remove('selected');
-                }
-            });
-            
-            // OCR結果を更新
-            const oldText = ocrResults[currentOcrIndex].text;
-            ocrResults[currentOcrIndex].text = selectedCandidate.char;
-            
-            // テキストエディタの内容を更新
-            updateTextFromOcrResults();
-            
-            // 学習データに追加（正解文字として）
-            if (candidateIndex !== 0) { // 最初の候補でない場合のみ学習データとして登録
-                learnCharacter(currentOcrIndex, selectedCandidate.char);
-            }
-            
-            showToast(`"${oldText}" を "${selectedCandidate.char}" に変更しました`, 'success');
-        }
-
-        // 文字を学習
-        function learnCharacter(ocrIndex, correctChar) {
-            if (ocrIndex < 0 || ocrIndex >= ocrResults.length) return;
-            
-            const ocrResult = ocrResults[ocrIndex];
-            
-            try {
-                // 画像データの取得
-                const imageData = getCharacterImage(ocrResult.box);
-                
-                if (!imageData) {
-                    console.warn("文字画像データを取得できませんでした");
-                    return;
-                }
-                
-                // 学習データに追加
-                const existingIndex = learningData.findIndex(item => item.text === correctChar);
-                
-                if (existingIndex !== -1) {
-                    // 既存の文字に対するサンプルを追加
-                    learningData[existingIndex].samples.push({
-                        imageData: imageData,
-                        confidence: 1.0, // 人間が確認したので信頼度は100%
-                        timestamp: new Date().getTime()
-                    });
-                } else {
-                    // 新しい文字として追加
-                    learningData.push({
-                        text: correctChar,
-                        samples: [{
-                            imageData: imageData,
-                            confidence: 1.0,
-                            timestamp: new Date().getTime()
-                        }]
-                    });
-                }
-                
-                // 学習データ表示を更新
-                updateLearningDataDisplay();
-                
-            } catch (error) {
-                console.error("文字学習エラー:", error);
-                showToast("学習データの追加に失敗しました", "error");
-            }
-        }
-
-        // 文字画像データの取得
-        function getCharacterImage(box) {
-            if (!box) return null;
-            
-            try {
-                // Canvas に画像の一部を描画
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // 画像の縮尺を考慮
-                const scale = sourceImage.naturalWidth / (sourceImage.width * currentZoom);
-                
-                canvas.width = box.width * scale;
-                canvas.height = box.height * scale;
-                
-                try {
-                    ctx.drawImage(
-                        sourceImage,
-                        box.x * scale, box.y * scale, 
-                        box.width * scale, box.height * scale,
-                        0, 0, canvas.width, canvas.height
-                    );
-                    
-                    // Base64エンコードされた画像データを返す
-                    return canvas.toDataURL('image/png');
-                } catch (drawError) {
-                    console.error("Canvas描画エラー（CORS？）:", drawError);
-                    
-                    // フォールバック: プレースホルダー画像を返す
-                    return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
-                }
-            } catch (error) {
-                console.error("文字画像データ取得エラー:", error);
-                return null;
-            }
-        }
-
-        // 学習データの更新
-        function updateLearningData(results) {
-            if (!results || !Array.isArray(results)) return;
-            
-            results.forEach(result => {
-                if (!result || !result.text) return;
-                
-                try {
-                    // 文字画像データの取得
-                    const imageData = getCharacterImage(result.box);
-                    
-                    if (!imageData) {
-                        console.warn("文字画像データを取得できませんでした");
-                        return;
-                    }
-                    
-                    // 信頼度に基づいて学習データに追加
-                    const confidence = result.confidence || 0.5;
-                    
-                    // 既存の文字を探す
-                    const existingIndex = learningData.findIndex(item => item.text === result.text);
-                    
-                    if (existingIndex !== -1) {
-                        // 既存の文字に対するサンプルを追加
-                        if (confidence > 0.6) { // 信頼度が高い場合のみ追加
-                            learningData[existingIndex].samples.push({
-                                imageData: imageData,
-                                confidence: confidence,
-                                timestamp: new Date().getTime()
-                            });
-                        }
-                    } else {
-                        // 新しい文字として追加
-                        learningData.push({
-                            text: result.text,
-                            samples: [{
-                                imageData: imageData,
-                                confidence: confidence,
-                                timestamp: new Date().getTime()
-                            }]
-                        });
-                    }
-                } catch (error) {
-                    console.error("学習データ追加エラー:", error);
-                }
-            });
-            
-            // 学習データの表示を更新
-            updateLearningDataDisplay();
-        }
-
-        // 学習データの表示更新
-        function updateLearningDataDisplay() {
-            if (!learningCharactersContainer) return;
-            
-            // コンテナをクリア
-            learningCharactersContainer.innerHTML = '';
-            
-            if (!learningData || !Array.isArray(learningData) || learningData.length === 0) {
-                learningCharactersContainer.innerHTML = '<p>学習データはまだありません。OCR処理を実行するか、文字候補を修正して学習データを追加してください。</p>';
-                return;
-            }
-            
-            // データをソート（文字コード順）
-            const sortedData = [...learningData].sort((a, b) => a.text.localeCompare(b.text));
-            
-            // 各文字の学習データを表示
-            sortedData.forEach(charData => {
-                if (!charData.text || !charData.samples || !Array.isArray(charData.samples)) return;
-                
-                // 最新のサンプルを使用
-                const latestSample = charData.samples[charData.samples.length - 1];
-                
-                const charElement = document.createElement('div');
-                charElement.className = 'character-item';
-                
-                // 信頼度に応じたバッジクラス
-                let confidenceBadgeClass = 'confidence-badge';
-                if (latestSample.confidence < 0.6) {
-                    confidenceBadgeClass += ' low';
-                } else if (latestSample.confidence < 0.4) {
-                    confidenceBadgeClass += ' very-low';
-                }
-                
-                // 信頼度を%表示
-                const confidencePercent = Math.round((latestSample.confidence || 0) * 100);
-                
-                charElement.innerHTML = `
-                    <div class="character-image">
-                        <img src="${latestSample.imageData}" alt="${charData.text}">
-                        <div class="${confidenceBadgeClass}">${confidencePercent}%</div>
-                    </div>
-                    <div class="character-info">
-                        <div class="character-char">${charData.text}</div>
-                        <div class="character-actions">
-                            <button class="btn btn-sm btn-icon" title="削除">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <button class="btn btn-sm btn-icon" title="編集">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                learningCharactersContainer.appendChild(charElement);
-            });
-        }
-
-        // 画像前処理（OCR精度向上のため）
-        function preprocessImageForOcr(image) {
-            try {
-                // Canvas に画像を描画
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                canvas.width = image.naturalWidth;
-                canvas.height = image.naturalHeight;
-                
-                try {
-                    // まず画像全体を描画
-                    ctx.drawImage(image, 0, 0);
-                    
-                    // 現在の画像状態に基づいて前処理を適用
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-                    
-                    // コントラスト、明るさ、しきい値を適用
-                    const contrast = imageState.contrast / 100;
-                    const brightness = imageState.brightness / 100;
-                    const threshold = imageState.threshold;
-                    
-                    for (let i = 0; i < data.length; i += 4) {
-                        // グレースケール変換
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-                        let v = 0.299 * r + 0.587 * g + 0.114 * b;
-                        
-                        // コントラストと明るさの適用
-                        v = ((v / 255 - 0.5) * contrast + 0.5) * 255 * brightness;
-                        
-                        // しきい値がある場合は二値化
-                        if (threshold > 0) {
-                            v = v < threshold ? 0 : 255;
-                        }
-                        
-                        // RGBすべてに同じ値を設定
-                        data[i] = data[i + 1] = data[i + 2] = v;
-                    }
-                    
-                    ctx.putImageData(imageData, 0, 0);
-                    
-                    // 処理済み画像のBase64を返す
-                    return canvas.toDataURL('image/png');
-                } catch (drawError) {
-                    console.error("Canvas描画エラー（CORS？）:", drawError);
-                    
-                    // CORSエラーの場合は元の画像をそのまま返す
-                    return image.src;
-                }
-            } catch (error) {
-                console.error("画像前処理エラー:", error);
-                return image.src;
-            }
-        }
-
-        // ファイル保存処理
-        async function saveFile() {
-            try {
-                showProcessing('データを保存中...');
-                
-                // 保存するデータの準備
-                const ocrData = {
-                    results: ocrResults,
-                    text: textEditor.innerHTML,
-                    vertical: editorMode === 'vertical',
-                    lastUpdated: new Date().toISOString()
-                };
-                
-                // メタデータの準備
-                const metadata = getMetadataFromForm();
-                
-                // Firebase Firestoreに保存
-                const batch = db.batch();
-                
-                // ファイルのメタデータ更新
-                const fileRef = db.collection('files').doc(currentFileId);
-                batch.update(fileRef, {
-                    metadata: metadata,
-                    lastModified: new Date().toISOString()
-                });
-                
-                // OCR結果の保存
-                const ocrRef = db.collection('ocr_results').doc(currentFileId);
-                batch.set(ocrRef, ocrData, { merge: true });
-                
-                // 学習データの保存
-                if (learningData && learningData.length > 0) {
-                    const learningRef = db.collection('learning_data').doc(currentFileId);
-                    batch.set(learningRef, { characters: learningData }, { merge: true });
-                }
-                
-                // バッチ処理を実行
-                await batch.commit();
-                
-                hideProcessing();
-                showToast('データが正常に保存されました', 'success');
-                
-            } catch (error) {
-                console.error("保存エラー:", error);
-                hideProcessing();
-                showToast('保存に失敗しました: ' + error.message, 'error');
-            }
-        }
-
-        // 編集権限チェック
-        async function checkEditPermission(file) {
-            // ログイン状態確認
-            currentUser = auth.currentUser;
-            
-            if (!currentUser) {
-                // 未ログインユーザーの場合、リダイレクト
-                window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
-                return false;
-            }
-            
-            // オーナー確認
-            if (file.owner === currentUser.uid) {
-                return true;
-            }
-            
-            // 共有設定を確認
-            if (file.shared && Array.isArray(file.sharedWith)) {
-                if (file.sharedWith.includes(currentUser.uid) || file.sharedWith.includes(currentUser.email)) {
-                    return true;
-                }
-            }
-            
-            // 公開設定を確認
-            if (file.public) {
-                return true;
-            }
-            
-            return false;
-        }
-
-        // ズーム処理
-        function updateZoom(delta) {
-            const oldZoom = currentZoom;
-            currentZoom = Math.max(0.1, Math.min(5, currentZoom + delta));
-            
-            // ズームレベル表示の更新
-            zoomLevel.textContent = Math.round(currentZoom * 100) + '%';
-            
-            // 画像サイズの更新
-            sourceImage.style.width = `${sourceImage.naturalWidth * currentZoom}px`;
-            
-            // 文字ボックスのスケールも更新
-            const scaleFactor = currentZoom / oldZoom;
-            document.querySelectorAll('.char-box').forEach(box => {
-                const left = parseFloat(box.style.left);
-                const top = parseFloat(box.style.top);
-                const width = parseFloat(box.style.width);
-                const height = parseFloat(box.style.height);
-                
-                box.style.left = `${left * scaleFactor}px`;
-                box.style.top = `${top * scaleFactor}px`;
-                box.style.width = `${width * scaleFactor}px`;
-                box.style.height = `${height * scaleFactor}px`;
-            });
-        }
-
-        // 画像変換処理（回転、反転など）
-        function applyImageTransformation(type, value) {
-            switch (type) {
-                case 'rotate':
-                    imageState.rotation = (imageState.rotation + value) % 360;
-                    break;
-                case 'flipH':
-                    imageState.flipH = !imageState.flipH;
-                    break;
-                case 'flipV':
-                    imageState.flipV = !imageState.flipV;
-                    break;
-                case 'brightness':
-                    imageState.brightness = value;
-                    break;
-                case 'contrast':
-                    imageState.contrast = value;
-                    break;
-                case 'threshold':
-                    imageState.threshold = value;
-                    break;
-                case 'reset':
-                    imageState = {
-                        rotation: 0,
-                        flipH: false,
-                        flipV: false,
-                        brightness: 100,
-                        contrast: 100,
-                        threshold: 0
-                    };
-                    break;
-            }
-            
-            // 変換の適用
-            applyTransformations();
-        }
-
-        // 画像に変換を適用
-        function applyTransformations() {
-            let transformValue = `rotate(${imageState.rotation}deg)`;
-            
-            if (imageState.flipH) {
-                transformValue += ' scaleX(-1)';
-            }
-            
-            if (imageState.flipV) {
-                transformValue += ' scaleY(-1)';
-            }
-            
-            sourceImage.style.transform = transformValue;
-            
-            // フィルター適用
-            let filterValue = `brightness(${imageState.brightness}%) contrast(${imageState.contrast}%)`;
-            sourceImage.style.filter = filterValue;
-            
-            // しきい値処理は Canvas で行う必要がある（ここではプレビューのみ）
-        }
-
-        // タブ切り替え処理
-        function switchTab(tabId) {
-            tabs.forEach(tab => {
-                if (tab.dataset.tab === tabId) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            tabContents.forEach(content => {
-                if (content.id === `tab-${tabId}`) {
-                    content.classList.add('active');
-                } else {
-                    content.classList.remove('active');
-                }
-            });
-        }
-
-        // テーマ初期化
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            
-            if (savedTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
-            } else {
-                document.documentElement.setAttribute('data-theme', 'light');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
-            }
-        }
-
-        // テーマ切り替え
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            
-            if (currentTheme === 'dark') {
-                document.documentElement.setAttribute('data-theme', 'light');
-                localStorage.setItem('theme', 'light');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
-            }
-        }
-
-        // 処理中表示の表示・非表示
-        function showProcessing(message) {
-            processingStatus.textContent = message || 'Processing...';
-            processingOverlay.style.display = 'flex';
-        }
-        
-        function hideProcessing() {
-            processingOverlay.style.display = 'none';
-        }
-
-        // トースト通知表示
+         // トースト通知表示 (documents.htmlから流用)
         function showToast(message, type = 'info') {
             const toast = document.createElement('div');
-            toast.className = `toast ${type}`;
-            toast.textContent = message;
-            
-            const toastContainer = document.getElementById('toast-container');
+            toast.className = `toast toast-${type}`;
+
+            let icon = '';
+            switch (type) {
+                case 'success': icon = '<i class="fas fa-check-circle toast-icon"></i>'; break;
+                case 'error': icon = '<i class="fas fa-exclamation-circle toast-icon"></i>'; break;
+                case 'warning': icon = '<i class="fas fa-exclamation-triangle toast-icon"></i>'; break;
+                default: icon = '<i class="fas fa-info-circle toast-icon"></i>';
+            }
+
+            toast.innerHTML = `${icon}<div>${message}</div>`;
             toastContainer.appendChild(toast);
-            
-            // 一定時間後に自動的に消える
+
             setTimeout(() => {
-                toast.style.opacity = '0';
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
-                }, 500);
+                toast.remove();
             }, 5000);
         }
 
-        // イベントリスナーの設定
-        function setupEventListeners() {
-            // 保存ボタン
-            saveBtn.addEventListener('click', saveFile);
-            
-            // 戻るボタン
-            backBtn.addEventListener('click', () => {
-                window.location.href = 'documents.html';
-            });
-            
-            // 縦書き切り替え
-            verticalToggle.addEventListener('change', () => {
-                if (verticalToggle.checked) {
-                    textEditor.classList.add('vertical');
-                    editorMode = 'vertical';
-                } else {
-                    textEditor.classList.remove('vertical');
-                    editorMode = 'horizontal';
+        // 資料番号の半角数字制限
+        if (docNumberInput) {
+            docNumberInput.addEventListener('input', (event) => {
+                // 入力値から半角数字以外を除去
+                const sanitizedValue = event.target.value.replace(/[^0-9]/g, '');
+                if (event.target.value !== sanitizedValue) {
+                    event.target.value = sanitizedValue;
+                    // 必要であればユーザーに通知
+                    // showToast('資料番号は半角数字で入力してください。', 'warning');
                 }
-                
-                // テキスト更新
-                updateTextFromOcrResults();
-            });
-            
-            // タブ切り替え
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    switchTab(tab.dataset.tab);
-                });
-            });
-            
-            // テーマ切り替え
-            themeToggle.addEventListener('click', toggleTheme);
-            
-            // 自動OCRボタン
-            selectOcrBtn.addEventListener('click', performAutoOcr);
-            
-            // 選択OCRボタン
-            manualOcrBtn.addEventListener('click', () => {
-                isSelecting = true;
-                showToast('範囲を選択してください', 'info');
-            });
-            
-            // 画像回転・反転ボタン
-            rotateLeftBtn.addEventListener('click', () => applyImageTransformation('rotate', -90));
-            rotateRightBtn.addEventListener('click', () => applyImageTransformation('rotate', 90));
-            flipHBtn.addEventListener('click', () => applyImageTransformation('flipH'));
-            flipVBtn.addEventListener('click', () => applyImageTransformation('flipV'));
-            
-            // 画像調整ボタン
-            brightnessBtn.addEventListener('click', () => {
-                const value = prompt('明るさを入力してください（0-200）', imageState.brightness);
-                if (value !== null) {
-                    applyImageTransformation('brightness', parseInt(value));
-                }
-            });
-            
-            contrastBtn.addEventListener('click', () => {
-                const value = prompt('コントラストを入力してください（0-200）', imageState.contrast);
-                if (value !== null) {
-                    applyImageTransformation('contrast', parseInt(value));
-                }
-            });
-            
-            thresholdBtn.addEventListener('click', () => {
-                const value = prompt('しきい値を入力してください（0-255、0で無効）', imageState.threshold);
-                if (value !== null) {
-                    applyImageTransformation('threshold', parseInt(value));
-                }
-            });
-            
-            resetBtn.addEventListener('click', () => {
-                applyImageTransformation('reset');
-            });
-            
-            // ズームボタン
-            zoomInBtn.addEventListener('click', () => updateZoom(0.1));
-            zoomOutBtn.addEventListener('click', () => updateZoom(-0.1));
-            
-            // テキストコピーボタン
-            copyTextBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(textEditor.innerText)
-                    .then(() => {
-                        showToast('テキストをクリップボードにコピーしました', 'success');
-                    })
-                    .catch(err => {
-                        console.error('テキストコピーエラー:', err);
-                        showToast('テキストのコピーに失敗しました', 'error');
-                    });
-            });
-            
-            // 候補パネルを閉じるボタン
-            closeCandidatesBtn.addEventListener('click', () => {
-                ocrCandidatePanel.style.display = 'none';
-                
-                // アクティブなchar-boxを非アクティブに
-                document.querySelectorAll('.char-box.active').forEach(box => {
-                    box.classList.remove('active');
-                });
-            });
-            
-            // 画像ワークスペースでの選択処理
-            imageWorkspace.addEventListener('mousedown', (e) => {
-                if (!isSelecting) return;
-                
-                // 選択開始位置を取得
-                const rect = imageContainer.getBoundingClientRect();
-                selectionStart = {
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top
-                };
-                
-                // 選択ボックスの初期化
-                selectionBox.style.left = `${selectionStart.x}px`;
-                selectionBox.style.top = `${selectionStart.y}px`;
-                selectionBox.style.width = '0';
-                selectionBox.style.height = '0';
-                selectionBox.style.display = 'block';
-                
-                // マウス移動イベントの追加
-                imageWorkspace.addEventListener('mousemove', handleSelectionMove);
-            });
-            
-            // 選択完了処理
-            imageWorkspace.addEventListener('mouseup', () => {
-                if (!isSelecting) return;
-                
-                imageWorkspace.removeEventListener('mousemove', handleSelectionMove);
-                
-                // 選択範囲が有効かチェック
-                const width = parseInt(selectionBox.style.width);
-                const height = parseInt(selectionBox.style.height);
-                
-                if (width > 20 && height > 20) {
-                    // 有効な選択範囲であればOCR処理
-                    const rect = {
-                        x: parseInt(selectionBox.style.left),
-                        y: parseInt(selectionBox.style.top),
-                        width: width,
-                        height: height
-                    };
-                    
-                    performSelectiveOcr(rect);
-                } else {
-                    showToast('選択範囲が小さすぎます。もう少し大きく選択してください。', 'warning');
-                }
-                
-                // 選択状態をリセット
-                isSelecting = false;
-                selectionBox.style.display = 'none';
             });
         }
 
-        // 選択範囲の移動処理
-        function handleSelectionMove(e) {
-            const rect = imageContainer.getBoundingClientRect();
-            const currentX = e.clientX - rect.left;
-            const currentY = e.clientY - rect.top;
-            
-            // 選択範囲の計算
-            const left = Math.min(selectionStart.x, currentX);
-            const top = Math.min(selectionStart.y, currentY);
-            const width = Math.abs(currentX - selectionStart.x);
-            const height = Math.abs(currentY - selectionStart.y);
-            
-            // 選択ボックスの更新
-            selectionBox.style.left = `${left}px`;
-            selectionBox.style.top = `${top}px`;
-            selectionBox.style.width = `${width}px`;
-            selectionBox.style.height = `${height}px`;
+        // ファイルデータを読み込む関数
+        async function loadFileData(fileId) {
+            imageLoading.style.display = 'block'; // ローディング表示開始
+            editorImage.style.display = 'none';
+            try {
+                const fileDoc = await db.collection('files').doc(fileId).get();
+                if (fileDoc.exists) {
+                    currentFile = { id: fileDoc.id, ...fileDoc.data() };
+
+                    if (currentFile.url && currentFile.fileType === 'image') {
+                        editorImage.src = currentFile.url;
+                        editorImage.alt = currentFile.name;
+                        editorImage.onload = () => { // 画像読み込み完了後
+                             imageLoading.style.display = 'none';
+                             editorImage.style.display = 'block';
+                        };
+                        editorImage.onerror = () => { // 画像読み込みエラー
+                             imageLoading.style.display = 'none';
+                             imagePane.innerHTML = '<p style="color: var(--danger);">画像の読み込みに失敗しました。</p>';
+                             showToast('画像の読み込みに失敗しました。', 'error');
+                        }
+
+                        // メタデータとテキストを読み込む (存在する場合)
+                        docNameInput.value = currentFile.name || '';
+                        docNumberInput.value = currentFile.metadata?.docNumber || '';
+                        eraInput.value = currentFile.metadata?.era || '';
+                        sourceInput.value = currentFile.metadata?.source || '';
+                        verticalText.value = currentFile.transcribedText || '';
+
+                    } else {
+                        imageLoading.style.display = 'none';
+                        imagePane.innerHTML = '<p>画像ファイルが見つからないか、画像タイプではありません。</p>';
+                        showToast('有効な画像ファイルではありません。', 'warning');
+                        // 必要なら資料管理ページへリダイレクトなど
+                    }
+                } else {
+                     imageLoading.style.display = 'none';
+                    imagePane.innerHTML = '<p>ファイルが見つかりません。</p>';
+                     showToast('指定されたファイルが見つかりません。', 'error');
+                }
+            } catch (error) {
+                 imageLoading.style.display = 'none';
+                console.error("ファイルデータ読み込みエラー:", error);
+                 imagePane.innerHTML = '<p>ファイルの読み込み中にエラーが発生しました。</p>';
+                showToast('ファイルの読み込みに失敗しました。', 'error');
+            }
         }
 
-        // アプリケーション初期化
-        window.addEventListener('DOMContentLoaded', init);
+       // 保存処理
+        async function saveData() {
+            if (!currentFileId || !currentUser) {
+                showToast('保存に必要な情報がありません。', 'error');
+                return;
+            }
+
+            // 保存するデータ
+            const dataToSave = {
+                transcribedText: verticalText.value,
+                metadata: {
+                    docNumber: docNumberInput.value,
+                    era: eraInput.value,
+                    source: sourceInput.value,
+                    // 必要に応じて他のメタデータを追加
+                },
+                // 資料名も更新する場合
+                name: docNameInput.value || currentFile.originalName || '名称未設定',
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                 lastEditorId: currentUser.uid, // 最終編集者ID
+                 lastEditorName: currentUser.displayName || '不明なユーザー' // 最終編集者名
+            };
+
+             saveButton.disabled = true; // 保存中はボタンを無効化
+             saveButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 保存中...';
+
+
+            try {
+                await db.collection('files').doc(currentFileId).update(dataToSave);
+                showToast('保存しました。', 'success');
+                // 保存成功後、currentFileの内容も更新（任意）
+                currentFile = { ...currentFile, ...dataToSave };
+                // 資料名が変更された場合、タイトルも更新（任意）
+                if (currentFile.name) {
+                     document.title = `編集: ${currentFile.name} | KatsujiRingX`;
+                }
+
+            } catch (error) {
+                console.error("保存エラー:", error);
+                showToast('保存に失敗しました。', 'error');
+            } finally {
+                 saveButton.disabled = false; // ボタンを再度有効化
+                 saveButton.innerHTML = '<i class="fas fa-save"></i> 保存';
+            }
+        }
+
+        // テーマ切替 (documents.htmlから流用・調整)
+        function initThemeEditor() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            updateThemeButton(savedTheme);
+        }
+
+        function toggleThemeEditor() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+             updateThemeButton(newTheme);
+        }
+
+         function updateThemeButton(theme){
+             if (themeToggleButton) {
+                 const icon = themeToggleButton.querySelector('i');
+                 const label = themeToggleButton.querySelector('.theme-label');
+                if (theme === 'dark') {
+                    icon.className = 'fas fa-sun';
+                     if(label) label.textContent = 'ライトモード';
+                } else {
+                     icon.className = 'fas fa-moon';
+                     if(label) label.textContent = 'ダークモード';
+                }
+            }
+         }
+
+        // --- 初期化処理 ---
+        document.addEventListener('DOMContentLoaded', () => {
+             initThemeEditor(); // テーマ初期化
+
+            // 認証状態の監視
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user; // ログイン中のユーザー情報を保持
+
+                    // URLからファイルIDを取得
+                    const urlParams = new URLSearchParams(window.location.search);
+                    currentFileId = urlParams.get('file');
+
+                    if (currentFileId) {
+                        loadFileData(currentFileId);
+                    } else {
+                         imageLoading.style.display = 'none';
+                        imagePane.innerHTML = '<p>表示するファイルが指定されていません。</p>';
+                         showToast('ファイルIDが指定されていません。', 'error');
+                    }
+                } else {
+                    // ログインしていない場合はログインページへリダイレクト
+                    window.location.href = 'login.html';
+                }
+            });
+
+            // 保存ボタンのイベントリスナー
+            if (saveButton) {
+                saveButton.addEventListener('click', saveData);
+            }
+
+            // 戻るボタンのイベントリスナー
+            if (backButton) {
+                backButton.addEventListener('click', () => {
+                    // 変更が未保存の場合、確認ダイアログを出すなどの処理を追加可能
+                    window.location.href = 'documents.html'; // 資料管理ページへ
+                });
+            }
+
+             // テーマ切替ボタン
+             if (themeToggleButton) {
+                 themeToggleButton.addEventListener('click', toggleThemeEditor);
+             }
+        });
+
     </script>
 </body>
 </html>
