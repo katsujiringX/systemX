@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>崩字解読クイズ </title>
+    
+    <style>
+        /* --- Base Styles & Fonts --- */
+:root {
+    --bg-color: #f3f0e9; /* Traditional Japanese paper color */
+    --panel-bg: #ffffff; /* White panels */
+    --sushi-plate-bg: #f9f9f9;
+    --sushi-plate-border: #e0e0e0; /* Light gray border */
+    --header-bg: #d42c2c; /* Deeper sushi red for header */
+    --button-primary-bg: #4aac67; /* Wasabi green for buttons */
+    --button-primary-hover: #3a9756;
+    --button-secondary-bg: #f6b93b; /* Egg yellow for secondary */
+    --button-secondary-hover: #e59400;
+    --text-color: #333333;
+    --correct-color: #2ecc71;
+    --incorrect-color: #e74c3c;
+    --font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h100v100H0z" fill="none"/><path d="M0 20h100M20 0v100" stroke="%23e0dfda" stroke-width="1"/></svg>');
+    background-size: 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 20px;
+    color: var(--text-color);
+    min-height: 100vh; /* Ensure body takes full height */
+    box-sizing: border-box;
+}
+
+h1 {
+    background-color: var(--header-bg);
+    color: white;
+    padding: 15px 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 30px;
+    font-size: 2em;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.2);
+    transform: rotate(-1deg);
+    position: relative;
+}
+
+
+
+/* --- Area Containers --- */
+.panel {
+    background-color: var(--panel-bg);
+    padding: 30px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    width: 90%;
+    max-width: 550px; /* Slightly wider */
+    text-align: center;
+    margin-bottom: 25px;
+    border: 2px solid #f0f0f0;
+    transition: transform 0.3s ease;
+}
+
+.panel:hover {
+    transform: translateY(-5px);
+}
+
+
+
+/* --- Level Selection --- */
+#level-selection-area h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: var(--header-bg);
+    font-size: 1.8em;
+    position: relative;
+    display: inline-block;
+}
+
+#level-selection-area h2::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background-color: var(--button-secondary-bg);
+    border-radius: 2px;
+}
+
+#level-selection-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* --- Level Selection Buttons Centering --- */
+#level-selection-area button {
+    font-size: 1.3em;
+    padding: 15px 30px;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--button-secondary-bg);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    width: 80%;
+    max-width: 250px;
+    margin: 12px auto; /* Changed: using auto for left/right margins */
+    display: block; /* Ensures the element takes up full width */
+}
+
+#level-selection-area button:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.5s ease;
+}
+
+#level-selection-area button:hover {
+    background-color: var(--button-secondary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 10px rgba(0, 0, 0, 0.15);
+}
+
+#level-selection-area button:hover:before {
+    left: 100%;
+}
+
+#level-selection-area button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+/* Responsive adjustments for level selection */
+@media (max-width: 600px) {
+    #level-selection-area button {
+        font-size: 1.1em;
+        padding: 12px 20px;
+        width: 85%;
+        margin: 10px 0;
+    }
+}
+
+
+
+
+/* Responsive adjustments for level selection */
+@media (max-width: 600px) {
+    #level-selection-area div:not([id]) {
+        flex-direction: row;
+        gap: 10px;
+    }
+    
+    #level-selection-area button {
+        font-size: 1.1em;
+        padding: 12px 15px;
+        min-width: 80px;
+    }
+}
+
+/* --- Game Area (Initially Hidden) --- */
+#game-area {
+    display: none; /* Initially hidden */
+    position: relative; /* For back button positioning if needed */
+}
+
+/* --- Timer and Progress Bar --- */
+#timer-container {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+#timer {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: var(--header-bg);
+}
+
+#progress-bar-container {
+    width: 100%;
+    background-color: #f0f0f0;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    height: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#progress-bar {
+    height: 12px;
+    background: linear-gradient(90deg, var(--button-primary-bg) 0%, var(--button-primary-hover) 100%);
+    border-radius: var(--border-radius);
+    width: 100%;
+    transition: width 1s linear;
+}
+
+#question-counter {
+    font-size: 1em;
+    color: #555;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* --- Sushi Plate Style for Image --- */
+#question-area p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: var(--header-bg);
+    font-weight: bold;
+}
+
+.sushi-plate {
+    background-color: var(--sushi-plate-bg);
+    border: 4px solid var(--sushi-plate-border);
+    border-radius: 50%; /* Circular plate */
+    width: 220px; /* Slightly larger plate */
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 25px auto; /* Center the plate */
+    box-shadow: var(--box-shadow), inset 0 0 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.sushi-plate:hover {
+    transform: rotate(5deg);
+}
+
+.sushi-plate::after {
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 10px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+#kuzushiji-image {
+    display: block;
+    max-width: 85%; /* Ensure image fits well */
+    max-height: 85%;
+    border: none; /* Remove default image border if any */
+    filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.2));
+    transition: transform 0.2s ease;
+}
+
+.sushi-plate:hover #kuzushiji-image {
+    transform: scale(1.05);
+}
+
+/* --- Choices Buttons --- */
+#choices-area {
+    margin-top: 30px;
+    margin-bottom: 25px;
+    display: flex; /* Use flexbox for button layout */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    justify-content: center; /* Center buttons */
+    gap: 15px; /* Space between buttons */
+}
+
+#choices-area button {
+    font-size: 1.5em; /* Larger font for choices */
+    padding: 15px 25px;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--button-primary-bg);
+    color: white;
+    transition: all 0.3s ease;
+    min-width: 80px; /* Ensure minimum size */
+    flex-grow: 1; /* Allow buttons to grow */
+    flex-basis: 100px; /* Base size before growing */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+#choices-area button:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.5s ease;
+}
+
+#choices-area button:hover:not(:disabled) { 
+    background-color: var(--button-primary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 10px rgba(0, 0, 0, 0.15);
+}
+
+#choices-area button:hover:not(:disabled):before {
+    left: 100%;
+}
+
+#choices-area button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+#choices-area button:disabled {
+    background-color: #bdc3c7; /* Gray out disabled buttons */
+    cursor: default;
+    box-shadow: none;
+    transform: none;
+}
+
+/* --- Feedback Area --- */
+#feedback-area {
+    margin-top: 25px;
+    min-height: 2.5em; /* Ensure space for message */
+    font-weight: bold;
+    font-size: 1.3em;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    transition: all 0.3s ease;
+}
+
+#feedback-area.correct {
+    color: var(--correct-color);
+    background-color: rgba(46, 204, 113, 0.1);
+    animation: pulse 1s;
+}
+
+#feedback-area.incorrect {
+    color: var(--incorrect-color);
+    background-color: rgba(231, 76, 60, 0.1);
+    animation: shake 0.5s;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* --- Score & Next Button --- */
+ #score-area {
+    margin-top: 20px;
+    font-size: 1.3em;
+    color: #333;
+    font-weight: bold;
+    background: linear-gradient(45deg, var(--button-primary-bg), var(--button-primary-hover));
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 30px;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#next-button-area {
+    margin-top: 25px;
+}
+
+#next-button {
+    font-size: 1.2em;
+    padding: 12px 30px;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--button-secondary-bg);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+#next-button:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.5s ease;
+}
+
+#next-button:hover {
+    background-color: var(--button-secondary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 10px rgba(0, 0, 0, 0.15);
+}
+
+#next-button:hover:before {
+    left: 100%;
+}
+
+#next-button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Back Button --- */
+#back-button-area {
+    text-align: left;
+    margin-bottom: 20px; /* Add space below back button */
+}
+
+#back-button {
+    font-size: 1em;
+    padding: 8px 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: #e0e0e0; /* Neutral color */
+    color: var(--text-color);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#back-button:hover {
+    background-color: #d0d0d0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#back-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Results Area --- */
+#results-area {
+    display: none;
+    text-align: center;
+    margin-top: 20px;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#results-area h2 {
+    margin-top: 0;
+    color: var(--header-bg);
+    font-size: 2em;
+    position: relative;
+    display: inline-block;
+    margin-bottom: 30px;
+}
+
+#results-area h2::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background-color: var(--button-secondary-bg);
+    border-radius: 2px;
+}
+
+.results-stat {
+    margin: 15px 0 5px;
+    font-size: 1.2em;
+    color: #555;
+}
+
+.results-score {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: var(--button-secondary-bg);
+    margin: 5px 0 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+    display: inline-block;
+    padding: 5px 25px;
+    border-radius: 30px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.retry-button {
+    font-size: 1.2em;
+    margin-top: 30px;
+    padding: 15px 30px;
+    cursor: pointer;
+    border: none;
+    border-radius: var(--border-radius);
+    background-color: var(--button-secondary-bg);
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.retry-button:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transition: left 0.5s ease;
+}
+
+.retry-button:hover {
+    background-color: var(--button-secondary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 10px rgba(0, 0, 0, 0.15);
+}
+
+.retry-button:hover:before {
+    left: 100%;
+}
+
+.retry-button:active {
+    transform: translateY(0);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.6em;
+        padding: 12px 25px;
+    }
+    
+    .panel {
+        padding: 20px;
+    }
+    
+    #level-selection-area button {
+        font-size: 1.1em;
+        margin: 8px;
+        padding: 12px 20px;
+    }
+    
+    .sushi-plate {
+        width: 180px;
+        height: 180px;
+    }
+    
+    #choices-area button {
+        font-size: 1.3em;
+        padding: 12px 15px;
+    }
+}
+    </style>
+</head>
+<body>
+    <h1>崩字解読クイズ</h1>
+
+    <div id="level-selection-area" class="panel">
+        <h2>レベルを選んでください</h2>
+        <button onclick="selectLevel(1)">初級</button>
+        <button onclick="selectLevel(2)">中級</button>
+        <button onclick="selectLevel(3)">上級</button>
+    </div>
+
+    <div id="game-area" class="panel">
+        <div id="back-button-area">
+             <button id="back-button" onclick="showLevelSelection()">レベル選択に戻る</button>
+        </div>
+
+        <div id="timer-container">
+            <div id="timer">残り時間: <span id="time-display">60</span>秒</div>
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+            <div id="question-counter">問題: <span id="current-question">1</span>/30</div>
+        </div>
+
+        <div id="question-area">
+            <p>この文字は何でしょう？</p>
+            <div class="sushi-plate">
+                <img id="kuzushiji-image" src="" alt="崩字画像">
+            </div>
+        </div>
+
+        <div id="choices-area">
+            <!-- Choices will be inserted here -->
+        </div>
+
+        <div id="feedback-area">
+            <!-- Feedback will appear here -->
+        </div>
+
+         <div id="score-area">
+            スコア: <span id="score">0</span>
+        </div>
+
+        <div id="next-button-area">
+            <button id="next-button" style="display: none;">次の問題へ</button>
+        </div>
+    </div>
+
+    <div id="results-area" class="panel">
+        <h2>ゲーム終了</h2>
+        <div class="results-stat">正解数:</div>
+        <div class="results-score"><span id="final-score">0</span>/30</div>
+        <div class="results-stat">正解率:</div>
+        <div class="results-score"><span id="accuracy">0</span>%</div>
+        <div class="results-stat">平均解答時間:</div>
+        <div class="results-score"><span id="avg-time">0</span>秒/問</div>
+        <button class="retry-button" onclick="showLevelSelection()">もう一度挑戦する</button>
+    </div>
+
+    <script>
+        // --- ゲームデータ ---
+        const allQuizData = [
+          // --- 初級 ---
+          { image: "images/ka_dummy.png", answer: "か", difficulty: 1 }, 
+          { image: "images/i_dummy.png", answer: "い", difficulty: 1 }, 
+          { image: "images/u_dummy.png", answer: "う", difficulty: 1 }, 
+          { image: "images/e_dummy.png", answer: "え", difficulty: 1 }, 
+          { image: "images/o_dummy.png", answer: "お", difficulty: 1 },
+          { image: "images/ki_dummy.png", answer: "き", difficulty: 1 },
+          { image: "images/ku_dummy.png", answer: "く", difficulty: 1 },
+          { image: "images/ke_dummy.png", answer: "け", difficulty: 1 },
+          { image: "images/ko_dummy.png", answer: "こ", difficulty: 1 },
+          { image: "images/sa_dummy.png", answer: "さ", difficulty: 1 },
+          { image: "images/ka_dummy.png", answer: "か", difficulty: 1 }, 
+          { image: "images/i_dummy.png", answer: "い", difficulty: 1 }, 
+          { image: "images/u_dummy.png", answer: "う", difficulty: 1 }, 
+          { image: "images/e_dummy.png", answer: "え", difficulty: 1 }, 
+          { image: "images/o_dummy.png", answer: "お", difficulty: 1 },
+          { image: "images/ki_dummy.png", answer: "き", difficulty: 1 },
+          { image: "images/ku_dummy.png", answer: "く", difficulty: 1 },
+          { image: "images/ke_dummy.png", answer: "け", difficulty: 1 },
+          { image: "images/ko_dummy.png", answer: "こ", difficulty: 1 },
+          { image: "images/sa_dummy.png", answer: "さ", difficulty: 1 },
+          { image: "images/ka_dummy.png", answer: "か", difficulty: 1 }, 
+          { image: "images/i_dummy.png", answer: "い", difficulty: 1 }, 
+          { image: "images/u_dummy.png", answer: "う", difficulty: 1 }, 
+          { image: "images/e_dummy.png", answer: "え", difficulty: 1 }, 
+          { image: "images/o_dummy.png", answer: "お", difficulty: 1 },
+          { image: "images/ki_dummy.png", answer: "き", difficulty: 1 },
+          { image: "images/ku_dummy.png", answer: "く", difficulty: 1 },
+          { image: "images/ke_dummy.png", answer: "け", difficulty: 1 },
+          { image: "images/ko_dummy.png", answer: "こ", difficulty: 1 },
+          { image: "images/sa_dummy.png", answer: "さ", difficulty: 1 },
+          // --- 中級 ---
+          { image: "images/he_dummy.png", answer: "へ", difficulty: 2 }, 
+          { image: "images/ru_dummy.png", answer: "る", difficulty: 2 }, 
+          { image: "images/to_dummy.png", answer: "と", difficulty: 2 }, 
+          { image: "images/shi_dummy.png", answer: "し", difficulty: 2 }, 
+          { image: "images/kan_dummy.png", answer: "変", difficulty: 2 },
+          { image: "images/te_dummy.png", answer: "て", difficulty: 2 },
+          { image: "images/no_dummy.png", answer: "の", difficulty: 2 },
+          { image: "images/ha_dummy.png", answer: "は", difficulty: 2 },
+          { image: "images/mi_dummy.png", answer: "み", difficulty: 2 },
+          { image: "images/yo_dummy.png", answer: "よ", difficulty: 2 },
+          { image: "images/he_dummy.png", answer: "へ", difficulty: 2 }, 
+          { image: "images/ru_dummy.png", answer: "る", difficulty: 2 }, 
+          { image: "images/to_dummy.png", answer: "と", difficulty: 2 }, 
+          { image: "images/shi_dummy.png", answer: "し", difficulty: 2 }, 
+          { image: "images/kan_dummy.png", answer: "変", difficulty: 2 },
+          { image: "images/te_dummy.png", answer: "て", difficulty: 2 },
+          { image: "images/no_dummy.png", answer: "の", difficulty: 2 },
+          { image: "images/ha_dummy.png", answer: "は", difficulty: 2 },
+          { image: "images/mi_dummy.png", answer: "み", difficulty: 2 },
+          { image: "images/yo_dummy.png", answer: "よ", difficulty: 2 },
+          { image: "images/he_dummy.png", answer: "へ", difficulty: 2 }, 
+          { image: "images/ru_dummy.png", answer: "る", difficulty: 2 }, 
+          { image: "images/to_dummy.png", answer: "と", difficulty: 2 }, 
+          { image: "images/shi_dummy.png", answer: "し", difficulty: 2 }, 
+          { image: "images/kan_dummy.png", answer: "変", difficulty: 2 },
+          { image: "images/te_dummy.png", answer: "て", difficulty: 2 },
+          { image: "images/no_dummy.png", answer: "の", difficulty: 2 },
+          { image: "images/ha_dummy.png", answer: "は", difficulty: 2 },
+          { image: "images/mi_dummy.png", answer: "み", difficulty: 2 },
+          { image: "images/yo_dummy.png", answer: "よ", difficulty: 2 },
+          // --- 上級 ---
+          { image: "images/wa_dummy.png", answer: "わ", difficulty: 3 }, 
+          { image: "images/ri_dummy.png", answer: "り", difficulty: 3 }, 
+          { image: "images/nu_dummy.png", answer: "ぬ", difficulty: 3 }, 
+          { image: "images/ari_dummy.png", answer: "有", difficulty: 3 }, 
+          { image: "images/ko_dummy.png", answer: "こ", difficulty: 3 },
+          { image: "images/ho_dummy.png", answer: "ほ", difficulty: 3 },
+          { image: "images/mu_dummy.png", answer: "む", difficulty: 3 },
+          { image: "images/su_dummy.png", answer: "す", difficulty: 3 },
+          { image: "images/me_dummy.png", answer: "め", difficulty: 3 },
+          { image: "images/mo_dummy.png", answer: "も", difficulty: 3 },
+          { image: "images/wa_dummy.png", answer: "わ", difficulty: 3 }, 
+          { image: "images/ri_dummy.png", answer: "り", difficulty: 3 }, 
+          { image: "images/nu_dummy.png", answer: "ぬ", difficulty: 3 }, 
+          { image: "images/ari_dummy.png", answer: "有", difficulty: 3 }, 
+          { image: "images/ko_dummy.png", answer: "こ", difficulty: 3 },
+          { image: "images/ho_dummy.png", answer: "ほ", difficulty: 3 },
+          { image: "images/mu_dummy.png", answer: "む", difficulty: 3 },
+          { image: "images/su_dummy.png", answer: "す", difficulty: 3 },
+          { image: "images/me_dummy.png", answer: "め", difficulty: 3 },
+          { image: "images/mo_dummy.png", answer: "も", difficulty: 3 },
+          { image: "images/wa_dummy.png", answer: "わ", difficulty: 3 }, 
+          { image: "images/ri_dummy.png", answer: "り", difficulty: 3 }, 
+          { image: "images/nu_dummy.png", answer: "ぬ", difficulty: 3 }, 
+          { image: "images/ari_dummy.png", answer: "有", difficulty: 3 }, 
+          { image: "images/ko_dummy.png", answer: "こ", difficulty: 3 },
+          { image: "images/ho_dummy.png", answer: "ほ", difficulty: 3 },
+          { image: "images/mu_dummy.png", answer: "む", difficulty: 3 },
+          { image: "images/su_dummy.png", answer: "す", difficulty: 3 },
+          { image: "images/me_dummy.png", answer: "め", difficulty: 3 },
+          { image: "images/mo_dummy.png", answer: "も", difficulty: 3 }
+        ];
+        // ★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★
+
+        // --- HTML要素の取得 ---
+        const imageElement = document.getElementById('kuzushiji-image');
+        const choicesArea = document.getElementById('choices-area');
+        const feedbackArea = document.getElementById('feedback-area');
+        const nextButton = document.getElementById('next-button');
+        const scoreElement = document.getElementById('score');
+        const finalScoreElement = document.getElementById('final-score');
+        const accuracyElement = document.getElementById('accuracy');
+        const avgTimeElement = document.getElementById('avg-time');
+        const timerElement = document.getElementById('time-display');
+        const progressBar = document.getElementById('progress-bar');
+        const questionCounterElement = document.getElementById('current-question');
+        const levelSelectionArea = document.getElementById('level-selection-area');
+        const gameArea = document.getElementById('game-area');
+        const resultsArea = document.getElementById('results-area');
+
+        // --- ゲームの状態管理 ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let currentQuestions = [];
+        let timerInterval;
+        let timeRemaining = 60; // 初期制限時間（レベルによって変わる）
+        let totalGameTime = 0;
+        let questionStartTime;
+        let questionTimes = [];
+        const TOTAL_QUESTIONS = 30;
+        const allAnswers = [...new Set(allQuizData.map(q => q.answer))];
+
+        // --- 関数定義 ---
+
+        // 問題を画面に表示する関数
+        function displayQuestion() {
+            feedbackArea.textContent = '';
+            feedbackArea.className = ''; // Clear feedback class
+            nextButton.style.display = 'none';
+            choicesArea.innerHTML = '';
+
+            if (currentQuestions.length === 0 || currentQuestionIndex >= currentQuestions.length) {
+                endGame();
+                return;
+            }
+
+            document.querySelector('.sushi-plate').style.display = 'flex'; // Show plate
+            questionCounterElement.textContent = currentQuestionIndex + 1;
+            
+            const question = currentQuestions[currentQuestionIndex];
+            imageElement.src = question.image;
+            imageElement.alt = `崩字: ${question.answer}`;
+
+            imageElement.onerror = () => {
+                imageElement.alt = `画像 "${question.image}" が見つかりません`;
+                // Optionally display text inside the plate on error
+                imageElement.style.display = 'none'; // Hide broken img icon
+                const plate = document.querySelector('.sushi-plate');
+                plate.innerHTML = `<p style="font-size: 0.8em; color: grey;">画像<br>なし</p>`; // Show text in plate
+            };
+            // Ensure img is visible if previously hidden by error
+            imageElement.style.display = 'block';
+
+            const options = generateOptions(question.answer);
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option, question.answer);
+                choicesArea.appendChild(button);
+            });
+
+            questionStartTime = Date.now();
+        }
+
+        // 選択肢を生成する関数
+        function generateOptions(correctAnswer) {
+            const options = [correctAnswer];
+            while (options.length < 4 && options.length < allAnswers.length) {
+                const randomIndex = Math.floor(Math.random() * allAnswers.length);
+                const dummy = allAnswers[randomIndex];
+                if (!options.includes(dummy)) {
+                    options.push(dummy);
+                }
+            }
+            return shuffleArray(options);
+        }
+
+        // 配列をシャッフルする関数
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 回答をチェックする関数
+        function checkAnswer(selectedOption, correctAnswer) {
+            const buttons = choicesArea.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+
+            // 回答時間を記録
+            const answerTime = (Date.now() - questionStartTime) / 1000; // 秒単位
+            questionTimes.push(answerTime);
+
+            if (selectedOption === correctAnswer) {
+                feedbackArea.textContent = '正解！';
+                feedbackArea.className = 'correct';
+                score++;
+                scoreElement.textContent = score;
+            } else {
+                feedbackArea.textContent = `残念！ 正解は「${correctAnswer}」`;
+                feedbackArea.className = 'incorrect';
+            }
+
+            // 自動的に次の問題へ進む（寿司打風）
+            setTimeout(() => nextQuestion(), 1000);
+        }
+
+        // 次の問題へ進む関数
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length && currentQuestionIndex < TOTAL_QUESTIONS) {
+                displayQuestion();
+            } else {
+                endGame();
+            }
+        }
+
+        // タイマーを開始する関数
+        function startTimer(seconds) {
+            timeRemaining = seconds;
+            timerElement.textContent = timeRemaining;
+            progressBar.style.width = '100%';
+            
+            // タイマーを設定
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                timerElement.textContent = timeRemaining;
+                
+                // プログレスバーの更新
+                const percentRemaining = (timeRemaining / seconds) * 100;
+                progressBar.style.width = `${percentRemaining}%`;
+                
+                // 時間切れの場合
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // ゲームを開始する関数
+        function startGame(difficulty) {
+            // レベルに応じて制限時間を設定
+            let timeLimit;
+            switch(difficulty) {
+                case 1: timeLimit = 60; break; // 初級: 60秒
+                case 2: timeLimit = 30; break; // 中級: 30秒
+                case 3: timeLimit = 25; break; // 上級: 25秒
+                default: timeLimit = 60;
+            }
+            
+            // 既存の問題からレベルに合うものを選択
+            let availableQuestions = allQuizData.filter(q => q.difficulty === difficulty);
+            
+            // 30問ない場合は複製して増やす
+            while (availableQuestions.length < TOTAL_QUESTIONS) {
+                availableQuestions = availableQuestions.concat(availableQuestions);
+            }
+            
+            // シャッフルしてTOTAL_QUESTIONS分を取得
+            currentQuestions = shuffleArray(availableQuestions).slice(0, TOTAL_QUESTIONS);
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            questionTimes = [];
+            scoreElement.textContent = score;
+            feedbackArea.textContent = '';
+            feedbackArea.className = '';
+            choicesArea.innerHTML = '';
+            nextButton.style.display = 'none';
+
+            levelSelectionArea.style.display = 'none';
+            gameArea.style.display = 'block';
+            resultsArea.style.display = 'none';
+
+            // Reset potential error state in plate
+            const plate = document.querySelector('.sushi-plate');
+            plate.innerHTML = ''; // Clear potential error text
+            plate.appendChild(imageElement); // Ensure image tag is back
+            imageElement.style.display = 'block';
+
+            // タイマー開始
+            startTimer(timeLimit);
+
+            // 最初の問題を表示
+            displayQuestion();
+        }
+
+        // ゲーム終了関数
+        function endGame() {
+            clearInterval(timerInterval);
+            
+            // 結果画面を表示
+            gameArea.style.display = 'none';
+            resultsArea.style.display = 'block';
+            
+            // 結果を表示
+            finalScoreElement.textContent = score;
+            
+            // 正解率の計算 (小数点以下切り捨て)
+            const accuracy = Math.floor((score / (currentQuestionIndex || 1)) * 100);
+            accuracyElement.textContent = accuracy;
+            
+            // 平均回答時間の計算 (小数点第2位まで)
+            let avgTime = 0;
+            if (questionTimes.length > 0) {
+                const sum = questionTimes.reduce((a, b) => a + b, 0);
+                avgTime = (sum / questionTimes.length).toFixed(2);
+            }
+            avgTimeElement.textContent = avgTime;
+        }
+
+        // レベル選択ボタンが押されたときの処理
+        function selectLevel(difficulty) {
+            startGame(difficulty);
+        }
+
+        // 「レベル選択に戻る」ボタンが押されたときの処理
+        function showLevelSelection() {
+            clearInterval(timerInterval);
+            gameArea.style.display = 'none';
+            resultsArea.style.display = 'none';
+            levelSelectionArea.style.display = 'block';
+        }
+
+        // --- 初期状態の設定 ---
+        levelSelectionArea.style.display = 'block';
+        gameArea.style.display = 'none';
+        resultsArea.style.display = 'none';
+    </script>
+</body>
+</html>
