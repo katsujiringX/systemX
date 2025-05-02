@@ -5980,6 +5980,237 @@ auth.onAuthStateChanged(async user => {
         showToast('認証処理に失敗しました。ページを再読み込みしてください。', 'error');
     }
 });
+// フォルダ一覧の取得（サイドバー用）
+async function loadFolders() {
+    try {
+        // フォルダリストの初期化
+        const folderListOptions = {
+            root: 'ルート'
+        };
+        
+        // モーダル内のフォルダリストをクリア
+        if (uploadFolder) uploadFolder.innerHTML = '<option value="root">ルート</option>';
+        if (parentFolder) parentFolder.innerHTML = '<option value="root">ルート</option>';
+        if (moveDestination) moveDestination.innerHTML = '<option value="root">ルート</option>';
+        if (batchMoveDestination) batchMoveDestination.innerHTML = '<option value="root">ルート</option>';
+        
+        // サイドバーが存在すれば初期化
+        if (folderListContainer) {
+            // ルートフォルダは常に表示
+            const rootItem = document.createElement('li');
+            rootItem.className = currentFolder === 'root' ? 'sidebar-item active' : 'sidebar-item';
+            rootItem.setAttribute('data-folder', 'root');
+            rootItem.innerHTML = '<i class="fas fa-folder"></i> ルート';
+            rootItem.addEventListener('click', () => changeFolder('root'));
+            
+            // フォルダリストをクリア
+            folderListContainer.innerHTML = '';
+            folderListContainer.appendChild(rootItem);
+        }
+        
+        try {
+            // ユーザーのフォルダを取得（ゴミ箱以外）
+            const myFoldersQuery = db.collection('folders')
+                .where('userId', '==', currentUser.uid)
+                .where('trashed', '==', false);
+            
+            const myFoldersSnapshot = await myFoldersQuery.get();
+            myFoldersSnapshot.forEach(doc => {
+                const folder = { id: doc.id, ...doc.data() };
+                // フォルダ名をマッピングに追加
+                folderNameMap[folder.id] = folder.name;
+                folderListOptions[folder.id] = folder.name;
+                
+                // サイドバーが存在すればそこにも追加
+                if (folderListContainer) {
+                    addFolderToSidebar(doc);
+                }
+                
+                // 常にドロップダウンに追加
+                addFolderToDropdowns(folder);
+            });
+            
+            // 共有フォルダの取得（自分に共有されているフォルダ）
+            const sharedFoldersQuery = db.collection('folders')
+                .where('visibility', '==', 'shared')
+                .where('sharedWith', 'array-contains', currentUser.uid)
+                .where('trashed', '==', false);
+            
+            const sharedFoldersSnapshot = await sharedFoldersQuery.get();
+            sharedFoldersSnapshot.forEach(doc => {
+                const folder = { id: doc.id, ...doc.data() };
+                // フォルダ名をマッピングに追加
+                folderNameMap[folder.id] = folder.name;
+                folderListOptions[folder.id] = `${folder.name} (共有)`;
+                
+                // サイドバーが存在すればそこにも追加
+                if (folderListContainer) {
+                    addFolderToSidebar(doc, '共有');
+                }
+                
+                // 常にドロップダウンに追加
+                addFolderToDropdowns(folder, '共有');
+            });
+            
+            // 公開フォルダの取得
+            const publicFoldersQuery = db.collection('folders')
+                .where('visibility', '==', 'public')
+                .where('trashed', '==', false);
+            
+            const publicFoldersSnapshot = await publicFoldersQuery.get();
+            publicFoldersSnapshot.forEach(doc => {
+                const folder = { id: doc.id, ...doc.data() };
+                // 自分のフォルダは除外（すでに表示済み）
+                if (folder.userId !== currentUser.uid) {
+                    // フォルダ名をマッピングに追加
+                    folderNameMap[folder.id] = folder.name;
+                    folderListOptions[folder.id] = `${folder.name} (公開)`;
+                    
+                    // サイドバーが存在すればそこにも追加
+                    if (folderListContainer) {
+                        addFolderToSidebar(doc, '公開');
+                    }
+                    
+                    // 常にドロップダウンに追加
+                    addFolderToDropdowns(folder, '公開');
+                }
+            });
+        } catch (error) {
+            console.error("フォルダ一覧取得エラー:", error);
+            showToast('フォルダ一覧の取得に失敗しました', 'warning');
+        }
+    } catch (error) {
+        console.error("フォルダ一覧取得エラー:", error);
+    }
+}
+
+// ドロップダウンにフォルダを追加する関数
+function addFolderToDropdowns(folder, shareType = '') {
+    const folderLabel = shareType ? `${folder.name} (${shareType})` : folder.name;
+    
+    // アップロードモーダル用
+    if (uploadFolder) {
+        const uploadOption = document.createElement('option');
+        uploadOption.value = folder.id;
+        uploadOption.textContent = folderLabel;
+        uploadFolder.appendChild(uploadOption);
+    }
+    
+    // 新規フォルダモーダル用
+    if (parentFolder) {
+        const parentOption = document.createElement('option');
+        parentOption.value = folder.id;
+        parentOption.textContent = folderLabel;
+        parentFolder.appendChild(parentOption);
+    }
+    
+    // 移動モーダル用
+    if (moveDestination) {
+        const moveOption = document.createElement('option');
+        moveOption.value = folder.id;
+        moveOption.textContent = folderLabel;
+        moveDestination.appendChild(moveOption);
+    }
+    
+    // 一括移動モーダル用
+    if (batchMoveDestination) {
+        const batchMoveOption = document.createElement('option');
+        batchMoveOption.value = folder.id;
+        batchMoveOption.textContent = folderLabel;
+        batchMoveDestination.appendChild(batchMoveOption);
+    }
+}
+// アップロードモーダルを表示する関数を修正
+if (uploadBtn) {
+    uploadBtn.addEventListener('click', () => {
+        if (uploadModal) {
+            // 現在のフォルダを自動選択
+            if (uploadFolder) {
+                uploadFolder.value = currentFolder;
+            }
+            
+            // 前回の共有設定を復元（localStorage から取得）
+            const lastVisibility = localStorage.getItem('lastVisibility') || 'personal';
+            if (uploadVisibility) {
+                uploadVisibility.value = lastVisibility;
+                
+                // 共有設定に応じてユーザー選択部分の表示/非表示を切り替え
+                if (lastVisibility === 'shared' && shareUsersContainer) {
+                    shareUsersContainer.style.display = 'block';
+                    
+                    // 前回選択したユーザーIDを復元
+                    const lastSelectedUsers = JSON.parse(localStorage.getItem('lastSelectedUsers') || '[]');
+                    if (lastSelectedUsers.length > 0) {
+                        // 選択済みユーザーを設定
+                        selectedUserIds.clear();
+                        setSelectedUsers(lastSelectedUsers);
+                    }
+                } else if (shareUsersContainer) {
+                    shareUsersContainer.style.display = 'none';
+                }
+            }
+            
+            uploadModal.classList.add('show');
+        }
+    });
+}
+
+// アップロード処理の後に共有設定を保存する処理を追加
+async function uploadFiles(files) {
+    // 既存のコード...
+    
+    // アップロード先フォルダと共有設定
+    const folder = uploadFolder.value;
+    const visibility = uploadVisibility.value;
+    
+    // 現在の設定を保存
+    localStorage.setItem('lastVisibility', visibility);
+    
+    // 選択されたユーザーIDを取得（共有設定の場合）
+    let sharedWith = [];
+    if (visibility === 'shared') {
+        sharedWith = Array.from(selectedUserIds);
+        // 選択済みユーザーを保存
+        localStorage.setItem('lastSelectedUsers', JSON.stringify(sharedWith));
+    }
+    
+    // 以下、既存のコード...
+}
+
+// 空の状態からのアップロードボタンも同様に修正
+if (emptyUploadBtn) {
+    emptyUploadBtn.addEventListener('click', () => {
+        if (uploadModal) {
+            // 現在のフォルダを自動選択
+            if (uploadFolder) {
+                uploadFolder.value = currentFolder;
+            }
+            
+            // 前回の共有設定を復元
+            const lastVisibility = localStorage.getItem('lastVisibility') || 'personal';
+            if (uploadVisibility) {
+                uploadVisibility.value = lastVisibility;
+                
+                // 共有設定に応じてユーザー選択部分の表示/非表示を切り替え
+                if (lastVisibility === 'shared' && shareUsersContainer) {
+                    shareUsersContainer.style.display = 'block';
+                    
+                    // 前回選択したユーザーIDを復元
+                    const lastSelectedUsers = JSON.parse(localStorage.getItem('lastSelectedUsers') || '[]');
+                    if (lastSelectedUsers.length > 0) {
+                        // 選択済みユーザーを設定
+                        selectedUserIds.clear();
+                        setSelectedUsers(lastSelectedUsers);
+                    }
+                } else if (shareUsersContainer) {
+                    shareUsersContainer.style.display = 'none';
+                }
+            }
+            
+            uploadModal.classList.add('show');
+        }
+    });
+}
 </script>
 </body>
 </html>
