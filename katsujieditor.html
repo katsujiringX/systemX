@@ -396,18 +396,72 @@
             max-width: 40%;
         }
 
-        .metadata-form, .text-editor {
+        /* タブスタイル */
+        .tab-container {
             background-color: var(--bg-color-card);
-            border-radius: var(--border-radius);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
             box-shadow: var(--shadow);
             transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
             overflow: hidden;
+        }
+
+        .tabs-header {
+            display: flex;
+            background-color: var(--bg-color-card);
+            overflow: hidden;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.25rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all var(--transition-fast);
+            flex: 1;
+            justify-content: center;
+        }
+
+        .tab-button:hover {
+            color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+
+        .tab-button i {
+            font-size: 1rem;
+        }
+
+        .tab-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
         }
 
-        .metadata-form {
-            flex-shrink: 0;
+        .metadata-form, .text-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-color-card);
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            box-shadow: var(--shadow);
+            transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
+            overflow: hidden;
         }
 
         .card-header {
@@ -1057,48 +1111,61 @@
             </div>
         </div>
 
+        <!-- ここから右側のタブ付きエリア -->
         <div class="text-pane">
-            <div class="metadata-form">
-                <div class="card-header">
-                    <h2><i class="fas fa-info-circle"></i> 資料情報</h2>
+            <!-- タブヘッダー -->
+            <div class="tab-container">
+                <div class="tabs-header">
+                    <button class="tab-button" data-tab="metadata" id="metadata-tab-btn">
+                        <i class="fas fa-info-circle"></i> 資料情報
+                    </button>
+                    <button class="tab-button active" data-tab="text" id="text-tab-btn">
+                        <i class="fas fa-edit"></i> 活字化テキスト
+                    </button>
                 </div>
-                <div class="card-body">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="metadata-doc-number" class="form-label">資料番号</label>
-                            <input type="text" id="metadata-doc-number" class="form-control" placeholder="例: 12345 (半角数字)">
-                        </div>
-                        <div class="form-group">
-                            <label for="metadata-doc-name" class="form-label">資料名</label>
-                            <input type="text" id="metadata-doc-name" class="form-control" placeholder="資料名を入力">
-                        </div>
-                        <div class="form-group">
-                            <label for="metadata-era" class="form-label">年代</label>
-                            <input type="text" id="metadata-era" class="form-control" placeholder="例: 明治時代, 1900年代">
-                        </div>
-                        <div class="form-group">
-                            <label for="metadata-source" class="form-label">所蔵</label>
-                            <input type="text" id="metadata-source" class="form-control" placeholder="所蔵機関名などを入力">
-                        </div>
-                        <div class="form-group">
-                            <label for="metadata-staff" class="form-label">担当者</label>
-                            <input type="text" id="metadata-staff" class="form-control" placeholder="担当者名を入力">
+            </div>
+
+            <!-- タブコンテンツ：メタデータフォーム -->
+            <div class="tab-content" id="metadata-tab" style="display: none;">
+                <div class="metadata-form">
+                    <div class="card-body">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="metadata-doc-number" class="form-label">資料番号</label>
+                                <input type="text" id="metadata-doc-number" class="form-control" placeholder="例: 12345 (半角数字)">
+                            </div>
+                            <div class="form-group">
+                                <label for="metadata-doc-name" class="form-label">資料名</label>
+                                <input type="text" id="metadata-doc-name" class="form-control" placeholder="資料名を入力">
+                            </div>
+                            <div class="form-group">
+                                <label for="metadata-era" class="form-label">年代</label>
+                                <input type="text" id="metadata-era" class="form-control" placeholder="例: 明治時代, 1900年代">
+                            </div>
+                            <div class="form-group">
+                                <label for="metadata-source" class="form-label">所蔵</label>
+                                <input type="text" id="metadata-source" class="form-control" placeholder="所蔵機関名などを入力">
+                            </div>
+                            <div class="form-group">
+                                <label for="metadata-staff" class="form-label">担当者</label>
+                                <input type="text" id="metadata-staff" class="form-control" placeholder="担当者名を入力">
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="text-editor">
-                <div class="card-header">
-                    <h2><i class="fas fa-edit"></i> 活字化テキスト</h2>
-                </div>
-                <div class="card-body">
-                    <div class="vertical-text-container">
-                        <textarea id="vertical-text" placeholder="ここに活字化したテキストを入力します..."></textarea>
-                    </div>
-                    <div class="text-stats" id="text-stats">
-                        <i class="fas fa-font"></i>
-                        <span id="char-count">0</span> 文字
+            <!-- タブコンテンツ：テキストエディタ -->
+            <div class="tab-content" id="text-tab">
+                <div class="text-editor">
+                    <div class="card-body">
+                        <div class="vertical-text-container">
+                            <textarea id="vertical-text" placeholder="ここに活字化したテキストを入力します..."></textarea>
+                        </div>
+                        <div class="text-stats" id="text-stats">
+                            <i class="fas fa-font"></i>
+                            <span id="char-count">0</span> 文字
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1176,6 +1243,23 @@
                             <span class="key">D</span>
                         </div>
                     </div>
+                    <!-- タブ切替のショートカット追加 -->
+                    <div class="shortcut-item">
+                        <div class="shortcut-name">資料情報タブ</div>
+                        <div class="shortcut-combo">
+                            <span class="key">Alt</span>
+                            <span class="key-plus">+</span>
+                            <span class="key">1</span>
+                        </div>
+                    </div>
+                    <div class="shortcut-item">
+                        <div class="shortcut-name">テキストタブ</div>
+                        <div class="shortcut-combo">
+                            <span class="key">Alt</span>
+                            <span class="key-plus">+</span>
+                            <span class="key">2</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1228,6 +1312,12 @@
         const shortcutModal = document.getElementById('shortcut-modal');
         const shortcutModalClose = document.getElementById('shortcut-modal-close');
 
+        // タブ関連の要素
+        const metadataTabBtn = document.getElementById('metadata-tab-btn');
+        const textTabBtn = document.getElementById('text-tab-btn');
+        const metadataTab = document.getElementById('metadata-tab');
+        const textTab = document.getElementById('text-tab');
+
         // 状態管理変数
         let currentFileId = null;
         let currentFile = null;
@@ -1243,6 +1333,56 @@
         const MIN_ZOOM = 0.1;
         const MAX_ZOOM = 10;
         const ZOOM_STEP = 0.1;
+
+        // ------------------------
+        // タブ切り替え機能
+        // ------------------------
+        function setupTabs() {
+            // デフォルトでテキストタブを表示
+            activateTab('text');
+
+            // タブボタンにイベントリスナーを設定
+            metadataTabBtn.addEventListener('click', () => activateTab('metadata'));
+            textTabBtn.addEventListener('click', () => activateTab('text'));
+
+            // Alt+1, Alt+2 でのタブ切り替えショートカット
+            window.addEventListener('keydown', (e) => {
+                // テキストエリアでの入力中は一部ショートカットを無効化
+                const isInputActive = document.activeElement.tagName === 'INPUT' || 
+                                    document.activeElement.tagName === 'TEXTAREA';
+                
+                // タブ切り替えはテキスト入力中でも有効にする
+                if (e.altKey && e.key === '1') {
+                    e.preventDefault();
+                    activateTab('metadata');
+                } else if (e.altKey && e.key === '2') {
+                    e.preventDefault();
+                    activateTab('text');
+                }
+            });
+        }
+
+        function activateTab(tabId) {
+            // タブボタンを切り替え
+            if (tabId === 'metadata') {
+                metadataTabBtn.classList.add('active');
+                textTabBtn.classList.remove('active');
+                metadataTab.style.display = 'flex';
+                textTab.style.display = 'none';
+            } else {
+                metadataTabBtn.classList.remove('active');
+                textTabBtn.classList.add('active');
+                metadataTab.style.display = 'none';
+                textTab.style.display = 'flex';
+            }
+
+            // ショートカットトーストを表示
+            if (tabId === 'metadata') {
+                showToast('資料情報タブに切り替えました', 'info');
+            } else {
+                showToast('テキストタブに切り替えました', 'info');
+            }
+        }
 
         // ------------------------
         // トースト通知システム
@@ -1707,6 +1847,20 @@
                 return;
             }
             
+            // Alt+1: メタデータタブ
+            if (e.altKey && e.key === '1') {
+                e.preventDefault();
+                activateTab('metadata');
+                return;
+            }
+            
+            // Alt+2: テキストタブ
+            if (e.altKey && e.key === '2') {
+                e.preventDefault();
+                activateTab('text');
+                return;
+            }
+            
             // 入力中でない場合のみ有効なショートカット
             if (!isInputActive) {
                 // +: 拡大
@@ -1852,6 +2006,9 @@
             setupDocNumberValidation();
             setupCharCounter();
             setupChangeTracking();
+            
+            // タブ機能をセットアップ
+            setupTabs();
 
             // 認証状態の監視
             auth.onAuthStateChanged(user => {
