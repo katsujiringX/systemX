@@ -3,267 +3,592 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
     <title>資料検索システム | KatsujiRingX</title>
-
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <!-- SheetJS (js-xlsx) -->
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
-    <!-- ★★★ 日本語フォントデータ (必須) ★★★ -->
-    <!-- このファイルがない場合、PDFの日本語が文字化けします -->
+    <!-- 日本語フォントデータ (必須) -->
     <script src="notosansjp-regular-normal.js"></script>
-
+    
     <style>
-        /* --- Reset & Base --- */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         :root {
-            --font-sans: 'Noto Sans JP', sans-serif;
-            /* Light Theme Variables */
-            --primary-light: #4f46e5; --primary-hover-light: #4338ca; --primary-light-light: #e0e7ff;
-            --text-primary-light: #111827; --text-secondary-light: #4b5563; --text-muted-light: #6b7280;
-            --bg-main-light: #f8fafc; --bg-card-light: #ffffff; --bg-subtle-light: #f1f5f9;
-            --border-light: #e5e7eb; --border-focus-light: var(--primary-light);
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --radius: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem;
-            /* Dark Theme Variables */
-            --primary-dark: #818cf8; --primary-hover-dark: #6366f1; --primary-light-dark: rgba(99, 102, 241, 0.15);
-            --text-primary-dark: #e5e7eb; --text-secondary-dark: #9ca3af; --text-muted-dark: #6b7280;
-            --bg-main-dark: #0f172a; --bg-card-dark: #1e293b; --bg-subtle-dark: #374151;
-            --border-dark: #374151; --border-focus-dark: var(--primary-dark);
-            /* Common Variables */
-            --transition: 0.2s ease-in-out;
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
         }
-        /* Default Theme Assignment (Light) */
-        :root {
-            --primary: var(--primary-light); --primary-hover: var(--primary-hover-light); --primary-light-bg: var(--primary-light-light);
-            --text-primary: var(--text-primary-light); --text-secondary: var(--text-secondary-light); --text-muted: var(--text-muted-light);
-            --bg-main: var(--bg-main-light); --bg-card: var(--bg-card-light); --bg-subtle: var(--bg-subtle-light);
-            --border-color: var(--border-light); --border-focus: var(--border-focus-light);
-        }
-        /* Dark Theme Assignment */
+        
         [data-theme="dark"] {
-            --primary: var(--primary-dark); --primary-hover: var(--primary-hover-dark); --primary-light-bg: var(--primary-light-dark);
-            --text-primary: var(--text-primary-dark); --text-secondary: var(--text-secondary-dark); --text-muted: var(--text-muted-dark);
-            --bg-main: var(--bg-main-dark); --bg-card: var(--bg-card-dark); --bg-subtle: var(--bg-subtle-dark);
-            --border-color: var(--border-dark); --border-focus: var(--border-focus-dark);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
         }
-
-        html { scroll-behavior: smooth; }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: var(--font-sans); background-color: var(--bg-main); color: var(--text-primary);
-            font-size: 14px; line-height: 1.6; min-height: 100vh;
-            transition: background-color var(--transition), color var(--transition);
-            display: flex; flex-direction: column; /* Ensure footer pushes down */
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
         }
-        button, input, select, textarea { font: inherit; }
-        a { color: var(--primary); text-decoration: none; transition: color var(--transition); }
-        a:hover { color: var(--primary-hover); }
-        h1, h2, h3 { font-weight: 700; line-height: 1.3; color: var(--text-primary); margin-bottom: 0.5em;}
-        h2 { font-size: 1.25rem; } h3 { font-size: 1.1rem; }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin var(--transition-normal);
+        }
+        
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
 
-        /* --- Utility Classes --- */
-        .container { max-width: 1280px; margin-left: auto; margin-right: auto; padding-left: 1.5rem; padding-right: 1.5rem; width: 100%; }
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
-        /* 改善: ハイライトを濃くする */
-        .highlight { 
-            background-color: #ffd700; 
-            color: #000000; 
-            border-radius: 0.2em; 
-            padding: 0.1em 0.2em; 
-            box-decoration-break: clone; 
-            -webkit-box-decoration-break: clone; 
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
             font-weight: 500;
+            margin-bottom: 0.125rem;
         }
-        [data-theme="dark"] .highlight { 
-            background-color: #ffc000; 
-            color: #000000; 
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
         }
-        .text-muted { color: var(--text-muted); }
-
-        /* --- Header --- */
-        .main-header {
-            background-color: var(--bg-card); border-bottom: 1px solid var(--border-color);
-            padding: 0.8rem 0; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow);
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
         }
-        .main-header .container { display: flex; justify-content: space-between; align-items: center; }
-        .main-header .logo { font-size: 1.4rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 0.6rem;}
-        .main-header .logo img { height: 2rem; }
-        .header-actions { display: flex; align-items: center; gap: 0.75rem; }
-
-        /* --- User Profile Dropdown --- */
-        .profile-dropdown { position: relative; }
-        .profile-button {
-            display: flex; align-items: center; gap: 0.5rem; background: none; border: none; cursor: pointer;
-            padding: 0.3rem; border-radius: 99px; transition: background-color var(--transition);
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
         }
-         .profile-button:hover { background-color: var(--bg-subtle); }
-        .profile-avatar {
-            width: 2.25rem; height: 2.25rem; border-radius: 50%; background-color: var(--bg-subtle);
-            display: flex; align-items: center; justify-content: center; font-weight: 500; color: var(--text-secondary);
-            overflow: hidden; border: 1px solid var(--border-color);
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
         }
-        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-name { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); margin-left: 0.25rem; }
-        .profile-button i.fa-chevron-down { font-size: 0.7em; color: var(--text-muted); margin-left: 0.25rem;}
-        .profile-menu {
-            position: absolute; top: calc(100% + 0.5rem); right: 0; background-color: var(--bg-card);
-            border-radius: var(--radius); box-shadow: var(--shadow-md); border: 1px solid var(--border-color);
-            width: 200px; z-index: 110; opacity: 0; visibility: hidden; transform: translateY(-10px);
-            transition: opacity var(--transition), visibility var(--transition), transform var(--transition);
+        
+        /* カードセクション */
+        .card-section {
+            margin-bottom: 2rem;
         }
-        .profile-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
-        .profile-menu .menu-header {
-             padding: 0.75rem 1rem; border-bottom: 1px solid var(--border-color);
-             margin-bottom: 0.5rem;
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
         }
-         .profile-menu .menu-header div:first-child { font-weight: 500; color: var(--text-primary); margin-bottom: 0.1rem;}
-         .profile-menu .menu-header div:last-child { font-size: 0.8rem; color: var(--text-muted); word-break: break-all; }
-        .profile-menu a, .profile-menu button {
-            display: flex; align-items: center; gap: 0.75rem; width: 100%; text-align: left;
-            padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--text-secondary); background: none; border: none; cursor: pointer;
+        
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
         }
-        .profile-menu a:hover, .profile-menu button:hover { background-color: var(--bg-subtle); color: var(--text-primary); }
-        .profile-menu i { width: 1rem; text-align: center; color: var(--text-muted); }
-
-        /* --- Main Content Area --- */
-        .main-content { padding-top: 2rem; padding-bottom: 3rem; flex: 1; } /* Ensure main takes up space */
-
-        /* --- Search Form Area (Integrated) --- */
-        .search-form-area {
-            background-color: var(--bg-card); padding: 1.5rem; border-radius: var(--radius-lg);
-            box-shadow: var(--shadow); border: 1px solid var(--border-color); margin-bottom: 2rem;
+        
+        .section-actions {
+            display: flex;
+            gap: 0.5rem;
         }
-        .search-form-area h2 {
-             font-size: 1.125rem; font-weight: 600; margin-bottom: 1.25rem;
-             padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color);
-             display: flex; align-items: center; gap: 0.6rem; color: var(--text-primary);
-         }
-         .search-form-area h2 i { color: var(--primary); }
-        .search-form-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem 1.25rem; margin-bottom: 1.5rem;
+        
+        .card {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
         }
-        .form-group { margin: 0; }
-        .form-label { display: block; margin-bottom: 0.375rem; font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); }
-        .form-control {
-             display: block; width: 100%; padding: 0.6rem 0.8rem; font-size: 0.9rem;
-             border: 1px solid var(--border-color); border-radius: var(--radius); background-color: var(--bg-main); color: var(--text-primary);
-             transition: border-color var(--transition), box-shadow var(--transition);
-         }
-         .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light-bg); }
-         [data-theme="dark"] .form-control { background-color: var(--bg-main-dark); border-color: var(--gray-600);}
-          [data-theme="dark"] .form-control:focus { box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2); }
-        .search-actions {
-             display: flex; justify-content: flex-end; gap: 0.75rem;
-             padding-top: 1rem; border-top: 1px solid var(--border-color); margin-top: 1rem;
-         }
-
-        /* --- Button Styles --- */
+        
+        [data-theme="dark"] .card {
+            background-color: #1e293b;
+        }
+        
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        
+        /* ボタンスタイル */
         .btn {
-            display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;
-            padding: 0.6rem 1.2rem; border-radius: var(--radius); font-size: 0.875rem; font-weight: 500;
-            text-decoration: none; transition: all 0.2s ease; cursor: pointer; border: 1px solid transparent;
-            line-height: 1.4;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
         }
-         .btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-        .btn i { margin-right: 0.5rem; font-size: 0.9em; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; background-color: var(--bg-subtle); color: var(--text-muted); border-color: var(--border-color);}
-         [data-theme="dark"] .btn:disabled { background-color: var(--gray-700); color: var(--gray-500); border-color: var(--gray-600); }
-        .btn-primary { background-color: var(--primary); color: white; border-color: var(--primary); }
-        .btn-primary:hover:not(:disabled) { background-color: var(--primary-hover); border-color: var(--primary-hover); }
-        .btn-secondary { background-color: var(--text-secondary); color: white; border-color: var(--text-secondary); }
-        .btn-secondary:hover:not(:disabled) { background-color: var(--text-primary); border-color: var(--text-primary); }
-        [data-theme="dark"] .btn-secondary { background-color: var(--text-secondary); border-color: var(--text-secondary); }
-         [data-theme="dark"] .btn-secondary:hover:not(:disabled) { background-color: var(--text-primary); border-color: var(--text-primary); }
-        .btn-outline { background-color: transparent; border-color: var(--border-color); color: var(--text-secondary); }
-        .btn-outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background-color: var(--primary-light-bg); }
-         [data-theme="dark"] .btn-outline { border-color: var(--gray-600); color: var(--gray-400); }
-         [data-theme="dark"] .btn-outline:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); background-color: rgba(129, 140, 248, 0.1); }
-        .btn-ghost { background-color: transparent; border-color: transparent; color: var(--text-secondary); }
-        .btn-ghost:hover:not(:disabled) { background-color: var(--bg-subtle); color: var(--primary); }
-        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8125rem; }
-        .btn-icon { padding: 0.5rem; } .btn-icon i { margin-right: 0; }
-
-         /* --- Dropdown --- */
-         .dropdown { position: relative; display: inline-block; }
-         .dropdown-toggle::after {
-             display: inline-block; margin-left: 0.5em; vertical-align: 0.15em;
-             content: ""; border-top: 0.35em solid; border-right: 0.35em solid transparent;
-             border-bottom: 0; border-left: 0.35em solid transparent; opacity: 0.7;
-         }
-         .dropdown-menu {
-             position: absolute; top: calc(100% + 0.25rem); right: 0;
-             background-color: var(--bg-card); min-width: 180px;
-             border-radius: var(--radius); box-shadow: var(--shadow-md); border: 1px solid var(--border-color);
-             z-index: 110; margin-top: 0.25rem; padding: 0.5rem 0;
-             opacity: 0; visibility: hidden; transform: translateY(-5px);
-             transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
-         }
-         .dropdown-menu.active { opacity: 1; visibility: visible; transform: translateY(0); }
-         .dropdown-item {
-             display: flex; align-items: center; gap: 0.6rem;
-             width: 100%; padding: 0.6rem 1rem; clear: both;
-             font-weight: 400; color: var(--text-secondary); text-align: inherit; white-space: nowrap;
-             background-color: transparent; border: 0; cursor: pointer; font-size: 0.875rem;
-         }
-         .dropdown-item:hover { background-color: var(--bg-subtle); color: var(--text-primary); }
-         .dropdown-item i { color: var(--text-muted); width: 1em; text-align: center; }
-
-
-        /* --- Results Options & Grid --- */
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            padding: 0;
+            border-radius: 50%;
+        }
+        
+        .btn-icon i {
+            margin-right: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background-color: white;
+            color: var(--text-color);
+            font-size: 0.875rem;
+            transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+        [data-theme="dark"] .form-control {
+            background-color: #1e293b;
+            border-color: var(--border-color);
+        }
+        
+        /* 検索フォームエリア */
+        .search-form-area {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+        
+        [data-theme="dark"] .search-form-area {
+            background-color: #1e293b;
+        }
+        
+        .search-form-area h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .search-form-area h2 i {
+            color: var(--primary);
+        }
+        
+        .search-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* 検索結果 */
         .results-options {
-             display: flex; flex-wrap: wrap;
-             justify-content: space-between; align-items: center;
-             margin-bottom: 1.5rem; padding-bottom: 1rem;
-             border-bottom: 1px solid var(--border-color);
-             gap: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
         }
-        .results-info { color: var(--text-secondary); font-size: 0.9rem; flex-shrink: 0; }
-        .results-controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-        .form-check { display: flex; align-items: center; gap: 0.4rem; font-size: 0.875rem; cursor: pointer; color: var(--text-secondary); }
-         .form-check input[type="checkbox"] { cursor: pointer; margin-right: 0.2rem; width: 1rem; height: 1rem; accent-color: var(--primary);}
-         .form-check:hover { color: var(--text-primary); }
-
-        /* --- Results List (リスト型) --- */
+        
+        .results-info {
+            color: var(--text-muted);
+        }
+        
+        .results-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        /* リスト型表示 */
         .results-list {
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
         }
-
+        
         .result-item {
-            background-color: var(--bg-card);
+            background-color: white;
             border-radius: var(--radius);
             border: 1px solid var(--border-color);
             box-shadow: var(--shadow-sm);
-            overflow: hidden;
             display: flex;
             transition: all 0.2s ease;
             position: relative;
+            overflow: hidden;
         }
-
+        
+        [data-theme="dark"] .result-item {
+            background-color: #1e293b;
+        }
+        
         .result-item:hover {
             box-shadow: var(--shadow-md);
             border-color: var(--primary);
         }
-
+        
         .result-item.selected {
             border-color: var(--primary);
-            background-color: var(--primary-light-bg);
+            background-color: var(--primary-light);
         }
-
+        
+        [data-theme="dark"] .result-item.selected {
+            background-color: rgba(99, 102, 241, 0.15);
+        }
+        
         .item-checkbox {
             display: flex;
             align-items: center;
@@ -271,72 +596,53 @@
             padding: 0 0.75rem;
             border-right: 1px solid var(--border-color);
         }
-
+        
         .item-checkbox input[type="checkbox"] {
             cursor: pointer;
             width: 1.15rem;
             height: 1.15rem;
-            border-radius: 0.25rem;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-card);
-            appearance: none;
-            -webkit-appearance: none;
-            transition: var(--transition);
+            accent-color: var(--primary);
         }
-
-        .item-checkbox input[type="checkbox"]:checked {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .item-checkbox input[type="checkbox"]:checked::after {
-            content: '';
-            display: block;
-            width: 0.3rem;
-            height: 0.6rem;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg) translate(-50%, -50%);
-            position: absolute;
-            top: 45%;
-            left: 50%;
-        }
-
+        
         .item-thumbnail {
             width: 80px;
             min-width: 80px;
             height: 80px;
-            background-color: var(--bg-subtle);
+            background-color: var(--gray-100);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
         }
-
+        
+        [data-theme="dark"] .item-thumbnail {
+            background-color: #273549;
+        }
+        
         .item-thumbnail img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-
+        
         .item-thumbnail .no-image-icon {
             font-size: 1.75rem;
             color: var(--text-muted);
         }
-
+        
         .item-content {
             display: flex;
             flex: 1;
             overflow: hidden;
             padding: 0.75rem;
         }
-
+        
         .item-main {
             flex: 1;
-            min-width: 0; /* 必須: テキストの省略が機能するために */
+            min-width: 0;
             margin-right: 0.75rem;
         }
-
+        
         .item-title {
             font-size: 0.95rem;
             font-weight: 600;
@@ -345,7 +651,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
+        
         .item-meta {
             display: flex;
             flex-wrap: wrap;
@@ -353,31 +659,35 @@
             font-size: 0.75rem;
             margin-bottom: 0.4rem;
         }
-
+        
         .meta-item {
             display: inline-flex;
             align-items: center;
             gap: 0.25rem;
-            background-color: var(--bg-subtle);
+            background-color: var(--gray-100);
             padding: 0.15rem 0.4rem;
             border-radius: 3px;
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
-
+        
+        [data-theme="dark"] .meta-item {
+            background-color: #273549;
+        }
+        
         .meta-item i {
             font-size: 0.7rem;
             color: var(--text-muted);
         }
-
+        
         .item-excerpt {
             font-size: 0.8rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             display: -webkit-box;
             -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-
+        
         .item-actions {
             display: flex;
             align-items: center;
@@ -385,58 +695,359 @@
             min-width: 100px;
             padding-right: 0.75rem;
         }
-
+        
         .item-date {
             font-size: 0.7rem;
             color: var(--text-muted);
             margin-bottom: 0.4rem;
             text-align: right;
         }
-
-        /* --- Status Messages --- */
-        .status-message {
-            text-align: center; padding: 3rem 1rem; color: var(--text-secondary);
-            border: 1px dashed var(--border-color); border-radius: var(--radius);
-            background-color: var(--bg-card); display: none; margin-top: 1rem;
+        
+        /* ハイライト */
+        .highlight {
+            background-color: #ffd700;
+            color: #000000;
+            border-radius: 0.2rem;
+            padding: 0.1em 0.2em;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+            font-weight: 500;
         }
-         .status-message i { font-size: 1.5rem; margin-bottom: 0.8rem; display: block; color: var(--text-muted);}
-         .status-message p { margin-top: 0.75rem; font-size: 0.9rem; }
-         .loading-spinner { width: 32px; height: 32px; border: 3px solid rgba(0, 0, 0, 0.1); border-left-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; }
-         [data-theme="dark"] .loading-spinner { border-color: rgba(255, 255, 255, 0.1); border-left-color: var(--primary); }
-         @keyframes spin { to { transform: rotate(360deg); } }
-
-
-        /* --- Toast --- */
-        .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 1000; display: flex; flex-direction: column; gap: 0.75rem;}
+        
+        [data-theme="dark"] .highlight {
+            background-color: #ffc000;
+            color: #000000;
+        }
+        
+        /* トースト */
+        .toast-container {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
         .toast {
-            display: flex; align-items: center; gap: 0.75rem;
-            padding: 0.875rem 1.25rem; border-radius: var(--radius-md); background-color: var(--bg-card);
-            box-shadow: var(--shadow-md); min-width: 280px; max-width: 400px; border: 1px solid var(--border-color);
-            border-left-width: 4px; /* For status color */
-            opacity: 0; transform: translateX(20px); transition: all 0.3s ease; font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            border-radius: var(--radius-md);
+            background-color: white;
+            box-shadow: var(--shadow-md);
+            min-width: 280px;
+            max-width: 400px;
+            border: 1px solid var(--border-color);
+            border-left-width: 4px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
-         .toast.show { opacity: 1; transform: translateX(0); }
-         .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
-         .toast.success { border-left-color: #22c55e; } .toast.success .toast-icon { color: #22c55e; }
-         .toast.error { border-left-color: #ef4444; } .toast.error .toast-icon { color: #ef4444; }
-         .toast.warning { border-left-color: #f59e0b; } .toast.warning .toast-icon { color: #f59e0b; }
-         .toast.info { border-left-color: #3b82f6; } .toast.info .toast-icon { color: #3b82f6; }
-         [data-theme="dark"] .toast { background-color: var(--bg-subtle-dark); border-color: var(--border-dark); }
-
-
-        /* --- Responsive --- */
+        
+        [data-theme="dark"] .toast {
+            background-color: #1e293b;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast-icon {
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .toast.success {
+            border-left-color: var(--success);
+        }
+        
+        .toast.success .toast-icon {
+            color: var(--success);
+        }
+        
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+        
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+        
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+        
+        .toast.warning .toast-icon {
+            color: var(--warning);
+        }
+        
+        .toast.info {
+            border-left-color: var(--info);
+        }
+        
+        .toast.info .toast-icon {
+            color: var(--info);
+        }
+        
+        /* ステータスメッセージ */
+        .status-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            background-color: white;
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        [data-theme="dark"] .status-message {
+            background-color: #1e293b;
+        }
+        
+        .status-message i {
+            font-size: 1.5rem;
+            margin-bottom: 0.8rem;
+            display: block;
+            color: var(--text-muted);
+        }
+        
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+            border-left-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+        
+        [data-theme="dark"] .loading-spinner {
+            border-color: rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary);
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        /* ドロップダウン */
+        .dropdown {
+            position: relative;
+        }
+        
+        .dropdown-toggle::after {
+            display: inline-block;
+            margin-left: 0.5em;
+            vertical-align: 0.15em;
+            content: "";
+            border-top: 0.35em solid;
+            border-right: 0.35em solid transparent;
+            border-bottom: 0;
+            border-left: 0.35em solid transparent;
+            opacity: 0.7;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 0.25rem);
+            right: 0;
+            background-color: white;
+            min-width: 180px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            z-index: 110;
+            margin-top: 0.25rem;
+            padding: 0.5rem 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+        }
+        
+        [data-theme="dark"] .dropdown-menu {
+            background-color: #1e293b;
+        }
+        
+        .dropdown-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            width: 100%;
+            padding: 0.6rem 1rem;
+            clear: both;
+            font-weight: 400;
+            color: var(--text-color);
+            text-align: inherit;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .dropdown-item:hover {
+            background-color: #273549;
+        }
+        
+        .dropdown-item i {
+            color: var(--text-muted);
+            width: 1em;
+            text-align: center;
+        }
+        
+        /* プロフィールメニュー */
+        .profile-menu {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background-color: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            width: 200px;
+            z-index: 110;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity var(--transition-normal), visibility var(--transition-normal), transform var(--transition-normal);
+        }
+        
+        [data-theme="dark"] .profile-menu {
+            background-color: #1e293b;
+        }
+        
+        .profile-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .profile-menu .menu-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-menu .menu-header div:first-child {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 0.1rem;
+        }
+        
+        .profile-menu .menu-header div:last-child {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            word-break: break-all;
+        }
+        
+        .profile-menu a, .profile-menu button {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: var(--text-color);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .profile-menu a:hover, .profile-menu button:hover {
+            background-color: var(--gray-100);
+        }
+        
+        [data-theme="dark"] .profile-menu a:hover, [data-theme="dark"] .profile-menu button:hover {
+            background-color: #273549;
+        }
+        
+        .profile-menu i {
+            width: 1rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        
+        /* チェックボックス */
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+        
+        .form-check input[type="checkbox"] {
+            cursor: pointer;
+            margin-right: 0.2rem;
+            width: 1rem;
+            height: 1rem;
+            accent-color: var(--primary);
+        }
+        
+        .form-check:hover {
+            color: var(--text-color);
+        }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 240px;
+            }
+            
+            .main-content {
+                margin-left: 240px;
+            }
+        }
+        
         @media (max-width: 768px) {
-             .container { padding-left: 1rem; padding-right: 1rem; }
-             .main-content { padding: 1.5rem 1rem; }
-             .search-form-grid { grid-template-columns: 1fr; }
-             .profile-name { display: none; }
-             .header-actions { gap: 0.5rem; }
-             .header-actions .btn span { display: none; }
-             .header-actions .btn i { margin-right: 0; }
-             .results-options { flex-direction: column; align-items: flex-start; }
-         }
-         
-        /* レスポンシブ対応 - リスト表示 */
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .search-form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .results-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+        
         @media (max-width: 640px) {
             .item-thumbnail {
                 display: none;
@@ -448,112 +1059,170 @@
         }
     </style>
 </head>
-<body data-theme="light">
-
-    <header class="main-header">
-        <div class="container">
-            <a href="mainpage.html" class="logo">
-                <!-- <img src="katsujiRingX.png" alt="Logo"> -->
-                <span>資料検索</span>
-            </a>
-            <div class="header-actions">
-                 <div class="profile-dropdown">
-                     <button class="profile-button" id="profile-button" aria-haspopup="true" aria-expanded="false">
-                         <div class="profile-avatar" id="profile-avatar"><i class="fas fa-user"></i></div>
-                         <span class="profile-name" id="profile-name">ユーザー</span>
-                         <i class="fas fa-chevron-down"></i>
-                     </button>
-                     <div class="profile-menu" id="profile-menu" role="menu">
-                          <div class="menu-header">
-                              <div id="menu-user-name">ユーザー名</div>
-                              <div id="menu-user-email">email@example.com</div>
-                          </div>
-                         <button id="logout-button" role="menuitem"><i class="fas fa-sign-out-alt fa-fw"></i>ログアウト</button>
-                     </div>
-                 </div>
-                <button id="theme-toggle" class="btn btn-ghost btn-icon" aria-label="テーマ切替"><i class="fas fa-moon"></i></button>
-            </div>
-        </div>
-    </header>
-
-    <main class="main-content container">
-        <!-- --- 検索フォーム --- -->
-        <div class="search-form-area">
-            <form id="search-form">
-                <h2><i class="fas fa-search"></i>検索条件</h2>
-                <div class="search-form-grid">
-                    <div class="form-group">
-                        <label for="search-keyword" class="form-label">キーワード</label>
-                        <input type="search" id="search-keyword" class="form-control" placeholder="資料名、本文など">
-                    </div>
-                    <div class="form-group">
-                        <label for="search-doc-number" class="form-label">資料番号</label>
-                        <input type="text" id="search-doc-number" class="form-control" placeholder="半角・ハイフン可">
-                    </div>
-                    <div class="form-group">
-                        <label for="search-era" class="form-label">年代</label>
-                        <input type="text" id="search-era" class="form-control" placeholder="部分一致">
-                    </div>
-                    <div class="form-group">
-                        <label for="search-source" class="form-label">所蔵</label>
-                        <input type="text" id="search-source" class="form-control" placeholder="部分一致">
-                    </div>
-                    <div class="form-group">
-                        <label for="search-handler" class="form-label">担当者名</label>
-                        <input type="text" id="search-handler" class="form-control" placeholder="部分一致">
-                    </div>
-                </div>
-                 <div class="search-actions">
-                     <button type="button" id="clear-search-btn" class="btn btn-outline">条件をクリア</button>
-                     <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> 検索実行</button>
-                 </div>
-            </form>
-        </div>
-
-        <!-- --- 検索結果オプション --- -->
-        <div class="results-options">
-            <div class="results-info" id="results-info">検索結果: 0件</div>
-            <div class="results-controls">
-                 <div class="form-check">
-                     <input type="checkbox" id="select-all-checkbox">
-                     <label for="select-all-checkbox">すべて選択</label>
-                 </div>
-                <div class="dropdown">
-                    <button class="btn btn-outline btn-sm dropdown-toggle" id="export-button" disabled>
-                        <i class="fas fa-download"></i> エクスポート
-                    </button>
-                     <div class="dropdown-menu" id="export-menu">
-                         <button class="dropdown-item" id="export-excel-btn"><i class="fas fa-file-excel fa-fw"></i>Excel (.xlsx)</button>
-                         <button class="dropdown-item" id="export-pdf-btn"><i class="fas fa-file-pdf fa-fw"></i>PDF</button>
-                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- --- ステータス表示 --- -->
-        <div class="status-message" id="loading-indicator"><i class="fas fa-spinner fa-spin"></i> 検索中...</div>
-        <div class="status-message" id="no-results"><i class="fas fa-box-open"></i> 検索結果が見つかりませんでした。</div>
-
-        <!-- --- 結果リスト --- -->
-        <div class="results-list" id="results-grid">
-            <!-- Search results will be appended here -->
-        </div>
-    </main>
-
-    <div class="toast-container" id="toast-container"></div>
-
+<body>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="mainpage.html" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="search.html" class="menu-item active">
+                <i class="fas fa-search"></i> 資料検索システム
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
 
-    <!-- ★★★ 日本語フォントデータ (必須) ★★★ -->
-    <script src="notosansjp-regular-normal.js"></script>
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
 
+            <p class="menu-label">管理者</p>
+            <a href="admin.html" class="menu-item">
+                <i class="fas fa-user-cog"></i>管理ページ
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ホーム</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>資料検索システム</span>
+            </div>
+            <h1 class="page-title">資料検索システム</h1>
+        </div>
+        
+        <!-- 検索フォーム -->
+        <div class="card-section">
+            <div class="search-form-area">
+                <form id="search-form">
+                    <h2><i class="fas fa-search"></i>検索条件</h2>
+                    <div class="search-form-grid">
+                        <div class="form-group">
+                            <label for="search-keyword" class="form-label">キーワード</label>
+                            <input type="search" id="search-keyword" class="form-control" placeholder="資料名、本文など">
+                        </div>
+                        <div class="form-group">
+                            <label for="search-doc-number" class="form-label">資料番号</label>
+                            <input type="text" id="search-doc-number" class="form-control" placeholder="半角・ハイフン可">
+                        </div>
+                        <div class="form-group">
+                            <label for="search-era" class="form-label">年代</label>
+                            <input type="text" id="search-era" class="form-control" placeholder="部分一致">
+                        </div>
+                        <div class="form-group">
+                            <label for="search-source" class="form-label">所蔵</label>
+                            <input type="text" id="search-source" class="form-control" placeholder="部分一致">
+                        </div>
+                        <div class="form-group">
+                            <label for="search-handler" class="form-label">担当者名</label>
+                            <input type="text" id="search-handler" class="form-control" placeholder="部分一致">
+                        </div>
+                    </div>
+                    <div class="search-actions">
+                        <button type="button" id="clear-search-btn" class="btn btn-outline">条件をクリア</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> 検索実行</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 検索結果オプション -->
+        <div class="results-options">
+            <div class="results-info" id="results-info">検索結果: 0件</div>
+            <div class="results-controls">
+                <div class="form-check">
+                    <input type="checkbox" id="select-all-checkbox">
+                    <label for="select-all-checkbox">すべて選択</label>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline btn-sm dropdown-toggle" id="export-button" disabled>
+                        <i class="fas fa-download"></i> エクスポート
+                    </button>
+                    <div class="dropdown-menu" id="export-menu">
+                        <button class="dropdown-item" id="export-excel-btn"><i class="fas fa-file-excel fa-fw"></i>Excel (.xlsx)</button>
+                        <button class="dropdown-item" id="export-pdf-btn"><i class="fas fa-file-pdf fa-fw"></i>PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ステータス表示 -->
+        <div class="status-message" id="loading-indicator"><i class="fas fa-spinner fa-spin"></i> 検索中...</div>
+        <div class="status-message" id="no-results"><i class="fas fa-box-open"></i> 検索結果が見つかりませんでした。</div>
+
+        <!-- 結果リスト -->
+        <div class="results-list" id="results-grid">
+            <!-- Search results will be appended here -->
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
 
     <script>
-        // --- Firebase Config & Initialization (★★★ 必ずご自身の値に設定 ★★★) ---
+        // --- Firebase Config & Initialization ---
         const firebaseConfig = {
             apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
             authDomain: "katsujiringx.firebaseapp.com",
@@ -577,10 +1246,9 @@
             console.log("Firebase Initialized successfully.");
         } catch (error) {
             console.error("Firebase initialization error:", error);
-            // Display a more user-friendly error, maybe in a dedicated div
-             const mainContent = document.querySelector('.main-content');
-             if(mainContent) mainContent.innerHTML = '<p style="color:red; text-align: center; padding: 2rem;">Firebaseの初期化に失敗しました。設定を確認してください。</p>';
-         }
+            const mainContent = document.querySelector('.main-content');
+            if(mainContent) mainContent.innerHTML = '<p style="color:red; text-align: center; padding: 2rem;">Firebaseの初期化に失敗しました。設定を確認してください。</p>';
+        }
 
         // --- DOM Elements ---
         const searchForm = document.getElementById('search-form');
@@ -596,18 +1264,18 @@
         const noResults = document.getElementById('no-results');
         const themeToggle = document.getElementById('theme-toggle');
         const toastContainer = document.getElementById('toast-container');
-        const profileButton = document.getElementById('profile-button');
-        const profileMenu = document.getElementById('profile-menu');
-        const profileAvatar = document.getElementById('profile-avatar');
-        const profileName = document.getElementById('profile-name');
-        const menuUserName = document.getElementById('menu-user-name');
-        const menuUserEmail = document.getElementById('menu-user-email');
-        const logoutButton = document.getElementById('logout-button');
         const selectAllCheckbox = document.getElementById('select-all-checkbox');
         const exportButton = document.getElementById('export-button');
         const exportMenu = document.getElementById('export-menu');
         const exportExcelBtn = document.getElementById('export-excel-btn');
         const exportPdfBtn = document.getElementById('export-pdf-btn');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const userAvatar = document.getElementById('user-avatar');
+        const userInitial = document.getElementById('user-initial');
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const logoutBtn = document.getElementById('logout-btn');
+        const pageTitle = document.querySelector('.page-title');
 
         // --- State Variables ---
         let currentUser = null;
@@ -615,14 +1283,12 @@
         let currentResults = [];
         let selectedItems = new Set();
 
-        // --- 改善: Toast Function ---
+        // --- Toast Function ---
         function showToast(message, type = "info", duration = 3000) {
             if (!toastContainer) return;
             const toast = document.createElement("div");
             toast.className = `toast ${type}`;
             toast.setAttribute("role", "alert");
-            toast.style.fontSize = '0.95rem';
-            toast.style.fontWeight = type === 'error' ? '500' : '400';
             
             let iconHtml = '';
             if (type === 'success') iconHtml = '<i class="fas fa-check-circle"></i>';
@@ -630,7 +1296,7 @@
             else if (type === 'warning') iconHtml = '<i class="fas fa-exclamation-triangle"></i>';
             else iconHtml = '<i class="fas fa-info-circle"></i>';
             
-            toast.innerHTML = `<span class="toast-icon" style="color: var(--${type}, var(--text-muted))">${iconHtml}</span><span>${message}</span>`;
+            toast.innerHTML = `<span class="toast-icon">${iconHtml}</span><span>${message}</span>`;
             toastContainer.appendChild(toast);
             
             // Trigger animation
@@ -650,8 +1316,8 @@
             localStorage.setItem('theme', theme);
             if (themeToggle) {
                 themeToggle.innerHTML = theme === 'dark'
-                    ? '<i class="fas fa-sun"></i>'
-                    : '<i class="fas fa-moon"></i>';
+                    ? '<i class="fas fa-sun"></i> ライトモード'
+                    : '<i class="fas fa-moon"></i> ダークモード';
             }
         }
         
@@ -660,7 +1326,7 @@
             applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
         }
 
-        // --- 改善: Highlight Function ---
+        // --- Highlight Function ---
         function highlightText(text, searchCriteria) {
             if (!text) return '';
             let highlighted = text.toString();
@@ -702,38 +1368,46 @@
             }
         }
 
-
         // --- Update User Profile UI ---
         function updateUserProfileUI(user) {
-            if (!profileName || !menuUserName || !menuUserEmail || !profileAvatar) return;
+            if (!sidebarUserName || !userAvatar) return;
             
             if (user) {
-                profileName.textContent = user.displayName || 'ユーザー';
-                menuUserName.textContent = user.displayName || 'ユーザー';
-                menuUserEmail.textContent = user.email || 'メールアドレス不明';
+                // ユーザー名をサイドバーとページタイトルに設定
+                const displayName = user.displayName || 'ユーザー';
+                sidebarUserName.textContent = displayName;
+                
+                // ページタイトルがある場合はそこにも表示（オプション）
+                if (pageTitle) {
+                    pageTitle.textContent = "資料検索システム";
+                }
                 
                 if (user.photoURL) {
-                    profileAvatar.innerHTML = `<img src="${user.photoURL}" alt="User Avatar">`;
-                    profileAvatar.style.backgroundColor = ''; 
-                    profileAvatar.style.color = '';
+                    // 画像がある場合は画像を表示
+                    const img = document.createElement('img');
+                    img.src = user.photoURL;
+                    img.alt = 'ユーザーアバター';
+                    userAvatar.innerHTML = '';
+                    userAvatar.appendChild(img);
                 } else {
-                    const initial = (user.displayName || 'U').charAt(0).toUpperCase();
-                    profileAvatar.innerHTML = initial;
-                    let hash = 0; 
-                    for (let i = 0; i < user.uid.length; i++) { 
-                        hash = user.uid.charCodeAt(i) + ((hash << 5) - hash); 
-                    }
-                    const h = hash % 360;
-                    profileAvatar.style.backgroundColor = `hsl(${h}, 60%, 88%)`;
-                    profileAvatar.style.color = `hsl(${h}, 80%, 25%)`;
+                    // 画像がない場合はイニシャルを表示
+                    const initial = displayName.charAt(0).toUpperCase();
+                    userAvatar.innerHTML = initial;
                 }
+                
+                // デバッグ情報（開発時のみ使用）
+                console.log("ユーザー情報更新:", {
+                    uid: user.uid,
+                    displayName: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                });
             } else {
-                profileName.textContent = 'ゲスト'; 
-                menuUserName.textContent = 'ゲスト'; 
-                menuUserEmail.textContent = 'ログインしていません';
-                profileAvatar.innerHTML = '<i class="fas fa-user"></i>'; 
-                profileAvatar.style.backgroundColor = ''; 
-                profileAvatar.style.color = '';
+                sidebarUserName.textContent = 'ゲスト';
+                userAvatar.innerHTML = 'G';
+                if (pageTitle) {
+                    pageTitle.textContent = "資料検索システム - ログインしてください";
+                }
             }
         }
 
@@ -750,7 +1424,7 @@
         }
         
         function closeAllDropdowns() {
-            document.querySelectorAll('.profile-menu.active, .dropdown-menu.active').forEach(menu => {
+            document.querySelectorAll('.dropdown-menu.active').forEach(menu => {
                 menu.classList.remove('active'); 
                 const btn = menu.previousElementSibling; 
                 if (btn) btn.setAttribute('aria-expanded', 'false');
@@ -759,7 +1433,7 @@
         }
         
         function handleClickOutsideDropdown(event) {
-            const openDropdown = document.querySelector('.profile-menu.active, .dropdown-menu.active');
+            const openDropdown = document.querySelector('.dropdown-menu.active');
             if (openDropdown && !openDropdown.contains(event.target) && !openDropdown.previousElementSibling?.contains(event.target)) { 
                 closeAllDropdowns(); 
             }
@@ -775,9 +1449,8 @@
                 selectAllCheckbox.indeterminate = numSelected > 0 && numSelected < totalSelectable;
             }
             
-            // カード要素とリスト要素の両方に対応
-            resultsGrid.querySelectorAll('.result-card, .result-item').forEach(item => {
-                const checkbox = item.querySelector('.card-checkbox input, .item-checkbox input');
+            resultsGrid.querySelectorAll('.result-item').forEach(item => {
+                const checkbox = item.querySelector('.item-checkbox input');
                 if(checkbox) checkbox.checked = selectedItems.has(item.dataset.id);
                 if (selectedItems.has(item.dataset.id)) item.classList.add('selected');
                 else item.classList.remove('selected');
@@ -802,7 +1475,7 @@
         
         function handleCardCheckboxChange(event) {
             if(!event || !event.target) return; 
-            const item = event.target.closest('.result-card, .result-item');
+            const item = event.target.closest('.result-item');
             
             if (!item) return; 
             const itemId = item.dataset.id;
@@ -816,14 +1489,14 @@
             updateSelectionState();
         }
 
-        // --- 改善: Search Function ---
+        // --- Search Function ---
         async function performSearch() {
             if (!currentUser || !db) { 
                 showToast("初期化中またはログインが必要です。", "warning"); 
                 return; 
             }
 
-            // Get all search criteria from the integrated form
+            // Get all search criteria from the form
             currentSearchCriteria = {
                 keyword: keywordInput.value.trim(),
                 docNumber: docNumberInput.value.trim(),
@@ -832,7 +1505,7 @@
                 handler: handlerInput.value.trim()
             };
             
-            // For filtering, use lower case for keyword, era, source, handler
+            // For filtering, use lower case
             const keywordLower = currentSearchCriteria.keyword.toLowerCase();
             const docNumberLower = currentSearchCriteria.docNumber.toLowerCase();
             const eraLower = currentSearchCriteria.era.toLowerCase();
@@ -856,28 +1529,22 @@
                 let allResults = [];
                 snapshot.forEach(doc => allResults.push({ id: doc.id, ...doc.data() }));
 
-                // 改善: より確実な最新バージョンフィルター
+                // 最新バージョンフィルター
                 const latestFilesMap = new Map();
                 allResults.forEach(doc => {
-                    // オリジナル名またはIDが同じファイルを一意に識別するキーとして使用
                     const key = doc.originalName || doc.name || doc.id;
                     
-                    // 更新日時を数値に安全に変換
                     const currentTimestamp = doc.updatedAt?.seconds ? 
                         Number(doc.updatedAt.seconds) : 0;
                     
-                    // マップに保存されているバージョンがあるかチェック
                     if (!latestFilesMap.has(key)) {
-                        // 最初の出現を設定
                         latestFilesMap.set(key, {
                             document: doc,
                             timestamp: currentTimestamp
                         });
                     } else {
-                        // 既存のタイムスタンプと比較
                         const existingTimestamp = latestFilesMap.get(key).timestamp;
                         
-                        // より新しい場合は更新
                         if (currentTimestamp > existingTimestamp) {
                             latestFilesMap.set(key, {
                                 document: doc,
@@ -887,22 +1554,20 @@
                     }
                 });
                 
-                // マップから最新のドキュメントだけを抽出
+                // 最新のドキュメントだけを抽出
                 const filteredByLatest = Array.from(latestFilesMap.values())
                     .map(entry => entry.document);
 
-                // 改善された検索フィルタリング
+                // 検索フィルタリング
                 currentResults = filteredByLatest.filter(doc => {
                     const meta = doc.metadata || {};
                     let match = true;
 
-                    // 資料番号の検索改善 (資料名も含めて検索)
+                    // 資料番号検索
                     if (docNumberLower) {
-                        // 資料番号フィールドとdocName（名前）の両方で検索
                         const docNumStr = meta.docNumber?.toString().toLowerCase() || '';
                         const nameStr = (doc.name || '').toLowerCase();
                         
-                        // どちらにも含まれていなければ不一致
                         if (!docNumStr.includes(docNumberLower) && !nameStr.includes(docNumberLower)) {
                             match = false;
                         }
@@ -918,12 +1583,12 @@
                         match = false; 
                     }
 
-                    // 担当者検索 (追加)
+                    // 担当者検索
                     if (match && handlerLower && (!meta.handler || !(typeof meta.handler === 'string' && meta.handler.toLowerCase().includes(handlerLower)))) { 
                         match = false; 
                     }
 
-                    // キーワード検索 (複数フィールドを検索)
+                    // キーワード検索
                     if (match && keywordLower) {
                         const searchableText = [ 
                             doc.name, 
@@ -931,7 +1596,7 @@
                             meta.docNumber, 
                             meta.era, 
                             meta.source,
-                            meta.handler // 担当者も検索対象に追加
+                            meta.handler
                         ].filter(val => typeof val === 'string' || typeof val === 'number')
                          .join(' ').toLowerCase();
                         
@@ -943,7 +1608,7 @@
                     return match;
                 });
 
-                displayResults(currentResults, currentSearchCriteria); // Pass criteria for highlighting
+                displayResults(currentResults, currentSearchCriteria);
 
             } catch (error) {
                 console.error("Search error:", error);
@@ -953,11 +1618,11 @@
                 noResults.style.display = 'block';
             } finally {
                 loadingIndicator.style.display = 'none';
-                updateSelectionState(); // Update buttons etc.
+                updateSelectionState();
             }
         }
 
-        // --- リスト型表示用のDisplayResults Function ---
+        // --- DisplayResults Function ---
         function displayResults(results, searchCriteria) {
             resultsGrid.innerHTML = '';
             resultsInfo.textContent = `検索結果: ${results.length}件`;
@@ -969,9 +1634,6 @@
             }
             
             noResults.style.display = 'none';
-
-            // リスト表示用のクラス名を変更
-            resultsGrid.className = 'results-list';
 
             results.forEach(doc => {
                 const item = document.createElement('div');
@@ -1023,11 +1685,11 @@
                         <div class="item-main">
                             <h3 class="item-title" id="title-${doc.id}">${highlightedTitle}</h3>
                             ${metaHtml}
-                            <div class="item-excerpt">${highlightedExcerpt || '<span class="text-muted"><i>テキストなし</i></span>'}</div>
+                            <div class="item-excerpt">${highlightedExcerpt || '<span style="color: var(--text-muted);"><i>テキストなし</i></span>'}</div>
                         </div>
                         <div class="item-actions">
                             <div class="item-date"><i class="far fa-clock fa-fw"></i> ${updatedAt}</div>
-                            <a href="katsujieditor.html?file=${doc.id}" target="_blank" class="btn btn-ghost btn-sm" title="編集">
+                            <a href="katsujieditor.html?file=${doc.id}" class="btn btn-outline btn-sm" title="編集">
                                 <i class="fas fa-edit"></i> 編集
                             </a>
                         </div>
@@ -1056,14 +1718,14 @@
             try {
                 await auth.signOut(); 
                 console.log("User signed out.");
-                // Auth state listener will handle UI updates and state reset
+                window.location.href = 'login.html';
             } catch (error) { 
                 console.error("Logout error:", error); 
                 showToast("ログアウトに失敗しました。", "error"); 
             }
         }
 
-        // --- 改善: Excel Export ---
+        // --- Excel Export ---
         async function exportToExcel() {
             if (selectedItems.size === 0) { 
                 showToast('エクスポートする資料を選択してください。', 'warning'); 
@@ -1072,7 +1734,7 @@
             
             const exportBtn = exportExcelBtn; 
             exportBtn.disabled = true; 
-            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 作成中';
+            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 作成中';
             
             try {
                 const dataToExport = currentResults.filter(doc => selectedItems.has(doc.id));
@@ -1082,7 +1744,7 @@
                     '資料番号': doc.metadata?.docNumber || '',
                     '年代': doc.metadata?.era || '', 
                     '所蔵': doc.metadata?.source || '',
-                    '担当者': doc.metadata?.handler || '', // 担当者カラム追加
+                    '担当者': doc.metadata?.handler || '',
                     '活字化テキスト': doc.transcribedText || '', 
                     '最終更新日時': doc.updatedAt?.seconds ? new Date(doc.updatedAt.seconds * 1000) : '',
                     '画像URL': doc.imageUrl || '', 
@@ -1112,8 +1774,7 @@
             }
         }
 
-
-        // --- 改善: PDF Export ---
+        // --- PDF Export ---
         async function exportToPdf() {
             if (selectedItems.size === 0) { 
                 showToast('エクスポートする資料を選択してください。', 'warning'); 
@@ -1132,7 +1793,7 @@
 
             const exportBtn = exportPdfBtn; 
             exportBtn.disabled = true; 
-            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> 作成中';
+            exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 作成中';
 
             try {
                 const { jsPDF } = window.jspdf; 
@@ -1208,7 +1869,7 @@
                         currentY += 8; 
                     }
 
-                    // Metadata (AutoTable) - 担当者を追加
+                    // Metadata
                     checkPageBreak(25); 
                     const meta = item.metadata || {};
                     const metaDataForTable = [ 
@@ -1269,22 +1930,21 @@
             }
         }
 
-        // --- 改善: Image Fetch Helper ---
+        // --- Image Fetch Helper ---
         async function fetchImageAsBase64(url) {
             try {
-                // リトライ処理を追加
                 let retries = 2;
                 let response;
                 
                 while (retries >= 0) {
                     try {
-                        response = await fetch(url, { cache: 'force-cache' }); // キャッシング戦略を追加
+                        response = await fetch(url, { cache: 'force-cache' });
                         if (response.ok) break;
                     } catch (err) {
                         if (retries === 0) throw err;
                     }
                     retries--;
-                    await new Promise(r => setTimeout(r, 500)); // 再試行の間に少し待機
+                    await new Promise(r => setTimeout(r, 500));
                 }
                  
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -1307,25 +1967,65 @@
             docNumberInput.value = ''; 
             eraInput.value = ''; 
             sourceInput.value = '';
-            handlerInput.value = ''; // 担当者入力欄もクリア
+            handlerInput.value = '';
             currentSearchCriteria = { keyword: '', docNumber: '', era: '', source: '', handler: '' };
-            // すべてのファイルを表示
             performSearch();
+        }
+
+        // --- サイドバー関連の関数 ---
+        function toggleSidebar() {
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
         }
 
         // --- Initialization & Event Listeners ---
         document.addEventListener('DOMContentLoaded', () => {
+            // ユーザー名表示要素の確認
+            console.log("サイドバーユーザー名要素:", sidebarUserName);
+            
             // Auth Listener
             if (auth) {
                 auth.onAuthStateChanged(user => {
                     currentUser = user; 
-                    updateUserProfileUI(user);
-                    if (user) { 
-                        performSearch(); 
+                    console.log("認証状態変更:", user ? "ログイン中" : "未ログイン");
+                    
+                    // ユーザー情報を取得して詳細データで表示を更新
+                    if (user && db) {
+                        console.log("ユーザー情報取得開始:", user.uid);
+                        // Firestoreからユーザープロファイルを取得
+                        db.collection('users').doc(user.uid).get()
+                            .then(doc => {
+                                if (doc.exists) {
+                                    console.log("ユーザーデータ取得成功");
+                                    const userData = doc.data();
+                                    // プロフィール画像URLがある場合は、Authのプロフィール写真よりも優先
+                                    if (userData.displayName) {
+                                        const userWithName = { ...user };
+                                        userWithName.displayName = userData.displayName;
+                                        if (userData.profileImageUrl && !user.photoURL) {
+                                            userWithName.photoURL = userData.profileImageUrl;
+                                        }
+                                        updateUserProfileUI(userWithName);
+                                    } else {
+                                        updateUserProfileUI(user);
+                                    }
+                                } else {
+                                    console.log("ユーザーデータなし");
+                                    updateUserProfileUI(user);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("ユーザー情報取得エラー:", error);
+                                updateUserProfileUI(user);
+                            });
+                        
+                        performSearch();
+                    } else if (user) {
+                        updateUserProfileUI(user);
+                        performSearch();
                     } else { 
-                        resultsGrid.innerHTML = ''; 
-                        resultsInfo.textContent = 'ログインしてください'; 
-                        noResults.style.display = 'none'; 
+                        window.location.href = 'login.html';
                     }
                 });
             } else { 
@@ -1338,17 +2038,18 @@
             if (themeToggle) { 
                 themeToggle.addEventListener('click', toggleTheme); 
             }
-
-            // Profile Dropdown
-            if (profileButton && profileMenu) { 
-                profileButton.addEventListener('click', (e) => { 
-                    e.stopPropagation(); 
-                    toggleDropdown(profileButton, profileMenu); 
-                }); 
+            
+            // Logout Button
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
             }
             
-            if (logoutButton) { 
-                logoutButton.addEventListener('click', logout); 
+            // サイドバー切替ボタン
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
             }
 
             // Search Form Listener
@@ -1367,13 +2068,6 @@
             // Selection Listeners
             if (selectAllCheckbox) { 
                 selectAllCheckbox.addEventListener('change', handleSelectAll); 
-            }
-            
-            if (resultsGrid) { 
-                resultsGrid.addEventListener('change', (e) => { 
-                    if (e.target.type === 'checkbox' && e.target.closest('.card-checkbox, .item-checkbox')) 
-                        handleCardCheckboxChange(e); 
-                }); 
             }
 
             // Export Listeners
@@ -1398,10 +2092,18 @@
                     closeAllDropdowns(); 
                 }); 
             }
-
-            // 資料番号入力フィールドの制限を削除（半角・ハイフン可能に）
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
         });
     </script>
-
 </body>
 </html>
