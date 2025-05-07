@@ -6211,6 +6211,629 @@ if (emptyUploadBtn) {
         }
     });
 }
+
+//修正版
+// ファイルアップロード処理
+async function uploadFiles(files) {
+    if (!files || files.length === 0) {
+        showToast('ファイルが選択されていません', 'error');
+        return;
+    }
+    
+    // アップロード先フォルダと共有設定
+    const folder = uploadFolder.value;
+    const visibility = uploadVisibility.value;
+    
+    // 現在の設定を保存
+    localStorage.setItem('lastVisibility', visibility);
+    
+    // 選択されたユーザーIDを取得（共有設定の場合）
+    let sharedWith = [];
+    if (visibility === 'shared') {
+        sharedWith = Array.from(selectedUserIds);
+        // 選択済みユーザーを保存
+        localStorage.setItem('lastSelectedUsers', JSON.stringify(sharedWith));
+    }
+    
+    // プログレスコンテナ表示
+    uploadProgressContainer.style.display = 'block';
+    
+    try {
+        let successCount = 0;
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // ファイルサイズチェック
+            const maxFileSize = 100 * 1024 * 1024; // 100MB
+            if (file.size > maxFileSize) {
+                showToast(`ファイル「${file.name}」は最大サイズ（100MB）を超えています`, 'warning');
+                continue; // このファイルはスキップ
+            }
+            
+            // アップロード中のファイル名とインデックスを表示
+            uploadProgressText.textContent = `アップロード中: ${file.name} (${i + 1}/${files.length})`;
+            
+            // ファイルタイプの判定
+            let fileType = 'other';
+            if (file.type.startsWith('image/')) {
+                fileType = 'image';
+            } else if (file.type === 'application/pdf') {
+                fileType = 'pdf';
+            } else if (file.type.includes('document') || file.type.includes('text')) {
+                fileType = 'document';
+            }
+            
+            try {
+                // Storageへアップロード
+                const timestamp = new Date().getTime();
+                const storagePath = `files/${currentUser.uid}/${timestamp}_${file.name}`;
+                const storageRef = storage.ref(storagePath);
+                const uploadTask = storageRef.put(file);
+                
+                // アップロードの進捗監視
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // 進捗状況
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        uploadProgressBar.style.width = `${progress}%`;
+                        
+                        // 転送サイズ表示
+                        const transferred = formatFileSize(snapshot.bytesTransferred);
+                        const total = formatFileSize(snapshot.totalBytes);
+                        uploadProgressSize.textContent = `${transferred} / ${total}`;
+                    },
+                    (error) => {
+                        // エラー処理
+                        console.error("アップロードエラー:", error);
+                        showToast(`「${file.name}」のアップロードに失敗しました`, 'error');
+                    }
+                );
+                
+                // アップロード完了を待機
+                await uploadTask;
+                
+                // ダウンロードURLを取得
+                const downloadURL = await storageRef.getDownloadURL();
+                
+                // サムネイル作成（画像の場合）
+                let thumbnail = null;
+                if (fileType === 'image') {
+                    thumbnail = downloadURL;
+                }
+                
+                // Firestoreにファイル情報を保存
+                const fileData = {
+                    name: file.name,
+                    originalName: file.name,
+                    storagePath: storagePath,
+                    url: downloadURL,
+                    thumbnail: thumbnail,
+                    fileType: fileType,
+                    mimeType: file.type,
+                    size: file.size,
+                    parentFolder: folder,
+                    userId: currentUser.uid,
+                    ownerName: currentUser.displayName || '',
+                    visibility: visibility,
+                    sharedWith: sharedWith,
+                    trashed: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('files').add(fileData);
+                successCount++;
+            } catch (error) {
+                console.error(`ファイル「${file.name}」の処理エラー:`, error);
+                showToast(`ファイル「${file.name}」の処理に失敗しました`, 'error');
+            }
+        }
+        
+        // すべてのファイルのアップロード処理が完了
+        if (successCount > 0) {
+            showToast(`${successCount}個のファイルをアップロードしました`, 'success');
+            
+            // 現在のフォルダが作成先と同じ場合は一覧を更新
+            if (currentFolder === folder) {
+                loadFiles();
+            }
+            
+            fetchStorageUsage();
+        }
+        
+        // モーダルを閉じる
+        closeModal(uploadModal);
+        resetUploadForm();
+    } catch (error) {
+        console.error("アップロード処理エラー:", error);
+        showToast('アップロード処理に失敗しました', 'error');
+    }
+}
+
+//追加修正
+// ファイルアップロード処理の修正バージョン
+async function uploadFiles(files) {
+    if (!files || files.length === 0) {
+        showToast('ファイルが選択されていません', 'error');
+        return;
+    }
+    
+    // アップロード先フォルダと共有設定
+    const folder = uploadFolder.value;
+    const visibility = uploadVisibility.value;
+    
+    // 現在の設定を保存
+    localStorage.setItem('lastVisibility', visibility);
+    
+    // 選択されたユーザーIDを取得（共有設定の場合）
+    let sharedWith = [];
+    if (visibility === 'shared') {
+        sharedWith = Array.from(selectedUserIds);
+        // 選択済みユーザーを保存
+        localStorage.setItem('lastSelectedUsers', JSON.stringify(sharedWith));
+    }
+    
+    // プログレスコンテナ表示
+    uploadProgressContainer.style.display = 'block';
+    
+    try {
+        let successCount = 0;
+        
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // ファイルサイズチェック
+            const maxFileSize = 100 * 1024 * 1024; // 100MB
+            if (file.size > maxFileSize) {
+                showToast(`ファイル「${file.name}」は最大サイズ（100MB）を超えています`, 'warning');
+                continue; // このファイルはスキップ
+            }
+            
+            // アップロード中のファイル名とインデックスを表示
+            uploadProgressText.textContent = `アップロード中: ${file.name} (${i + 1}/${files.length})`;
+            
+            // ファイルタイプの判定
+            let fileType = 'other';
+            if (file.type.startsWith('image/')) {
+                fileType = 'image';
+            } else if (file.type === 'application/pdf') {
+                fileType = 'pdf';
+            } else if (file.type.includes('document') || file.type.includes('text')) {
+                fileType = 'document';
+            }
+            
+            try {
+                // Storageへアップロード
+                const timestamp = new Date().getTime();
+                const storagePath = `files/${currentUser.uid}/${timestamp}_${file.name}`;
+                const storageRef = storage.ref(storagePath);
+                const uploadTask = storageRef.put(file);
+                
+                // アップロードの進捗監視
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // 進捗状況
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        uploadProgressBar.style.width = `${progress}%`;
+                        
+                        // 転送サイズ表示
+                        const transferred = formatFileSize(snapshot.bytesTransferred);
+                        const total = formatFileSize(snapshot.totalBytes);
+                        uploadProgressSize.textContent = `${transferred} / ${total}`;
+                    },
+                    (error) => {
+                        // エラー処理
+                        console.error("アップロードエラー:", error);
+                        showToast(`「${file.name}」のアップロードに失敗しました`, 'error');
+                    }
+                );
+                
+                // アップロード完了を待機
+                await uploadTask;
+                
+                // ダウンロードURLを取得 - 重要な修正点: Promise完了を確実に待つ
+                let downloadURL;
+                try {
+                    downloadURL = await storageRef.getDownloadURL();
+                    console.log("取得したダウンロードURL:", downloadURL); // デバッグ用
+                } catch (urlError) {
+                    console.error("ダウンロードURL取得エラー:", urlError);
+                    showToast(`「${file.name}」のURL取得に失敗しました`, 'error');
+                    continue; // このファイルの処理をスキップ
+                }
+                
+                // サムネイル作成（画像の場合）
+                let thumbnail = null;
+                if (fileType === 'image') {
+                    thumbnail = downloadURL; // 直接ダウンロードURLを使用
+                }
+                
+                // Firestoreにファイル情報を保存
+                const fileData = {
+                    name: file.name,
+                    originalName: file.name,
+                    storagePath: storagePath,
+                    url: downloadURL,
+                    thumbnail: thumbnail,
+                    fileType: fileType,
+                    mimeType: file.type,
+                    size: file.size,
+                    parentFolder: folder,
+                    userId: currentUser.uid,
+                    ownerName: currentUser.displayName || '',
+                    visibility: visibility,
+                    sharedWith: sharedWith,
+                    trashed: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('files').add(fileData);
+                successCount++;
+            } catch (error) {
+                console.error(`ファイル「${file.name}」の処理エラー:`, error);
+                showToast(`ファイル「${file.name}」の処理に失敗しました`, 'error');
+            }
+        }
+        
+        // すべてのファイルのアップロード処理が完了
+        if (successCount > 0) {
+            showToast(`${successCount}個のファイルをアップロードしました`, 'success');
+            
+            // 現在のフォルダが作成先と同じ場合は一覧を更新
+            if (currentFolder === folder) {
+                loadFiles();
+            }
+            
+            fetchStorageUsage();
+        }
+        
+        // モーダルを閉じる
+        closeModal(uploadModal);
+        resetUploadForm();
+    } catch (error) {
+        console.error("アップロード処理エラー:", error);
+        showToast('アップロード処理に失敗しました', 'error');
+    }
+}
+
+// ファイルプレビュー表示関数の修正バージョン
+function showFilePreview(file) {
+    // 現在のファイルを保存
+    currentPreviewFile = file;
+    
+    // ユーザーが操作可能かチェック
+    const canEdit = canUserEdit(file);
+    
+    // プレビューコンテナの表示
+    document.getElementById('file-list-container').style.display = 'none';
+    fileViewContainer.style.display = 'flex';
+    backNavigation.style.display = 'flex';
+    
+    // プレビュー内容をクリア
+    filePreview.innerHTML = '';
+    fileInfo.innerHTML = '';
+    fileActions.innerHTML = '';
+    
+    // 権限情報表示
+    const filePermissionsInfo = document.getElementById('file-permissions-info');
+    if (file.userId === currentUser.uid) {
+        // 自分のファイル
+        filePermissionsInfo.style.display = 'none';
+    } else {
+        // 他人のファイル
+        filePermissionsInfo.style.display = 'block';
+        const permissionsText = document.getElementById('file-permissions-text');
+        
+        if (file.visibility === 'public') {
+            permissionsText.innerHTML = 'このファイルは全体共有されています。<br>元のファイルの所有者は <strong>' + (file.ownerName || '他のユーザー') + '</strong> です。';
+            filePermissionsInfo.className = 'file-permissions-info';
+            filePermissionsInfo.style.backgroundColor = 'var(--success-light)';
+            filePermissionsInfo.style.color = 'var(--success)';
+        } else if (file.visibility === 'shared') {
+            permissionsText.innerHTML = 'このファイルはあなたと共有されています。<br>元のファイルの所有者は <strong>' + (file.ownerName || '他のユーザー') + '</strong> です。';
+            filePermissionsInfo.className = 'file-permissions-info';
+            filePermissionsInfo.style.backgroundColor = 'var(--info-light)';
+            filePermissionsInfo.style.color = 'var(--info)';
+        }
+    }
+    
+    // ファイル情報の表示
+    fileInfo.innerHTML = `
+        <h2>${file.name}</h2>
+        <div class="mt-2">
+            <p><strong>タイプ:</strong> ${getFileTypeLabel(file.fileType)}</p>
+            <p><strong>サイズ:</strong> ${formatFileSize(file.size || 0)}</p>
+            <p><strong>アップロード日:</strong> ${file.createdAt ? new Date(file.createdAt.seconds * 1000).toLocaleString('ja-JP') : '-'}</p>
+            <p><strong>最終更新日:</strong> ${file.updatedAt ? new Date(file.updatedAt.seconds * 1000).toLocaleString('ja-JP') : '-'}</p>
+            <p><strong>所有者:</strong> ${file.userId === currentUser.uid ? '自分' : (file.ownerName || '他のユーザー')}</p>
+            <p><strong>共有状態:</strong> ${getVisibilityLabel(file.visibility)}</p>
+        </div>
+    `;
+    
+    // ファイルタイプに応じたプレビュー
+    if (file.fileType === 'image') {
+        // 画像プレビュー - URLにキャッシュバスターを追加
+        const imageUrl = file.url + (file.url.includes('?') ? '&' : '?') + 'cache=' + new Date().getTime();
+        console.log("プレビュー表示用URL:", imageUrl); // デバッグ用
+        
+        filePreview.innerHTML = `
+            <img src="${imageUrl}" alt="${file.name}" style="max-width: 100%; max-height: 400px; object-fit: contain;"
+                 onerror="console.error('画像読み込みエラー:', this.src); this.onerror=null; 
+                          this.src=''; this.alt='画像を読み込めませんでした'; 
+                          this.style.padding='2rem'; this.style.backgroundColor='var(--gray-100)'; 
+                          this.parentNode.innerHTML += '<p style=\\'text-align:center; margin-top:1rem;\\'>画像の読み込みに失敗しました</p>';">
+        `;
+    } else if (file.fileType === 'pdf') {
+        // PDFプレビュー（iframeを使用）
+        filePreview.innerHTML = `
+            <iframe src="${file.url}" style="width: 100%; height: 500px; border: 1px solid var(--border-color); border-radius: var(--radius);"></iframe>
+        `;
+    } else {
+        // その他のファイルはプレビュー不可
+        filePreview.innerHTML = `
+            <div style="text-align: center; padding: 2rem; background-color: var(--gray-100); border-radius: var(--radius);">
+                <i class="fas fa-file" style="font-size: 3rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                <p>このファイルはプレビューできません</p>
+            </div>
+        `;
+    }
+    
+    // アクションボタン - すべてのユーザーに表示するボタン
+    const downloadBtn = document.createElement('button');
+    downloadBtn.className = 'btn btn-primary';
+    downloadBtn.innerHTML = '<i class="fas fa-download"></i> ダウンロード';
+    downloadBtn.addEventListener('click', () => downloadFile(file));
+    fileActions.appendChild(downloadBtn);
+    
+    // 画像ファイルの場合は活字化エディタで開くボタンを追加
+    if (file.fileType === 'image') {
+        const editBtn = document.createElement('button');
+        editBtn.className = 'btn btn-secondary ml-2';
+        editBtn.innerHTML = '<i class="fas fa-edit"></i> 活字化エディタで開く';
+        editBtn.addEventListener('click', () => openInEditor(file));
+        fileActions.appendChild(editBtn);
+    }
+    
+    // 編集権限があるユーザーに表示するボタン
+    if (canEdit) {
+        // 共有ボタン
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 'btn btn-outline ml-2';
+        shareBtn.innerHTML = '<i class="fas fa-share-alt"></i> 共有';
+        shareBtn.addEventListener('click', () => showShareModal(file));
+        fileActions.appendChild(shareBtn);
+        
+        // 名前変更ボタン
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'btn btn-outline ml-2';
+        renameBtn.innerHTML = '<i class="fas fa-edit"></i> 名前変更';
+        renameBtn.addEventListener('click', () => showRenameModal(file));
+        fileActions.appendChild(renameBtn);
+        
+        // 削除ボタン
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn btn-danger ml-2';
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i> 削除';
+        deleteBtn.addEventListener('click', () => showDeleteModal(file));
+        fileActions.appendChild(deleteBtn);
+    }
+}
+
+// ファイルカードの作成関数の修正バージョン
+function createFileCard(file) {
+    const card = document.createElement('div');
+    card.className = 'file-card';
+    card.setAttribute('data-id', file.id);
+    card.setAttribute('data-type', file.isFolder ? 'folder' : 'file');
+    
+    // 選択チェックボックス
+    const checkbox = document.createElement('div');
+    checkbox.className = 'file-checkbox';
+    checkbox.innerHTML = '<i class="fas fa-check" style="display: none;"></i>';
+    
+    // チェックボックスクリックイベント
+    checkbox.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleItemSelection(card);
+    });
+    
+    // アイコンまたはサムネイル
+    let iconHtml = '';
+    if (file.isFolder) {
+        iconHtml = `<div class="file-icon folder-icon"><i class="fas fa-folder"></i></div>`;
+    } else if (file.fileType === 'image' && file.thumbnail) {
+        // サムネイルにキャッシュバスターを追加
+        const thumbnailUrl = file.thumbnail + (file.thumbnail.includes('?') ? '&' : '?') + 'cache=' + new Date().getTime();
+        iconHtml = `
+            <div class="file-image">
+                <img src="${thumbnailUrl}" alt="${file.name}" loading="lazy" 
+                     onerror="console.error('サムネイル読み込みエラー:', this.src); this.onerror=null; 
+                              this.src=''; this.alt='画像を読み込めませんでした'; 
+                              this.parentNode.innerHTML = '<div class=\\'file-icon image-icon\\'><i class=\\'fas fa-file-image\\'></i></div>';">
+            </div>`;
+    } else {
+        // ファイルタイプ別のアイコン
+        let iconClass = 'file-icon';
+        let faIcon = 'fa-file';
+        
+        switch (file.fileType) {
+            case 'pdf':
+                iconClass += ' pdf-icon';
+                faIcon = 'fa-file-pdf';
+                break;
+            case 'document':
+                iconClass += ' doc-icon';
+                faIcon = 'fa-file-alt';
+                break;
+            case 'image':
+                iconClass += ' image-icon';
+                faIcon = 'fa-file-image';
+                break;
+            default:
+                iconClass += '';
+                faIcon = 'fa-file';
+        }
+        
+        iconHtml = `<div class="${iconClass}"><i class="fas ${faIcon}"></i></div>`;
+    }
+    
+    // 更新日
+    const updatedAt = file.updatedAt ? new Date(file.updatedAt.seconds * 1000) : new Date();
+    const formattedDate = updatedAt.toLocaleDateString('ja-JP');
+    
+    // 共有インジケーター
+    let shareIndicator = '';
+    if (file.visibility === 'shared') {
+        shareIndicator = `
+            <div class="share-indicator">
+                <i class="fas fa-share-alt share-indicator-icon" style="color: var(--info);"></i>
+                <span class="share-indicator-text">指定共有</span>
+            </div>
+        `;
+    } else if (file.visibility === 'public') {
+        shareIndicator = `
+            <div class="share-indicator">
+                <i class="fas fa-globe share-indicator-icon" style="color: var(--success);"></i>
+                <span class="share-indicator-text">全体共有</span>
+            </div>
+        `;
+    }
+    
+    // 所有者表示
+    let ownerIndicator = '';
+    if (file.userId !== currentUser.uid) {
+        const ownerName = file.ownerName || '他のユーザー';
+        ownerIndicator = `
+            <div class="mt-1" style="font-size: 0.7rem; color: var(--text-muted);">
+                <i class="fas fa-user mr-1"></i> ${ownerName}
+            </div>
+        `;
+    }
+    
+    // HTML作成
+    card.innerHTML = `
+        ${iconHtml}
+        <div>
+            <div class="file-card-name" title="${file.name}">${file.name}${shareIndicator}</div>
+            <div class="file-card-date">${formattedDate}</div>
+            ${ownerIndicator}
+        </div>
+        <div class="file-card-actions">
+            <span class="file-card-action" data-action="more"><i class="fas fa-ellipsis-v"></i></span>
+        </div>
+    `;
+    
+    // チェックボックスを追加
+    card.appendChild(checkbox);
+    
+    // 選択状態かチェック
+    if (selectedItems.includes(file.id)) {
+        card.classList.add('selected');
+        updateCheckboxState(checkbox, true);
+    }
+    
+    // イベントリスナー
+    card.addEventListener('click', (e) => {
+        if (!e.target.closest('.file-checkbox') && !e.target.closest('.file-card-action')) {
+            // フォルダの場合は開く
+            if (file.isFolder) {
+                changeFolder(file.id);
+            } else {
+                // ファイルの場合はプレビューまたはダウンロード
+                openFile(file);
+            }
+        }
+    });
+    
+    // 右クリックメニュー
+    card.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        activeFile = file;
+        showContextMenu(e.clientX, e.clientY, file);
+    });
+    
+    // 「...」ボタンクリック
+    const moreBtn = card.querySelector('[data-action="more"]');
+    if (moreBtn) {
+        moreBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            activeFile = file;
+            const rect = moreBtn.getBoundingClientRect();
+            showContextMenu(rect.right, rect.bottom, file);
+        });
+    }
+    
+    return card;
+}
+
+// 画像プレビューモーダル表示の修正
+function showImagePreviewModal(file) {
+    if (!file || !file.url) {
+        showToast('画像URLが見つかりません', 'error');
+        return;
+    }
+    
+    // 画像URLをセット - キャッシュバスターを追加
+    const imageUrl = file.url + (file.url.includes('?') ? '&' : '?') + 'cache=' + new Date().getTime();
+    console.log("モーダル表示用URL:", imageUrl); // デバッグ用
+    
+    previewImage.src = ''; // 一度クリア
+    previewImage.src = imageUrl;
+    previewImage.alt = file.name;
+    
+    // エラーハンドリングを追加
+    previewImage.onerror = function() {
+        console.error('プレビュー画像読み込みエラー:', this.src);
+        this.onerror = null;
+        this.src = '';
+        this.alt = '画像を読み込めませんでした';
+        showToast('画像の読み込みに失敗しました', 'error');
+    };
+    
+    // プレビュー中のファイルを保存
+    currentPreviewFile = file;
+    
+    // モーダル表示
+    imagePreviewModal.classList.add('show');
+}
+
+// Firebase Storageのセキュリティルール確認用のメッセージを表示
+function checkStorageRules() {
+    console.log("Firebase Storageのセキュリティルール確認が必要です。以下の点を確認してください：");
+    console.log("1. Firebase Consoleで、プロジェクトのStorageのルールが以下のように設定されているか確認：");
+    console.log(`
+    rules_version = '2';
+    service firebase.storage {
+      match /b/{bucket}/o {
+        match /files/{userId}/{fileName} {
+          allow read: if request.auth != null && (
+            // 所有者は常に読み取り可能
+            request.auth.uid == userId ||
+            // 公開ファイルは誰でも読み取り可能
+            exists(/databases/$(database)/documents/files/$(resource.name)) && 
+            get(/databases/$(database)/documents/files/$(resource.name)).data.visibility == 'public' ||
+            // 共有されたファイルは対象ユーザーが読み取り可能
+            exists(/databases/$(database)/documents/files/$(resource.name)) && 
+            get(/databases/$(database)/documents/files/$(resource.name)).data.visibility == 'shared' &&
+            request.auth.uid in get(/databases/$(database)/documents/files/$(resource.name)).data.sharedWith
+          );
+          allow write: if request.auth != null && request.auth.uid == userId;
+        }
+      }
+    }
+    `);
+}
+
+// 初期化時にデバッグ情報を表示
+document.addEventListener('DOMContentLoaded', () => {
+    // 既存の初期化コード...
+    
+    // デバッグ情報を表示
+    console.log("画像読み込みのデバッグを有効化しました");
+    checkStorageRules();
+});
 </script>
 </body>
 </html>

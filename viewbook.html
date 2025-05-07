@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4338ca">
+    <title>デジタル書籍 | KatsujiRingX</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0ea5e9;
+            --secondary-hover: #0284c7;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-hover: #ea580c;
+            --accent-light: #fff7ed;
+            --success: #10b981;
+            --success-hover: #059669;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-hover: #d97706;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --danger-light: #fef2f2;
+            --info: #3b82f6;
+            --info-hover: #2563eb;
+            --info-light: #eff6ff;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            
+            --bg-color: var(--gray-50);
+            --text-color: var(--gray-800);
+            --text-muted: var(--gray-500);
+            --border-color: var(--gray-200);
+            
+            --header-height: 4rem;
+            --sidebar-width: 280px;
+            --transition-normal: 0.3s ease;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            --radius-sm: 0.25rem;
+            --radius: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-full: 9999px;
+        }
+        
+        [data-theme="dark"] {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-light: #2d2a63;
+            
+            --bg-color: #0f172a;
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #1f2937;
+            
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            transition: background-color var(--transition-normal), color var(--transition-normal);
+        }
+        
+        /* サイドバー */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--primary);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            color: white;
+            z-index: 50;
+            transition: transform var(--transition-normal), width var(--transition-normal);
+            box-shadow: var(--shadow);
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo img {
+            width: 2rem;
+            height: 2rem;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+        
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.75rem 1.5rem 0.5rem;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: background-color var(--transition-normal);
+            position: relative;
+            margin: 0.125rem 0.75rem;
+            border-radius: var(--radius);
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .menu-item.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+        
+        .menu-item.active::before {
+            content: '';
+            position: absolute;
+            left: -0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0.25rem;
+            height: 1.5rem;
+            background-color: white;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        .menu-item i {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
+            border: none;
+            cursor: pointer;
+            transition: background-color var(--transition-normal);
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 1.5rem;
+            transition: margin var(--transition-normal);
+        }
+        
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.8125rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb i {
+            font-size: 0.625rem;
+        }
+        
+        /* ボタンスタイル */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color var(--transition-normal), color var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        
+        .btn i {
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: var(--success-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        
+        /* 本棚のスタイル */
+        .bookshelf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .bookshelf-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .bookshelf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .book-item {
+            background-color: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+        }
+        
+        [data-theme="dark"] .book-item {
+            background-color: #1e293b;
+        }
+        
+        .book-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .book-cover {
+            height: 180px;
+            background-color: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-style: italic;
+            font-size: 0.9em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        [data-theme="dark"] .book-cover {
+            background-color: var(--primary-light);
+        }
+        
+        .book-cover i {
+            font-size: 2.5rem;
+            opacity: 0.5;
+        }
+        
+        .book-info {
+            padding: 1rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .book-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .book-meta span {
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+        
+        .book-actions {
+            margin-top: auto;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .book-actions .btn {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .bookmark-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--accent);
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0 var(--radius-md) 0 var(--radius-md);
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background-color: var(--gray-200);
+            margin-top: 0.5rem;
+            border-radius: var(--radius-full);
+            overflow: hidden;
+        }
+        
+        .progress-value {
+            height: 100%;
+            background-color: var(--primary);
+            border-radius: var(--radius-full);
+        }
+        
+        /* フィルターとソート */
+        .filter-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 0.75rem 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        [data-theme="dark"] .filter-bar {
+            background-color: #1e293b;
+        }
+        
+        .filter-options {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .filter-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .filter-select {
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 0.875rem;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        [data-theme="dark"] .filter-select {
+            background-color: #0f172a;
+        }
+        
+        .search-input {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 0.375rem 0.75rem;
+            background-color: var(--bg-color);
+            min-width: 240px;
+        }
+        
+        [data-theme="dark"] .search-input {
+            background-color: #0f172a;
+        }
+        
+        .search-input input {
+            border: none;
+            background: transparent;
+            padding: 0;
+            font-size: 0.875rem;
+            color: var(--text-color);
+            font-family: inherit;
+            flex-grow: 1;
+            outline: none;
+        }
+        
+        .search-input i {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+        
+        /* テーマ切替ボタン */
+        .theme-toggle {
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            width: 100%;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color var(--transition-normal);
+        }
+        
+        .theme-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .theme-toggle i {
+            margin-right: 0.75rem;
+        }
+        
+        /* ユーザープロフィール */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .user-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            overflow: hidden;
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 500;
+            margin-bottom: 0.125rem;
+        }
+        
+        .user-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* ページネーション */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 2rem;
+            gap: 0.5rem;
+        }
+        
+        .pagination-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            text-decoration: none;
+            transition: all var(--transition-normal);
+        }
+        
+        .pagination-item:hover, .pagination-item.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .pagination-item.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        /* 追加のユーティリティクラス */
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-3 { margin-top: 1rem; }
+        .mt-4 { margin-top: 1.5rem; }
+        .mt-5 { margin-top: 3rem; }
+        
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .mb-5 { margin-bottom: 3rem; }
+        
+        .ml-1 { margin-left: 0.25rem; }
+        .ml-2 { margin-left: 0.5rem; }
+        .ml-3 { margin-left: 1rem; }
+        .ml-4 { margin-left: 1.5rem; }
+        .ml-5 { margin-left: 3rem; }
+        
+        .mr-1 { margin-right: 0.25rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .mr-3 { margin-right: 1rem; }
+        .mr-4 { margin-right: 1.5rem; }
+        .mr-5 { margin-right: 3rem; }
+        
+        /* レスポンシブデザイン */
+        @media (max-width: 1024px) {
+            .bookshelf-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .filter-options {
+                flex-wrap: wrap;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 240px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .sidebar-toggle {
+                display: flex;
+            }
+            
+            .bookshelf-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .bookshelf-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
+            
+            .book-cover {
+                height: 160px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .bookshelf-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 1rem;
+            }
+            
+            .book-cover {
+                height: 140px;
+            }
+            
+            .book-title {
+                font-size: 1rem;
+            }
+            
+            .book-info {
+                padding: 0.75rem;
+            }
+            
+            .book-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <!-- サイドバー -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="" class="logo">
+                <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
+                <span>KatsujiRingX</span>
+            </a>
+        </div>
+        
+        <div class="sidebar-menu">
+            <p class="menu-label">メインメニュー</p>
+            <a href="mainpage.html" class="menu-item">
+                <i class="fas fa-home"></i> ダッシュボード
+            </a>
+            <a href="documents.html" class="menu-item">
+                <i class="fas fa-file-alt"></i> 資料管理
+            </a>
+            <a href="search.html" class="menu-item">
+                <i class="fas fa-search"></i> 資料検索システム
+            </a>
+            <a href="viewbook.html" class="menu-item active">
+                <i class="fas fa-book"></i> KRXデジタル書籍
+            </a>
+            
+            <p class="menu-label">学習・コミュニティ</p>
+            <a href="games.html" class="menu-item">
+                <i class="fas fa-gamepad"></i> 学習ゲーム
+            </a>
+            <a href="community.html" class="menu-item">
+                <i class="fas fa-users"></i> コミュニティ広場
+            </a>
+            <a href="blog.html" class="menu-item">
+                <i class="fas fa-pen"></i> ブログ
+            </a>
+            
+            <p class="menu-label">ユーザー</p>
+            <a href="profile.html" class="menu-item">
+                <i class="fas fa-user"></i> プロフィール
+            </a>
+
+            <p class="menu-label">サポート</p>
+            <a href="helpcenter.html" class="menu-item">
+                <i class="fas fa-question-circle"></i>ヘルプデスク
+            </a>
+            <a href="feedback.html" class="menu-item">
+                <i class="fas fa-comment-dots"></i>フィードバック
+            </a>
+
+            <p class="menu-label">管理者</p>
+            <a href="admin.html" class="menu-item">
+                <i class="fas fa-user-cog"></i>管理ページ
+            </a>
+        </div>
+        
+        <div class="sidebar-footer">
+            <button id="theme-toggle" class="theme-toggle">
+                <i class="fas fa-moon"></i> ダークモード
+            </button>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="user-avatar">
+                    <span id="user-initial">U</span>
+                </div>
+                <div class="user-info">
+                    <div class="user-name" id="sidebar-user-name">ユーザー名</div>
+                    <div class="user-status">オンライン</div>
+                </div>
+            </div>
+            
+            <a href="#" id="logout-btn" class="btn btn-outline w-100 mt-3" style="background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.2);">
+                <i class="fas fa-sign-out-alt"></i> ログアウト
+            </a>
+        </div>
+    </aside>
+    
+    <!-- モバイル用サイドバー切替ボタン -->
+    <button class="sidebar-toggle" id="sidebar-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+    
+    <!-- メインコンテンツ -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="breadcrumb">
+                <a href="mainpage.html">ホーム</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>デジタル書籍</span>
+            </div>
+            <h1 class="page-title">あなたの本棚</h1>
+        </div>
+        
+        <!-- フィルターとソート -->
+        <div class="filter-bar">
+            <div class="filter-options">
+                <div>
+                    <span class="filter-label">並び替え:</span>
+                    <select class="filter-select" id="sort-select">
+                        <option value="date-desc">最終更新日（新しい順）</option>
+                        <option value="date-asc">最終更新日（古い順）</option>
+                        <option value="title-asc">タイトル（昇順）</option>
+                        <option value="title-desc">タイトル（降順）</option>
+                    </select>
+                </div>
+                <div>
+                    <span class="filter-label">カテゴリー:</span>
+                    <select class="filter-select" id="category-select">
+                        <option value="all">すべて</option>
+                        <option value="research">研究論文</option>
+                        <option value="lecture">講義ノート</option>
+                        <option value="book">書籍</option>
+                        <option value="other">その他</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-input">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="本棚を検索..." id="search-input">
+            </div>
+        </div>
+        
+        <!-- 本棚のヘッダー -->
+        <div class="bookshelf-header">
+            <h2>デジタル書籍一覧</h2>
+            <div class="bookshelf-actions">
+                <a href="#" class="btn btn-outline" id="import-btn">
+                    <i class="fas fa-download"></i> インポート
+                </a>
+                <a href="#" class="btn btn-success" id="create-btn">
+                    <i class="fas fa-plus"></i> 新規作成
+                </a>
+            </div>
+        </div>
+        
+        <!-- 本棚のグリッド -->
+        <div class="bookshelf-grid" id="book-grid">
+            <!-- 本のアイテム（JavaScript で動的に生成される） -->
+            <!-- テスト用のダミーデータ -->
+            <div class="book-item">
+                <div class="book-cover">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">革新的AI技術とその応用</h3>
+                    <div class="book-meta">
+                        <span><i class="fas fa-user"></i> 作成者: あなた</span>
+                        <span><i class="fas fa-calendar-alt"></i> 最終更新: 2025/05/05</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 75%"></div>
+                    </div>
+                    <div class="book-actions mt-3">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-book-open"></i> 読む
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            <i class="fas fa-cog"></i> 編集
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="book-item">
+                <div class="bookmark-badge">続きから</div>
+                <div class="book-cover">
+                    <i class="fas fa-flask"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">量子コンピューティング実験ノート</h3>
+                    <div class="book-meta">
+                        <span><i class="fas fa-user"></i> 作成者: あなた</span>
+                        <span><i class="fas fa-calendar-alt"></i> 最終更新: 2025/05/01</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 45%"></div>
+                    </div>
+                    <div class="book-actions mt-3">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-book-open"></i> 読む
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            <i class="fas fa-cog"></i> 編集
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="book-item">
+                <div class="book-cover">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">学術出版入門 (ドラフト)</h3>
+                    <div class="book-meta">
+                        <span><i class="fas fa-user"></i> 作成者: あなた</span>
+                        <span><i class="fas fa-calendar-alt"></i> 最終更新: 2025/04/28</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 20%"></div>
+                    </div>
+                    <div class="book-actions mt-3">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-book-open"></i> 読む
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            <i class="fas fa-cog"></i> 編集
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="book-item">
+                <div class="book-cover">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">再生可能エネルギーの経済分析</h3>
+                    <div class="book-meta">
+                        <span><i class="fas fa-user"></i> 作成者: あなた</span>
+                        <span><i class="fas fa-calendar-alt"></i> 最終更新: 2025/04/15</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 90%"></div>
+                    </div>
+                    <div class="book-actions mt-3">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-book-open"></i> 読む
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            <i class="fas fa-cog"></i> 編集
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="book-item">
+                <div class="book-cover">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="book-info">
+                    <h3 class="book-title">統計学基礎 講義ノート</h3>
+                    <div class="book-meta">
+                        <span><i class="fas fa-user"></i> 作成者: あなた</span>
+                        <span><i class="fas fa-calendar-alt"></i> 最終更新: 2025/03/30</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-value" style="width: 60%"></div>
+                    </div>
+                    <div class="book-actions mt-3">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fas fa-book-open"></i> 読む
+                        </a>
+                        <a href="#" class="btn btn-outline">
+                            <i class="fas fa-cog"></i> 編集
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ページネーション -->
+        <div class="pagination" id="pagination">
+            <a href="#" class="pagination-item disabled">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <a href="#" class="pagination-item active">1</a>
+            <a href="#" class="pagination-item">2</a>
+            <a href="#" class="pagination-item">3</a>
+            <a href="#" class="pagination-item">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- JavaScripts -->
+    <script>
+        // Firebase設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
+            authDomain: "katsujiringx.firebaseapp.com",
+            projectId: "katsujiringx",
+            storageBucket: "katsujiringx.appspot.com", 
+            messagingSenderId: "831784731743",
+            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+            measurementId: "G-LPCRE3WYZR"
+        };
+
+        // Firebase初期化
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+
+        // Firebaseサービスへの参照
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+        // 日本語ロケールの設定
+        auth.languageCode = 'ja';
+
+        // DOM要素の参照
+        const sidebarUserName = document.getElementById('sidebar-user-name');
+        const userInitial = document.getElementById('user-initial');
+        const userAvatar = document.getElementById('user-avatar');
+        const bookGrid = document.getElementById('book-grid');
+        const sortSelect = document.getElementById('sort-select');
+        const categorySelect = document.getElementById('category-select');
+        const searchInput = document.getElementById('search-input');
+        const pagination = document.getElementById('pagination');
+        const logoutBtn = document.getElementById('logout-btn');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const createBtn = document.getElementById('create-btn');
+        const importBtn = document.getElementById('import-btn');
+
+        // 認証状態の監視
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // ユーザーがログインしている場合
+                console.log("ログイン中:", user.uid);
+                
+                // 初期表示名の即時反映（暫定表示）
+                const initialDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'ユーザー');
+                if (sidebarUserName) {
+                    sidebarUserName.textContent = initialDisplayName;
+                }
+                
+                // ユーザーの初期アバター表示
+                if (userInitial && user.displayName) {
+                    const initial = user.displayName.charAt(0).toUpperCase();
+                    userInitial.textContent = initial;
+                    
+                    if (user.photoURL) {
+                        const avatarImg = document.createElement('img');
+                        avatarImg.src = user.photoURL;
+                        avatarImg.alt = user.displayName;
+                        userAvatar.innerHTML = '';
+                        userAvatar.appendChild(avatarImg);
+                    }
+                }
+                
+                // 完全なユーザーデータ取得
+                fetchUserData(user.uid);
+                
+                // 本のデータを取得
+                fetchBooks(user.uid);
+            } else {
+                // ログインしていない場合はログインページにリダイレクト
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ユーザーデータの取得
+        async function fetchUserData(userId) {
+            try {
+                const userDoc = await db.collection('users').doc(userId).get();
+                const currentUser = auth.currentUser;
+                
+                if (userDoc.exists) {
+                    const userData = userDoc.data();
+                    
+                    // Firebase Authentication からの最新ユーザー名があれば更新
+                    if (currentUser && currentUser.displayName && 
+                        currentUser.displayName !== userData.displayName) {
+                        await db.collection('users').doc(userId).update({
+                            displayName: currentUser.displayName
+                        });
+                        userData.displayName = currentUser.displayName;
+                    }
+                    
+                    // ユーザー名を表示
+                    if (sidebarUserName) {
+                        sidebarUserName.textContent = userData.displayName || 'ゲスト';
+                    }
+                    
+                    // ユーザーアバター設定
+                    if (userInitial) {
+                        const initial = (userData.displayName || 'U').charAt(0).toUpperCase();
+                        userInitial.textContent = initial;
+                        
+                        // Firebase Authentication のプロフィール画像を優先
+                        const profileImageUrl = (currentUser && currentUser.photoURL) || userData.profileImageUrl;
+                        if (profileImageUrl) {
+                            const avatarImg = document.createElement('img');
+                            avatarImg.src = profileImageUrl;
+                            avatarImg.alt = userData.displayName || 'ユーザー';
+                            userAvatar.innerHTML = '';
+                            userAvatar.appendChild(avatarImg);
+                        }
+                    }
+                } else {
+                    console.log("ユーザーデータが見つかりません");
+                    // ユーザーデータがない場合は新規作成
+                    await createUserProfile(auth.currentUser);
+                }
+            } catch (error) {
+                console.error("ユーザーデータ取得エラー:", error);
+            }
+        }
+
+        // 新規ユーザープロファイルの作成
+        async function createUserProfile(user) {
+            try {
+                // ユーザー名を Authentication から取得
+                let displayName = user.displayName;
+                if (!displayName && user.email) {
+                    displayName = user.email.split('@')[0];
+                } else if (!displayName) {
+                    displayName = '新規ユーザー';
+                }
+                
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: displayName,
+                    profileImageUrl: user.photoURL || '',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    documentCount: 0,
+                    points: 0,
+                    communityPosts: 0,
+                    level: 1
+                };
+                
+                await db.collection('users').doc(user.uid).set(userData);
+                console.log("ユーザープロファイル作成完了");
+                
+                // 初期アクティビティログの作成
+                await db.collection('activities').add({
+                    userId: user.uid,
+                    type: 'account_created',
+                    title: 'アカウント作成',
+                    description: 'KatsujiRingXへようこそ！アカウントが作成されました。',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // ページをリロード
+                window.location.reload();
+            } catch (error) {
+                console.error("ユーザープロファイル作成エラー:", error);
+            }
+        }
+
+        // 本のデータを取得
+        async function fetchBooks(userId) {
+            try {
+                // 現在のフィルターとソート条件を取得
+                const sortValue = sortSelect ? sortSelect.value : 'date-desc';
+                const categoryValue = categorySelect ? categorySelect.value : 'all';
+                const searchValue = searchInput ? searchInput.value.toLowerCase() : '';
+                
+                // Firestoreクエリを構築
+                let booksQuery = db.collection('books').where('userId', '==', userId);
+                
+                // カテゴリーフィルター適用
+                if (categoryValue !== 'all') {
+                    booksQuery = booksQuery.where('category', '==', categoryValue);
+                }
+                
+                // ソート適用
+                switch (sortValue) {
+                    case 'date-desc':
+                        booksQuery = booksQuery.orderBy('updatedAt', 'desc');
+                        break;
+                    case 'date-asc':
+                        booksQuery = booksQuery.orderBy('updatedAt', 'asc');
+                        break;
+                    case 'title-asc':
+                        booksQuery = booksQuery.orderBy('title', 'asc');
+                        break;
+                    case 'title-desc':
+                        booksQuery = booksQuery.orderBy('title', 'desc');
+                        break;
+                }
+                
+                // クエリ実行
+                const booksSnapshot = await booksQuery.get();
+                
+                // 検索フィルターの適用（クライアントサイドでフィルタリング）
+                const filteredBooks = [];
+                
+                booksSnapshot.forEach(doc => {
+                    const book = {
+                        id: doc.id,
+                        ...doc.data()
+                    };
+                    
+                    // 検索フィルターが存在する場合
+                    if (searchValue) {
+                        // タイトル、説明文、著者名、タグなどで検索
+                        const title = book.title ? book.title.toLowerCase() : '';
+                        const description = book.description ? book.description.toLowerCase() : '';
+                        const author = book.author ? book.author.toLowerCase() : '';
+                        const tags = book.tags || [];
+                        
+                        if (title.includes(searchValue) || 
+                            description.includes(searchValue) || 
+                            author.includes(searchValue) || 
+                            tags.some(tag => tag.toLowerCase().includes(searchValue))) {
+                            filteredBooks.push(book);
+                        }
+                    } else {
+                        // 検索フィルターがない場合はすべて表示
+                        filteredBooks.push(book);
+                    }
+                });
+                
+                // 本がない場合の処理
+                if (filteredBooks.length === 0) {
+                    bookGrid.innerHTML = `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 0;">
+                            <i class="fas fa-book" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                            <h3 style="margin-bottom: 1rem; color: var(--text-color);">まだ本がありません</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">新しい本を作成して、あなたの知識を整理しましょう</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('create-btn').click()">
+                                <i class="fas fa-plus"></i> 新しい本を作成
+                            </button>
+                        </div>
+                    `;
+                    
+                    // ページネーションを非表示
+                    if (pagination) {
+                        pagination.style.display = 'none';
+                    }
+                    
+                    return;
+                }
+                
+                // ページネーション処理
+                const itemsPerPage = 12;
+                const totalPages = Math.ceil(filteredBooks.length / itemsPerPage);
+                let currentPage = 1;
+                
+                // ページネーションを更新
+                updatePagination(currentPage, totalPages);
+                
+                // 現在のページに表示するアイテムを取得
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, filteredBooks.length);
+                const booksToDisplay = filteredBooks.slice(startIndex, endIndex);
+                
+                // 本のリストをクリア
+                bookGrid.innerHTML = '';
+                
+                // 本のアイテムを表示
+                booksToDisplay.forEach(book => {
+                    renderBookItem(book);
+                });
+                
+            } catch (error) {
+                console.error("本の取得エラー:", error);
+                
+                // エラーメッセージ表示
+                bookGrid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 0;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-color);">データの読み込みエラー</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">本の情報を読み込めませんでした。再度お試しください。</p>
+                        <button class="btn btn-primary" onclick="window.location.reload()">
+                            <i class="fas fa-sync-alt"></i> 再読み込み
+                        </button>
+                    </div>
+                `;
+                
+                // ページネーションを非表示
+                if (pagination) {
+                    pagination.style.display = 'none';
+                }
+            }
+        }
+
+        // 本のアイテムをレンダリング
+        function renderBookItem(book) {
+            // カテゴリーに応じたアイコン
+            let categoryIcon = 'fas fa-book';
+            switch (book.category) {
+                case 'research':
+                    categoryIcon = 'fas fa-flask';
+                    break;
+                case 'lecture':
+                    categoryIcon = 'fas fa-chalkboard-teacher';
+                    break;
+                case 'notes':
+                    categoryIcon = 'fas fa-sticky-note';
+                    break;
+                case 'reference':
+                    categoryIcon = 'fas fa-graduation-cap';
+                    break;
+            }
+            
+            // 最終更新日のフォーマット
+            const updatedAt = book.updatedAt ? book.updatedAt.toDate() : new Date();
+            const formattedDate = new Intl.DateTimeFormat('ja-JP', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            }).format(updatedAt);
+            
+            // 読書進捗のパーセンテージ
+            const progress = book.progress || 0;
+            
+            // ブックマークバッジ（続きから読む）
+            const bookmarkBadge = book.lastRead ? `<div class="bookmark-badge">続きから</div>` : '';
+            
+            // HTML生成
+            const html = `
+                <div class="book-item" data-id="${book.id}">
+                    ${bookmarkBadge}
+                    <div class="book-cover">
+                        ${book.coverUrl ? 
+                            `<img src="${book.coverUrl}" alt="${book.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                            `<i class="${categoryIcon}"></i>`
+                        }
+                    </div>
+                    <div class="book-info">
+                        <h3 class="book-title">${book.title}</h3>
+                        <div class="book-meta">
+                            <span><i class="fas fa-user"></i> 作成者: ${book.author || 'あなた'}</span>
+                            <span><i class="fas fa-calendar-alt"></i> 最終更新: ${formattedDate}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-value" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="book-actions mt-3">
+                            <a href="reader.html?id=${book.id}" class="btn btn-primary">
+                                <i class="fas fa-book-open"></i> 読む
+                            </a>
+                            <a href="editor.html?id=${book.id}" class="btn btn-outline">
+                                <i class="fas fa-cog"></i> 編集
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            bookGrid.innerHTML += html;
+        }
+
+        // ページネーションを更新
+        function updatePagination(currentPage, totalPages) {
+            if (!pagination) return;
+            
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+            
+            pagination.style.display = 'flex';
+            
+            let paginationHtml = `
+                <a href="#" class="pagination-item ${currentPage === 1 ? 'disabled' : ''}" data-page="${currentPage - 1}">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            `;
+            
+            // 表示するページ番号を決定
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(startPage + 4, totalPages);
+            
+            if (endPage - startPage < 4) {
+                startPage = Math.max(1, endPage - 4);
+            }
+            
+            // 最初のページへのリンク
+            if (startPage > 1) {
+                paginationHtml += `
+                    <a href="#" class="pagination-item" data-page="1">1</a>
+                `;
+                
+                if (startPage > 2) {
+                    paginationHtml += `<span class="pagination-item disabled">...</span>`;
+                }
+            }
+            
+            // ページ番号リンク
+            for (let i = startPage; i <= endPage; i++) {
+                paginationHtml += `
+                    <a href="#" class="pagination-item ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</a>
+                `;
+            }
+            
+            // 最後のページへのリンク
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    paginationHtml += `<span class="pagination-item disabled">...</span>`;
+                }
+                
+                paginationHtml += `
+                    <a href="#" class="pagination-item" data-page="${totalPages}">${totalPages}</a>
+                `;
+            }
+            
+            paginationHtml += `
+                <a href="#" class="pagination-item ${currentPage === totalPages ? 'disabled' : ''}" data-page="${currentPage + 1}">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            `;
+            
+            pagination.innerHTML = paginationHtml;
+            
+            // ページネーションクリックイベント
+            const pageItems = pagination.querySelectorAll('.pagination-item');
+            pageItems.forEach(item => {
+                if (item.dataset.page) {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const newPage = parseInt(item.dataset.page);
+                        updatePagination(newPage, totalPages);
+                        const userId = auth.currentUser ? auth.currentUser.uid : null;
+                        if (userId) {
+                            fetchBooks(userId);
+                        }
+                    });
+                }
+            });
+        }
+
+        // ログアウト処理
+        async function logout() {
+            try {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("ログアウトエラー:", error);
+            }
+        }
+
+        // テーマ切替
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (savedTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // アイコンとテキストを切り替え
+            if (themeToggle) {
+                if (newTheme === 'dark') {
+                    themeToggle.innerHTML = '<i class="fas fa-sun"></i> ライトモード';
+                } else {
+                    themeToggle.innerHTML = '<i class="fas fa-moon"></i> ダークモード';
+                }
+            }
+        }
+
+        // サイドバー切替（モバイル用）
+        function toggleSidebar() {
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+
+        // イベントリスナー
+        document.addEventListener('DOMContentLoaded', () => {
+            // テーマ初期化
+            initTheme();
+            
+            // ソート・フィルター・検索の変更イベント
+            if (sortSelect) {
+                sortSelect.addEventListener('change', () => {
+                    const userId = auth.currentUser ? auth.currentUser.uid : null;
+                    if (userId) {
+                        fetchBooks(userId);
+                    }
+                });
+            }
+            
+            if (categorySelect) {
+                categorySelect.addEventListener('change', () => {
+                    const userId = auth.currentUser ? auth.currentUser.uid : null;
+                    if (userId) {
+                        fetchBooks(userId);
+                    }
+                });
+            }
+            
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    const userId = auth.currentUser ? auth.currentUser.uid : null;
+                    if (userId) {
+                        fetchBooks(userId);
+                    }
+                });
+            }
+            
+            // 新規作成ボタン
+            if (createBtn) {
+                createBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.location.href = 'editor.html?new=true';
+                });
+            }
+            
+            // インポートボタン
+            if (importBtn) {
+                importBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('インポート機能は現在開発中です。');
+                });
+            }
+            
+            // ログアウトボタン
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+            
+            // テーマ切替ボタン
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleTheme);
+            }
+            
+            // サイドバー切替ボタン
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', toggleSidebar);
+            }
+            
+            // 画面クリックでサイドバーを閉じる（モバイル用）
+            document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 768 && 
+                    sidebar && 
+                    sidebar.classList.contains('active') && 
+                    !sidebar.contains(e.target) && 
+                    e.target !== sidebarToggle) {
+                    sidebar.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
