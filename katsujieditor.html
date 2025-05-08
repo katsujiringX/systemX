@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#4338ca">
     <title>活字化エディタ | KatsujiRingX</title>
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;500;600&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
     <style>
         /* デザインシステム変数 */
         :root {
@@ -43,7 +40,6 @@
             --info: #3b82f6;
             --info-hover: #2563eb;
             --info-light: #eff6ff;
-
             /* カラーパレット - グレースケール */
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
@@ -55,14 +51,12 @@
             --gray-700: #374151;
             --gray-800: #1f2937;
             --gray-900: #111827;
-
             /* テーマカラー */
             --bg-color: var(--gray-50);
             --bg-color-card: white;
             --text-color: var(--gray-800);
             --text-muted: var(--gray-500);
             --border-color: var(--gray-200);
-
             /* レイアウト */
             --header-height: 4rem;
             --container-padding: 1.5rem;
@@ -73,12 +67,10 @@
             --border-radius-lg: 0.75rem;
             --border-radius-xl: 1rem;
             --border-radius-full: 9999px;
-
             /* アニメーション */
             --transition-fast: 0.15s ease;
             --transition-normal: 0.25s ease;
             --transition-slow: 0.4s ease;
-
             /* シャドウ */
             --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -87,7 +79,6 @@
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             --shadow-focus: 0 0 0 3px var(--primary-transparent);
         }
-
         /* ダークモード */
         [data-theme="dark"] {
             /* カラーパレット調整 */
@@ -95,14 +86,12 @@
             --primary-hover: #4f46e5;
             --primary-light: rgba(99, 102, 241, 0.15);
             --primary-transparent: rgba(99, 102, 241, 0.2);
-
             /* テーマカラー調整 */
             --bg-color: #111827;
             --bg-color-card: #1f2937;
             --text-color: #f3f4f6;
             --text-muted: #9ca3af;
             --border-color: #374151;
-
             /* シャドウ調整 */
             --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
             --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -110,14 +99,12 @@
             --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
             --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
         }
-
         /* ベーススタイル */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Noto Sans JP', sans-serif;
             background-color: var(--bg-color);
@@ -129,7 +116,6 @@
             flex-direction: column;
             transition: background-color var(--transition-normal), color var(--transition-normal);
         }
-
         /* ヘッダー */
         .editor-header {
             height: var(--header-height);
@@ -144,7 +130,6 @@
             z-index: 50;
             transition: background-color var(--transition-normal), border-color var(--transition-normal);
         }
-
         .editor-header .logo {
             font-size: 1.25rem;
             font-weight: 700;
@@ -155,24 +140,20 @@
             gap: 0.75rem;
             transition: opacity var(--transition-fast);
         }
-
         .editor-header .logo:hover {
             opacity: 0.9;
         }
-
         .editor-header .logo img {
             width: 2.25rem;
             height: 2.25rem;
             filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
         }
-
         .editor-header .actions {
             margin-left: auto;
             display: flex;
             align-items: center;
             gap: 0.75rem;
         }
-
         /* メインコンテンツエリア */
         .editor-container {
             display: flex;
@@ -181,7 +162,6 @@
             padding: var(--container-padding);
             gap: var(--element-gap);
         }
-
         /* 左側: 画像表示エリア */
         .image-pane {
             flex: 1.2;
@@ -195,7 +175,6 @@
             overflow: hidden;
             position: relative;
         }
-
         .image-pane-header {
             display: flex;
             align-items: center;
@@ -203,7 +182,6 @@
             padding: 0.75rem 1rem;
             border-bottom: 1px solid var(--border-color);
         }
-
         .image-pane-header h2 {
             font-size: 1rem;
             font-weight: 600;
@@ -211,12 +189,10 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .image-pane-header h2 i {
             color: var(--primary);
             font-size: 1.125rem;
         }
-
         .image-viewport {
             flex-grow: 1;
             overflow: hidden;
@@ -232,7 +208,6 @@
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             transition: background-color var(--transition-normal);
         }
-
         [data-theme="dark"] .image-viewport {
             background-image: 
                 linear-gradient(45deg, var(--gray-700) 25%, transparent 25%), 
@@ -240,11 +215,9 @@
                 linear-gradient(45deg, transparent 75%, var(--gray-700) 75%), 
                 linear-gradient(-45deg, transparent 75%, var(--gray-700) 75%);
         }
-
         .image-viewport.grabbing {
             cursor: grabbing;
         }
-
         .image-container {
             position: absolute;
             top: 0;
@@ -255,7 +228,6 @@
             justify-content: center;
             align-items: center;
         }
-
         .image-container img {
             transform-origin: center center;
             max-width: none;
@@ -263,7 +235,6 @@
             transition: transform var(--transition-fast);
             will-change: transform;
         }
-
         /* ズームコントロール */
         .zoom-controls {
             position: absolute;
@@ -274,7 +245,6 @@
             gap: 0.625rem;
             z-index: 10;
         }
-
         .zoom-btn {
             width: 2.75rem;
             height: 2.75rem;
@@ -290,7 +260,6 @@
             font-size: 1rem;
             transition: all var(--transition-fast);
         }
-
         .zoom-btn:hover {
             background-color: var(--primary-light);
             border-color: var(--primary);
@@ -298,12 +267,10 @@
             transform: translateY(-1px);
             box-shadow: var(--shadow-md);
         }
-
         .zoom-btn:active {
             transform: translateY(0);
             box-shadow: var(--shadow-sm);
         }
-
         .zoom-level {
             position: absolute;
             bottom: 1rem;
@@ -322,11 +289,9 @@
             border: 1px solid var(--border-color);
             transition: opacity var(--transition-normal);
         }
-
         .zoom-level i {
             color: var(--primary);
         }
-
         .image-loading-overlay {
             position: absolute;
             top: 0;
@@ -342,7 +307,6 @@
             z-index: 20;
             backdrop-filter: blur(4px);
         }
-
         .image-loading-spinner {
             width: 3rem;
             height: 3rem;
@@ -351,17 +315,14 @@
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
         .image-loading-text {
             font-size: 0.875rem;
             font-weight: 500;
             color: var(--text-color);
         }
-
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
         .image-error-message {
             position: absolute;
             top: 50%;
@@ -374,17 +335,14 @@
             text-align: center;
             max-width: 80%;
         }
-
         .image-error-message i {
             font-size: 3rem;
             color: var(--danger);
         }
-
         .image-error-message p {
             font-size: 0.875rem;
             color: var(--text-color);
         }
-
         /* 右側: テキスト・メタデータエリア */
         .text-pane {
             flex: 1;
@@ -395,7 +353,6 @@
             min-width: 300px;
             max-width: 40%;
         }
-
         /* タブスタイル */
         .tab-container {
             background-color: var(--bg-color-card);
@@ -406,13 +363,11 @@
             transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
             overflow: hidden;
         }
-
         .tabs-header {
             display: flex;
             background-color: var(--bg-color-card);
             overflow: hidden;
         }
-
         .tab-button {
             padding: 0.75rem 1.25rem;
             background: none;
@@ -429,28 +384,23 @@
             flex: 1;
             justify-content: center;
         }
-
         .tab-button:hover {
             color: var(--primary);
             background-color: var(--primary-light);
         }
-
         .tab-button.active {
             color: var(--primary);
             border-bottom-color: var(--primary);
             background-color: var(--primary-light);
         }
-
         .tab-button i {
             font-size: 1rem;
         }
-
         .tab-content {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-
         .metadata-form, .text-editor {
             flex: 1;
             display: flex;
@@ -463,7 +413,6 @@
             transition: background-color var(--transition-normal), box-shadow var(--transition-normal);
             overflow: hidden;
         }
-
         .card-header {
             display: flex;
             align-items: center;
@@ -472,7 +421,6 @@
             border-bottom: 1px solid var(--border-color);
             transition: border-color var(--transition-normal);
         }
-
         .card-header h2 {
             font-size: 1rem;
             font-weight: 600;
@@ -480,27 +428,22 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .card-header h2 i {
             color: var(--primary);
             font-size: 1.125rem;
         }
-
         .card-body {
             padding: 1.25rem;
         }
-
         /* メタデータフォーム */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1rem;
         }
-
         .form-group {
             margin-bottom: 0.75rem;
         }
-
         .form-label {
             display: block;
             margin-bottom: 0.375rem;
@@ -508,7 +451,6 @@
             font-size: 0.8125rem;
             color: var(--text-color);
         }
-
         .form-control {
             width: 100%;
             padding: 0.625rem 0.875rem;
@@ -519,17 +461,14 @@
             font-size: 0.875rem;
             transition: all var(--transition-fast);
         }
-
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: var(--shadow-focus);
         }
-
         .form-control::placeholder {
             color: var(--text-muted);
         }
-
         /* 縦書きテキストエディタ */
         .text-editor {
             flex: 1;
@@ -537,7 +476,6 @@
             flex-direction: column;
             overflow: hidden;
         }
-
         .text-editor .card-body {
             flex: 1;
             padding: 0;
@@ -545,13 +483,11 @@
             display: flex;
             position: relative;
         }
-
         .vertical-text-container {
             flex: 1;
             overflow: hidden;
             position: relative;
         }
-
         .text-editor textarea {
             width: 100%;
             height: 100%;
@@ -570,11 +506,9 @@
             transition: background-color var(--transition-normal);
             box-sizing: border-box;
         }
-
         .text-editor textarea:focus {
             outline: none;
         }
-
         .text-stats {
             position: absolute;
             bottom: 1rem;
@@ -591,11 +525,9 @@
             gap: 0.375rem;
             border: 1px solid var(--border-color);
         }
-
         .text-stats i {
             color: var(--primary);
         }
-
         /* ボタンスタイル */
         .btn {
             display: inline-flex;
@@ -611,62 +543,51 @@
             border: none;
             line-height: 1.5;
         }
-
         .btn i {
             margin-right: 0.5rem;
         }
-
         .btn-primary {
             background-color: var(--primary);
             color: white;
             box-shadow: var(--shadow-sm);
         }
-
         .btn-primary:hover {
             background-color: var(--primary-hover);
             transform: translateY(-1px);
             box-shadow: var(--shadow);
         }
-
         .btn-primary:active {
             transform: translateY(0);
         }
-
         .btn-outline {
             background-color: transparent;
             border: 1px solid var(--border-color);
             color: var(--text-color);
         }
-
         .btn-outline:hover {
             border-color: var(--primary);
             color: var(--primary);
             background-color: var(--primary-light);
         }
-
         .btn-sm {
             padding: 0.375rem 0.75rem;
             font-size: 0.8125rem;
         }
-
         .btn-icon {
             width: 2.5rem;
             height: 2.5rem;
             padding: 0;
             border-radius: var(--border-radius-full);
         }
-
         .btn-icon i {
             margin-right: 0;
         }
-
         /* ロード中の状態 */
         .btn.loading {
             position: relative;
             color: transparent !important;
             pointer-events: none;
         }
-
         .btn.loading::after {
             content: "";
             position: absolute;
@@ -679,12 +600,10 @@
             border-top-color: white;
             animation: spin 0.6s linear infinite;
         }
-
         .btn-outline.loading::after {
             border: 2px solid rgba(var(--text-color-rgb), 0.3);
             border-top-color: var(--text-color);
         }
-
         /* ショートカットキー */
         .shortcut-key {
             display: inline-flex;
@@ -701,12 +620,10 @@
             box-shadow: var(--shadow-xs);
             margin-left: 0.375rem;
         }
-
         [data-theme="dark"] .shortcut-key {
             background-color: var(--gray-700);
             color: var(--gray-300);
         }
-
         /* トースト通知 */
         .toast-container {
             position: fixed;
@@ -717,7 +634,6 @@
             flex-direction: column;
             gap: 0.625rem;
         }
-
         .toast {
             padding: 1rem 1.5rem;
             border-radius: var(--border-radius);
@@ -730,66 +646,52 @@
             border-left: 4px solid var(--info);
             animation: slideInRight 0.3s ease forwards, fadeOut 0.3s ease forwards 4.7s;
         }
-
         .toast-success {
             border-left-color: var(--success);
         }
-
         .toast-error {
             border-left-color: var(--danger);
         }
-
         .toast-warning {
             border-left-color: var(--warning);
         }
-
         .toast-icon {
             margin-right: 0.75rem;
             font-size: 1.25rem;
             flex-shrink: 0;
         }
-
         .toast-success .toast-icon {
             color: var(--success);
         }
-
         .toast-error .toast-icon {
             color: var(--danger);
         }
-
         .toast-warning .toast-icon {
             color: var(--warning);
         }
-
         .toast-info .toast-icon {
             color: var(--info);
         }
-
         .toast-content {
             flex-grow: 1;
         }
-
         .toast-title {
             font-weight: 600;
             margin-bottom: 0.25rem;
             font-size: 0.875rem;
         }
-
         .toast-message {
             font-size: 0.8125rem;
             color: var(--text-muted);
         }
-
         @keyframes slideInRight {
             from { transform: translateX(100%); opacity: 0; }
             to { transform: translateX(0); opacity: 1; }
         }
-
         @keyframes fadeOut {
             from { opacity: 1; }
             to { opacity: 0; }
         }
-
         /* キーボードショートカットモーダル */
         .shortcut-modal {
             position: fixed;
@@ -807,12 +709,10 @@
             transition: opacity var(--transition-normal), visibility var(--transition-normal);
             backdrop-filter: blur(4px);
         }
-
         .shortcut-modal.active {
             opacity: 1;
             visibility: visible;
         }
-
         .shortcut-modal-content {
             background-color: var(--bg-color-card);
             border-radius: var(--border-radius);
@@ -823,12 +723,10 @@
             overflow-y: auto;
             animation: modalSlideIn 0.3s ease forwards;
         }
-
         @keyframes modalSlideIn {
             from { transform: translateY(-20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-
         .shortcut-modal-header {
             display: flex;
             align-items: center;
@@ -836,7 +734,6 @@
             padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border-color);
         }
-
         .shortcut-modal-title {
             font-size: 1.125rem;
             font-weight: 600;
@@ -844,11 +741,9 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .shortcut-modal-title i {
             color: var(--primary);
         }
-
         .shortcut-modal-close {
             background: none;
             border: none;
@@ -857,19 +752,15 @@
             cursor: pointer;
             transition: color var(--transition-fast);
         }
-
         .shortcut-modal-close:hover {
             color: var(--text-color);
         }
-
         .shortcut-modal-body {
             padding: 1.5rem;
         }
-
         .shortcut-group {
             margin-bottom: 1.5rem;
         }
-
         .shortcut-group-title {
             font-size: 0.9375rem;
             font-weight: 600;
@@ -879,7 +770,6 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .shortcut-item {
             display: flex;
             align-items: center;
@@ -887,21 +777,17 @@
             padding: 0.625rem 0;
             border-bottom: 1px solid var(--border-color);
         }
-
         .shortcut-item:last-child {
             border-bottom: none;
         }
-
         .shortcut-name {
             font-size: 0.875rem;
         }
-
         .shortcut-combo {
             display: flex;
             align-items: center;
             gap: 0.25rem;
         }
-
         .key {
             display: inline-flex;
             align-items: center;
@@ -916,28 +802,23 @@
             font-weight: 600;
             box-shadow: var(--shadow-sm);
         }
-
         [data-theme="dark"] .key {
             background-color: var(--gray-700);
             color: var(--gray-200);
         }
-
         .key-plus {
             color: var(--text-muted);
             margin: 0 0.25rem;
         }
-
         .key-or {
             color: var(--text-muted);
             font-size: 0.75rem;
             margin: 0 0.375rem;
         }
-
         /* ツールチップ */
         .tooltip {
             position: relative;
         }
-
         .tooltip::after {
             content: attr(data-tooltip);
             position: absolute;
@@ -956,65 +837,52 @@
             box-shadow: var(--shadow);
             z-index: 100;
         }
-
         .tooltip:hover::after {
             opacity: 1;
             visibility: visible;
             transform: translateX(-50%) translateY(-0.25rem);
         }
-
         /* レスポンシブ対応 */
         @media (max-width: 992px) {
             .editor-container {
                 flex-direction: column;
             }
-
             .image-pane, .text-pane {
                 min-width: unset;
                 max-width: unset;
                 width: 100%;
             }
-
             .image-pane {
                 height: 50vh;
             }
-
             .text-editor {
                 height: 50vh;
             }
         }
-
         @media (max-width: 768px) {
             :root {
                 --container-padding: 1rem;
                 --element-gap: 1rem;
             }
-
             .editor-header {
                 padding: 0 1rem;
             }
-
             .editor-header .actions {
                 gap: 0.5rem;
             }
-
             .form-grid {
                 grid-template-columns: 1fr;
             }
-
             .shortcut-key, .btn-text {
                 display: none;
             }
-
             .btn i {
                 margin-right: 0;
             }
-
             .btn {
                 padding: 0.5rem 0.75rem;
             }
         }
-
         /* ユーティリティクラス */
         .visually-hidden {
             position: absolute;
@@ -1027,16 +895,43 @@
             white-space: nowrap;
             border-width: 0;
         }
-
         /* RGB変数の追加 (JSでのカラー操作用) */
         :root {
             --primary-rgb: 79, 70, 229;
             --bg-color-card-rgb: 255, 255, 255;
         }
-
         [data-theme="dark"] {
             --primary-rgb: 99, 102, 241;
             --bg-color-card-rgb: 31, 41, 55;
+        }
+
+        /* メタデータフォーム用追加スタイル */
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+
+        .form-control[type="date"] {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+            font-family: 'Noto Sans JP', sans-serif;
+            line-height: 1.5;
+            writing-mode: horizontal-tb; /* 横書き */
+        }
+
+        /* 数値入力フィールドのスタイル */
+        input[type="number"].form-control {
+            -moz-appearance: textfield; /* Firefox */
+        }
+
+        /* Chrome, Safari, Edge, Opera で矢印を非表示 */
+        input[type="number"].form-control::-webkit-outer-spin-button,
+        input[type="number"].form-control::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
     </style>
 </head>
@@ -1045,7 +940,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-
     <header class="editor-header">
         <a href="mainpage.html" class="logo" title="トップページへ戻る">
             <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
@@ -1071,7 +965,6 @@
             </button>
         </div>
     </header>
-
     <div class="editor-container">
         <div class="image-pane">
             <div class="image-pane-header">
@@ -1082,13 +975,11 @@
                     </button>
                 </div>
             </div>
-
             <div class="image-viewport" id="image-viewport">
                 <div class="image-container" id="image-container">
                     <img id="editor-image" src="" alt="活字化対象画像" style="display: none;">
                 </div>
             </div>
-
             <div class="zoom-controls">
                 <button class="zoom-btn tooltip" id="zoom-in" data-tooltip="拡大 (Mouse Wheel Up)">
                     <i class="fas fa-search-plus"></i>
@@ -1100,17 +991,14 @@
                     <i class="fas fa-undo"></i>
                 </button>
             </div>
-
             <div class="zoom-level" id="zoom-level">
                 <i class="fas fa-search"></i> 100%
             </div>
-
             <div class="image-loading-overlay" id="image-loading">
                 <div class="image-loading-spinner"></div>
                 <div class="image-loading-text">画像読み込み中...</div>
             </div>
         </div>
-
         <!-- ここから右側のタブ付きエリア -->
         <div class="text-pane">
             <!-- タブヘッダー -->
@@ -1124,7 +1012,6 @@
                     </button>
                 </div>
             </div>
-
             <!-- タブコンテンツ：メタデータフォーム -->
             <div class="tab-content" id="metadata-tab" style="display: none;">
                 <div class="metadata-form">
@@ -1139,8 +1026,20 @@
                                 <input type="text" id="metadata-doc-name" class="form-control" placeholder="資料名を入力">
                             </div>
                             <div class="form-group">
+                                <label for="metadata-author" class="form-label">作者</label>
+                                <input type="text" id="metadata-author" class="form-control" placeholder="作者名を入力">
+                            </div>
+                            <div class="form-group">
+                                <label for="metadata-recipient" class="form-label">受信者</label>
+                                <input type="text" id="metadata-recipient" class="form-control" placeholder="受信者名を入力">
+                            </div>
+                            <div class="form-group">
                                 <label for="metadata-era" class="form-label">年代</label>
-                                <input type="text" id="metadata-era" class="form-control" placeholder="例: 明治時代, 1900年代">
+                                <input type="number" id="metadata-era" class="form-control" placeholder="例: 1999" min="1" max="9999">
+                            </div>
+                            <div class="form-group">
+                                <label for="metadata-creation-date" class="form-label">作成年月日</label>
+                                <input type="date" id="metadata-creation-date" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="metadata-source" class="form-label">所蔵</label>
@@ -1151,10 +1050,13 @@
                                 <input type="text" id="metadata-staff" class="form-control" placeholder="担当者名を入力">
                             </div>
                         </div>
+                        <div class="form-group mt-4">
+                            <label for="metadata-description" class="form-label">内容や形態等</label>
+                            <textarea id="metadata-description" class="form-control" rows="4" placeholder="資料の内容や形態について記述してください"></textarea>
+                        </div>
                     </div>
                 </div>
             </div>
-
             <!-- タブコンテンツ：テキストエディタ -->
             <div class="tab-content" id="text-tab">
                 <div class="text-editor">
@@ -1171,9 +1073,7 @@
             </div>
         </div>
     </div>
-
     <div class="toast-container" id="toast-container"></div>
-
     <div class="shortcut-modal" id="shortcut-modal">
         <div class="shortcut-modal-content">
             <div class="shortcut-modal-header">
@@ -1224,7 +1124,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="shortcut-group">
                     <h3 class="shortcut-group-title"><i class="fas fa-edit"></i> エディタ操作</h3>
                     <div class="shortcut-item">
@@ -1264,7 +1163,6 @@
             </div>
         </div>
     </div>
-
     <script>
         // Firebase設定
         const firebaseConfig = {
@@ -1276,54 +1174,92 @@
            appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
            measurementId: "G-LPCRE3WYZR"
         };
-
         // Firebase初期化
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-
         // Firebaseサービスへの参照
         const auth = firebase.auth();
         const db = firebase.firestore();
         const storage = firebase.storage();
-
-        // DOM要素
-        const imageViewport = document.getElementById('image-viewport');
-        const imageContainer = document.getElementById('image-container');
-        const editorImage = document.getElementById('editor-image');
-        const imageLoading = document.getElementById('image-loading');
-        const verticalText = document.getElementById('vertical-text');
-        const docNumberInput = document.getElementById('metadata-doc-number');
-        const docNameInput = document.getElementById('metadata-doc-name');
-        const eraInput = document.getElementById('metadata-era');
-        const sourceInput = document.getElementById('metadata-source');
-        const staffInput = document.getElementById('metadata-staff');
-        const saveButton = document.getElementById('save-button');
-        const backButton = document.getElementById('back-to-documents');
-        const themeToggleButton = document.getElementById('theme-toggle-editor');
-        const toastContainer = document.getElementById('toast-container');
-        const zoomInBtn = document.getElementById('zoom-in');
-        const zoomOutBtn = document.getElementById('zoom-out');
-        const zoomResetBtn = document.getElementById('zoom-reset');
-        const zoomLevelDisplay = document.getElementById('zoom-level');
-        const charCountEl = document.getElementById('char-count');
-        const fitToScreenBtn = document.getElementById('fit-to-screen');
-        const shortcutsBtn = document.getElementById('shortcuts-btn');
-        const shortcutModal = document.getElementById('shortcut-modal');
-        const shortcutModalClose = document.getElementById('shortcut-modal-close');
-
-        // タブ関連の要素
-        const metadataTabBtn = document.getElementById('metadata-tab-btn');
-        const textTabBtn = document.getElementById('text-tab-btn');
-        const metadataTab = document.getElementById('metadata-tab');
-        const textTab = document.getElementById('text-tab');
-
+        
+        // DOM要素（安全な初期化方法）
+        let imageViewport = null;
+        let imageContainer = null;
+        let editorImage = null;
+        let imageLoading = null;
+        let verticalText = null;
+        let docNumberInput = null;
+        let docNameInput = null;
+        let authorInput = null;
+        let recipientInput = null;
+        let eraInput = null;
+        let creationDateInput = null;
+        let sourceInput = null;
+        let staffInput = null;
+        let descriptionTextarea = null;
+        let saveButton = null;
+        let backButton = null;
+        let themeToggleButton = null;
+        let toastContainer = null;
+        let zoomInBtn = null;
+        let zoomOutBtn = null;
+        let zoomResetBtn = null;
+        let zoomLevelDisplay = null;
+        let charCountEl = null;
+        let fitToScreenBtn = null;
+        let shortcutsBtn = null;
+        let shortcutModal = null;
+        let shortcutModalClose = null;
+        let metadataTabBtn = null;
+        let textTabBtn = null;
+        let metadataTab = null;
+        let textTab = null;
+        
+        // DOM要素の初期化関数
+        function initializeElements() {
+            imageViewport = document.getElementById('image-viewport');
+            imageContainer = document.getElementById('image-container');
+            editorImage = document.getElementById('editor-image');
+            imageLoading = document.getElementById('image-loading');
+            verticalText = document.getElementById('vertical-text');
+            docNumberInput = document.getElementById('metadata-doc-number');
+            docNameInput = document.getElementById('metadata-doc-name');
+            authorInput = document.getElementById('metadata-author');
+            recipientInput = document.getElementById('metadata-recipient');
+            eraInput = document.getElementById('metadata-era');
+            creationDateInput = document.getElementById('metadata-creation-date');
+            sourceInput = document.getElementById('metadata-source');
+            staffInput = document.getElementById('metadata-staff');
+            descriptionTextarea = document.getElementById('metadata-description');
+            saveButton = document.getElementById('save-button');
+            backButton = document.getElementById('back-to-documents');
+            themeToggleButton = document.getElementById('theme-toggle-editor');
+            toastContainer = document.getElementById('toast-container');
+            zoomInBtn = document.getElementById('zoom-in');
+            zoomOutBtn = document.getElementById('zoom-out');
+            zoomResetBtn = document.getElementById('zoom-reset');
+            zoomLevelDisplay = document.getElementById('zoom-level');
+            charCountEl = document.getElementById('char-count');
+            fitToScreenBtn = document.getElementById('fit-to-screen');
+            shortcutsBtn = document.getElementById('shortcuts-btn');
+            shortcutModal = document.getElementById('shortcut-modal');
+            shortcutModalClose = document.getElementById('shortcut-modal-close');
+            metadataTabBtn = document.getElementById('metadata-tab-btn');
+            textTabBtn = document.getElementById('text-tab-btn');
+            metadataTab = document.getElementById('metadata-tab');
+            textTab = document.getElementById('text-tab');
+            
+            // 要素のデバッグログ
+            console.log('DOM要素初期化完了');
+        }
+        
         // 状態管理変数
         let currentFileId = null;
         let currentFile = null;
         let currentUser = null;
         let hasUnsavedChanges = false;
-
+        
         // 画像ズーム・パン用の変数
         let currentZoom = 1;
         let isDragging = false;
@@ -1333,18 +1269,23 @@
         const MIN_ZOOM = 0.1;
         const MAX_ZOOM = 10;
         const ZOOM_STEP = 0.1;
-
+        
         // ------------------------
         // タブ切り替え機能
         // ------------------------
         function setupTabs() {
+            if (!metadataTabBtn || !textTabBtn) {
+                console.error("タブボタンが見つかりません");
+                return;
+            }
+            
             // デフォルトでテキストタブを表示
             activateTab('text');
-
+            
             // タブボタンにイベントリスナーを設定
             metadataTabBtn.addEventListener('click', () => activateTab('metadata'));
             textTabBtn.addEventListener('click', () => activateTab('text'));
-
+            
             // Alt+1, Alt+2 でのタブ切り替えショートカット
             window.addEventListener('keydown', (e) => {
                 // テキストエリアでの入力中は一部ショートカットを無効化
@@ -1361,8 +1302,13 @@
                 }
             });
         }
-
+        
         function activateTab(tabId) {
+            if (!metadataTabBtn || !textTabBtn || !metadataTab || !textTab) {
+                console.error("タブ要素が見つかりません");
+                return;
+            }
+            
             // タブボタンを切り替え
             if (tabId === 'metadata') {
                 metadataTabBtn.classList.add('active');
@@ -1375,7 +1321,7 @@
                 metadataTab.style.display = 'none';
                 textTab.style.display = 'flex';
             }
-
+            
             // ショートカットトーストを表示
             if (tabId === 'metadata') {
                 showToast('資料情報タブに切り替えました', 'info');
@@ -1383,14 +1329,18 @@
                 showToast('テキストタブに切り替えました', 'info');
             }
         }
-
+        
         // ------------------------
         // トースト通知システム
         // ------------------------
         function showToast(message, type = 'info', title = '') {
+            if (!toastContainer) {
+                console.error("トーストコンテナが見つかりません");
+                return;
+            }
+            
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-
             let icon = '';
             let titleText = title || '';
             
@@ -1403,15 +1353,8 @@
                     icon = '<i class="fas fa-exclamation-circle toast-icon"></i>';
                     if (!titleText) titleText = 'エラー';
                     break;
-                case 'warning':
-                    icon = '<i class="fas fa-exclamation-triangle toast-icon"></i>';
-                    if (!titleText) titleText = '警告';
-                    break;
-                default:
-                    icon = '<i class="fas fa-info-circle toast-icon"></i>';
-                    if (!titleText) titleText = 'お知らせ';
-            }
-
+               
+            
             toast.innerHTML = `
                 ${icon}
                 <div class="toast-content">
@@ -1421,50 +1364,60 @@
             `;
             
             toastContainer.appendChild(toast);
-
             setTimeout(() => {
                 toast.remove();
-            }, 5000);
+            }, 0);
         }
-
+    }
+        
         // ------------------------
         // 資料番号のバリデーション
         // ------------------------
         function setupDocNumberValidation() {
-            if (docNumberInput) {
-                docNumberInput.addEventListener('input', (event) => {
-                    // 入力値から半角数字以外を除去
-                    const sanitizedValue = event.target.value.replace(/[^0-9]/g, '');
-                    if (event.target.value !== sanitizedValue) {
-                        event.target.value = sanitizedValue;
-                        showToast('資料番号は半角数字のみ入力可能です。', 'info');
-                    }
-                    setUnsavedChanges(true);
-                });
+            if (!docNumberInput) {
+                console.error("資料番号入力欄が見つかりません");
+                return;
             }
+            
+            docNumberInput.addEventListener('input', (event) => {
+                // 入力値から半角数字以外を除去
+                const sanitizedValue = event.target.value.replace(/[^0-9]/g, '');
+                if (event.target.value !== sanitizedValue) {
+                    event.target.value = sanitizedValue;
+                    showToast('資料番号は半角数字のみ入力可能です。', 'info');
+                }
+                setUnsavedChanges(true);
+            });
         }
-
+        
         // ------------------------
         // 文字数カウント機能
         // ------------------------
         function updateCharCount() {
-            if (verticalText && charCountEl) {
-                const count = verticalText.value.length;
-                charCountEl.textContent = count.toLocaleString();
+            if (!verticalText || !charCountEl) {
+                console.error("テキストエリアまたは文字数表示要素が見つかりません");
+                return;
             }
+            
+            const count = verticalText.value.length;
+            charCountEl.textContent = count.toLocaleString();
         }
-
+        
         function setupCharCounter() {
-            if (verticalText) {
-                verticalText.addEventListener('input', () => {
-                    updateCharCount();
-                    setUnsavedChanges(true);
-                });
-                // 初期カウント
-                updateCharCount();
+            if (!verticalText) {
+                console.error("テキストエリアが見つかりません");
+                return;
             }
+            
+            verticalText.addEventListener('input', () => {
+                updateCharCount();
+                setUnsavedChanges(true);
+            });
+            
+            // 初期カウント
+            updateCharCount();
         }
-
+        
         // ------------------------
         // 変更の追跡
         // ------------------------
@@ -1481,7 +1434,7 @@
                 document.title = title.substring(1);
             }
         }
-
+        
         function setupChangeTracking() {
             // メタデータフォームのすべての入力フィールドに変更リスナーを追加
             const metadataInputs = document.querySelectorAll('.metadata-form .form-control');
@@ -1498,11 +1451,16 @@
                 }
             });
         }
-
+        
         // ------------------------
         // ファイルデータ読み込み
         // ------------------------
         async function loadFileData(fileId) {
+            if (!imageLoading || !editorImage) {
+                console.error("画像表示要素が見つかりません");
+                return;
+            }
+            
             imageLoading.style.display = 'flex'; // ローディング表示開始
             editorImage.style.display = 'none';
             
@@ -1510,11 +1468,11 @@
                 const fileDoc = await db.collection('files').doc(fileId).get();
                 if (fileDoc.exists) {
                     currentFile = { id: fileDoc.id, ...fileDoc.data() };
-
+                    
                     // タイトルを設定
                     const fileName = currentFile.name || currentFile.originalName || '名称未設定';
                     document.title = `編集: ${fileName} | KatsujiRingX`;
-
+                    
                     if (currentFile.url && currentFile.fileType === 'image') {
                         editorImage.src = currentFile.url;
                         editorImage.alt = currentFile.name || '活字化対象画像';
@@ -1522,6 +1480,7 @@
                         editorImage.onload = () => { // 画像読み込み完了後
                             imageLoading.style.display = 'none';
                             editorImage.style.display = 'block';
+                            
                             // 画像の初期位置とサイズを設定
                             resetImagePosition();
                             showToast('画像の読み込みが完了しました', 'success');
@@ -1529,62 +1488,84 @@
                         
                         editorImage.onerror = () => { // 画像読み込みエラー
                             imageLoading.style.display = 'none';
-                            imageViewport.innerHTML = `
-                                <div class="image-error-message">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    <p>画像の読み込みに失敗しました。ページを再読み込みするか、管理者にお問い合わせください。</p>
-                                </div>
-                            `;
+                            if (imageViewport) {
+                                imageViewport.innerHTML = `
+                                    <div class="image-error-message">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <p>画像の読み込みに失敗しました。ページを再読み込みするか、管理者にお問い合わせください。</p>
+                                    </div>
+                                `;
+                            }
                             showToast('画像の読み込みに失敗しました。', 'error');
-                        }
-
-                        // メタデータとテキストを読み込む
-                        docNameInput.value = currentFile.name || '';
-                        docNumberInput.value = currentFile.metadata?.docNumber || '';
-                        eraInput.value = currentFile.metadata?.era || '';
-                        sourceInput.value = currentFile.metadata?.source || '';
-                        staffInput.value = currentFile.metadata?.staff || '';
-                        verticalText.value = currentFile.transcribedText || '';
+                        };
                         
-                        // 文字数カウントを更新
-                        updateCharCount();
+                        // メタデータの読み込み（安全に）
+                        loadMetadata(currentFile);
                         
                         // 初期状態では変更なしとして扱う
                         setUnsavedChanges(false);
-
                     } else {
                         imageLoading.style.display = 'none';
-                        imageViewport.innerHTML = `
-                            <div class="image-error-message">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <p>有効な画像ファイルが見つかりませんでした。資料管理ページから別の資料を選択してください。</p>
-                            </div>
-                        `;
+                        if (imageViewport) {
+                            imageViewport.innerHTML = `
+                                <div class="image-error-message">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <p>有効な画像ファイルが見つかりませんでした。資料管理ページから別の資料を選択してください。</p>
+                                </div>
+                            `;
+                        }
                         showToast('有効な画像ファイルではありません。', 'warning', '読み込みエラー');
                     }
                 } else {
                     imageLoading.style.display = 'none';
-                    imageViewport.innerHTML = `
-                        <div class="image-error-message">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <p>指定されたファイルが見つかりません。資料管理ページから別の資料を選択してください。</p>
-                        </div>
-                    `;
+                    if (imageViewport) {
+                        imageViewport.innerHTML = `
+                            <div class="image-error-message">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>指定されたファイルが見つかりません。資料管理ページから別の資料を選択してください。</p>
+                            </div>
+                        `;
+                    }
                     showToast('指定されたファイルが見つかりません。', 'error', '読み込みエラー');
                 }
             } catch (error) {
                 console.error("ファイルデータ読み込みエラー:", error);
                 imageLoading.style.display = 'none';
-                imageViewport.innerHTML = `
-                    <div class="image-error-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <p>ファイルの読み込み中にエラーが発生しました。ネットワーク接続を確認するか、後ほど再試行してください。</p>
-                    </div>
-                `;
+                if (imageViewport) {
+                    imageViewport.innerHTML = `
+                        <div class="image-error-message">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>ファイルの読み込み中にエラーが発生しました。ネットワーク接続を確認するか、後ほど再試行してください。</p>
+                        </div>
+                    `;
+                }
                 showToast('ファイルの読み込みに失敗しました。', 'error', '読み込みエラー');
             }
         }
-
+        
+        // メタデータの読み込み（安全に）
+        function loadMetadata(currentFile) {
+            if (!currentFile) {
+                console.warn('メタデータの読み込み: ファイルデータがありません');
+                return;
+            }
+            
+            // 安全に値を設定
+            if (docNameInput) docNameInput.value = currentFile.name || '';
+            if (docNumberInput) docNumberInput.value = currentFile.metadata?.docNumber || '';
+            if (authorInput) authorInput.value = currentFile.metadata?.author || '';
+            if (recipientInput) recipientInput.value = currentFile.metadata?.recipient || '';
+            if (eraInput) eraInput.value = currentFile.metadata?.era || '';
+            if (creationDateInput) creationDateInput.value = currentFile.metadata?.creationDate || '';
+            if (sourceInput) sourceInput.value = currentFile.metadata?.source || '';
+            if (staffInput) staffInput.value = currentFile.metadata?.staff || '';
+            if (descriptionTextarea) descriptionTextarea.value = currentFile.metadata?.description || '';
+            if (verticalText) verticalText.value = currentFile.transcribedText || '';
+            
+            // 文字数カウントを更新
+            updateCharCount();
+        }
+        
         // ------------------------
         // データ保存処理
         // ------------------------
@@ -1593,52 +1574,64 @@
                 showToast('保存に必要な情報がありません。', 'error');
                 return;
             }
-
+            
+            // 安全にメタデータを取得
+            const metadata = {
+                docNumber: docNumberInput ? docNumberInput.value : '',
+                author: authorInput ? authorInput.value : '',
+                recipient: recipientInput ? recipientInput.value : '',
+                era: eraInput ? eraInput.value : '',
+                creationDate: creationDateInput ? creationDateInput.value : '',
+                source: sourceInput ? sourceInput.value : '',
+                staff: staffInput ? staffInput.value : '',
+                description: descriptionTextarea ? descriptionTextarea.value : '',
+            };
+            
             // 保存するデータ
             const dataToSave = {
-                transcribedText: verticalText.value,
-                metadata: {
-                    docNumber: docNumberInput.value,
-                    era: eraInput.value,
-                    source: sourceInput.value,
-                    staff: staffInput.value,
-                },
+                transcribedText: verticalText ? verticalText.value : '',
+                metadata: metadata,
                 // 資料名も更新
-                name: docNameInput.value || currentFile.originalName || '名称未設定',
+                name: (docNameInput ? docNameInput.value : '') || (currentFile ? currentFile.originalName : '') || '名称未設定',
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                 lastEditorId: currentUser.uid,
                 lastEditorName: currentUser.displayName || currentUser.email || '不明なユーザー'
             };
-
+            
             // ボタンをロード中表示に
-            saveButton.disabled = true;
-            saveButton.classList.add('loading');
-
+            if (saveButton) {
+                saveButton.disabled = true;
+                saveButton.classList.add('loading');
+            }
+            
             try {
                 await db.collection('files').doc(currentFileId).update(dataToSave);
                 showToast('データを保存しました。', 'success', '保存完了');
                 
                 // 保存成功後、currentFileの内容も更新
-                currentFile = { ...currentFile, ...dataToSave };
+                if (currentFile) {
+                    currentFile = { ...currentFile, ...dataToSave };
+                }
                 
                 // 変更済みフラグをリセット
                 setUnsavedChanges(false);
                 
                 // 資料名が変更された場合、タイトルを更新
-                if (currentFile.name) {
+                if (currentFile && currentFile.name) {
                     document.title = `編集: ${currentFile.name} | KatsujiRingX`;
                 }
-
             } catch (error) {
                 console.error("保存エラー:", error);
                 showToast('保存に失敗しました。ネットワーク接続を確認して再試行してください。', 'error', '保存エラー');
             } finally {
                 // ボタンを元に戻す
-                saveButton.disabled = false;
-                saveButton.classList.remove('loading');
+                if (saveButton) {
+                    saveButton.disabled = false;
+                    saveButton.classList.remove('loading');
+                }
             }
         }
-
+        
         // ------------------------
         // テーマ設定
         // ------------------------
@@ -1647,7 +1640,7 @@
             document.body.setAttribute('data-theme', savedTheme);
             updateThemeButton(savedTheme);
         }
-
+        
         function toggleTheme() {
             const currentTheme = document.body.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -1659,10 +1652,15 @@
             const themeText = newTheme === 'dark' ? 'ダークモード' : 'ライトモード';
             showToast(`${themeText}に切り替えました。`, 'info');
         }
-
+        
         function updateThemeButton(theme) {
-            if (themeToggleButton) {
-                const icon = themeToggleButton.querySelector('i');
+            if (!themeToggleButton) {
+                console.error("テーマ切替ボタンが見つかりません");
+                return;
+            }
+            
+            const icon = themeToggleButton.querySelector('i');
+            if (icon) {
                 if (theme === 'dark') {
                     icon.className = 'fas fa-sun';
                     themeToggleButton.setAttribute('data-tooltip', 'ライトモードに切替');
@@ -1672,11 +1670,16 @@
                 }
             }
         }
-
+        
         // ------------------------
         // 画像操作機能
         // ------------------------
         function resetImagePosition() {
+            if (!imageViewport || !editorImage) {
+                console.error("画像表示要素が見つかりません");
+                return;
+            }
+            
             // ビューポートのサイズを取得
             viewportWidth = imageViewport.clientWidth;
             viewportHeight = imageViewport.clientHeight;
@@ -1690,6 +1693,11 @@
         }
         
         function fitImageToViewport() {
+            if (!originalImageWidth || !originalImageHeight || !editorImage) {
+                console.error("画像サイズが取得できません");
+                return;
+            }
+            
             // ビューポートと画像の比率を計算
             const widthRatio = viewportWidth / originalImageWidth;
             const heightRatio = viewportHeight / originalImageHeight;
@@ -1710,6 +1718,11 @@
         }
         
         function zoomImage(zoomFactor) {
+            if (!editorImage) {
+                console.error("画像要素が見つかりません");
+                return;
+            }
+            
             // ズーム前の中心位置を保存
             const viewportCenterX = viewportWidth / 2;
             const viewportCenterY = viewportHeight / 2;
@@ -1730,6 +1743,11 @@
         }
         
         function constrainTranslation() {
+            if (!originalImageWidth || !originalImageHeight) {
+                console.error("画像サイズが取得できません");
+                return;
+            }
+            
             // 画像の現在のサイズを計算
             const scaledWidth = originalImageWidth * currentZoom;
             const scaledHeight = originalImageHeight * currentZoom;
@@ -1752,15 +1770,30 @@
         }
         
         function updateImageTransform() {
+            if (!editorImage) {
+                console.error("画像要素が見つかりません");
+                return;
+            }
+            
             editorImage.style.transform = `translate(${translateX}px, ${translateY}px) scale(${currentZoom})`;
         }
         
         function updateZoomLevelDisplay() {
+            if (!zoomLevelDisplay) {
+                console.error("ズーム表示要素が見つかりません");
+                return;
+            }
+            
             const percentage = Math.round(currentZoom * 100);
             zoomLevelDisplay.innerHTML = `<i class="fas fa-search"></i> ${percentage}%`;
         }
         
         function startDrag(e) {
+            if (!editorImage || !imageViewport) {
+                console.error("画像表示要素が見つかりません");
+                return;
+            }
+            
             // ドラッグ開始時に画像が表示されていない場合は処理しない
             if (editorImage.style.display === 'none') return;
             
@@ -1777,7 +1810,7 @@
         }
         
         function drag(e) {
-            if (!isDragging) return;
+            if (!isDragging || !imageViewport) return;
             
             e.preventDefault();
             
@@ -1803,7 +1836,9 @@
         
         function endDrag() {
             isDragging = false;
-            imageViewport.classList.remove('grabbing');
+            if (imageViewport) {
+                imageViewport.classList.remove('grabbing');
+            }
         }
         
         function wheelZoom(e) {
@@ -1813,15 +1848,25 @@
             const zoomFactor = e.deltaY < 0 ? 1 + ZOOM_STEP : 1 - ZOOM_STEP;
             zoomImage(zoomFactor);
         }
-
+        
         // ------------------------
         // ショートカットモーダル
         // ------------------------
         function openShortcutModal() {
+            if (!shortcutModal) {
+                console.error("ショートカットモーダルが見つかりません");
+                return;
+            }
+            
             shortcutModal.classList.add('active');
         }
         
         function closeShortcutModal() {
+            if (!shortcutModal) {
+                console.error("ショートカットモーダルが見つかりません");
+                return;
+            }
+            
             shortcutModal.classList.remove('active');
         }
         
@@ -1899,21 +1944,21 @@
                 }
                 
                 // ESCキーでモーダルを閉じる
-                if (e.key === 'Escape' && shortcutModal.classList.contains('active')) {
+                if (e.key === 'Escape' && shortcutModal && shortcutModal.classList.contains('active')) {
                     closeShortcutModal();
                 }
             }
         }
-
+        
         // ------------------------
-        // 初期化処理
+        // イベントリスナーの設定
         // ------------------------
         function setupEventListeners() {
             // 保存ボタン
             if (saveButton) {
                 saveButton.addEventListener('click', saveData);
             }
-
+            
             // 戻るボタン
             if (backButton) {
                 backButton.addEventListener('click', () => {
@@ -1925,7 +1970,7 @@
                     window.location.href = 'documents.html';
                 });
             }
-
+            
             // テーマ切替ボタン
             if (themeToggleButton) {
                 themeToggleButton.addEventListener('click', toggleTheme);
@@ -1959,30 +2004,32 @@
             }
             
             // ショートカットモーダルの外側クリックで閉じる
-            shortcutModal.addEventListener('click', (e) => {
-                if (e.target === shortcutModal) {
-                    closeShortcutModal();
-                }
-            });
+            if (shortcutModal) {
+                shortcutModal.addEventListener('click', (e) => {
+                    if (e.target === shortcutModal) {
+                        closeShortcutModal();
+                    }
+                });
+            }
             
             // マウス/タッチでのドラッグ操作
             if (imageViewport) {
                 imageViewport.addEventListener('mousedown', startDrag);
                 imageViewport.addEventListener('touchstart', startDrag, { passive: false });
                 
-                window.addEventListener('mousemove', drag);
-                window.addEventListener('touchmove', drag, { passive: false });
-                
-                window.addEventListener('mouseup', endDrag);
-                window.addEventListener('touchend', endDrag);
-                
-                // マウスホイールでのズーム
+                // ホイールでのズーム
                 imageViewport.addEventListener('wheel', wheelZoom, { passive: false });
             }
             
+            // ドラッグイベントはウィンドウに設定（ドラッグ中に要素外に出ても追従するため）
+            window.addEventListener('mousemove', drag);
+            window.addEventListener('touchmove', drag, { passive: false });
+            window.addEventListener('mouseup', endDrag);
+            window.addEventListener('touchend', endDrag);
+            
             // ウィンドウリサイズ時に画像を再調整
             window.addEventListener('resize', () => {
-                if (editorImage.complete && editorImage.style.display !== 'none') {
+                if (editorImage && imageViewport && editorImage.complete && editorImage.style.display !== 'none') {
                     viewportWidth = imageViewport.clientWidth;
                     viewportHeight = imageViewport.clientHeight;
                     constrainTranslation();
@@ -1993,23 +2040,24 @@
             // キーボードショートカット
             window.addEventListener('keydown', handleKeyboardShortcuts);
         }
-
+        
         // ------------------------
         // メイン実行部分
         // ------------------------
         document.addEventListener('DOMContentLoaded', () => {
+            // DOM要素の初期化
+            initializeElements();
+            
             // テーマ初期化
             initTheme();
             
-            // イベントリスナーのセットアップ
-            setupEventListeners();
+            // 機能のセットアップ
+            setupTabs();
             setupDocNumberValidation();
             setupCharCounter();
             setupChangeTracking();
+            setupEventListeners();
             
-            // タブ機能をセットアップ
-            setupTabs();
-
             // 認証状態の監視
             auth.onAuthStateChanged(user => {
                 if (user) {
@@ -2018,17 +2066,19 @@
                     // URLからファイルIDを取得
                     const urlParams = new URLSearchParams(window.location.search);
                     currentFileId = urlParams.get('file');
-
+                    
                     if (currentFileId) {
                         loadFileData(currentFileId);
                     } else {
-                        imageLoading.style.display = 'none';
-                        imageViewport.innerHTML = `
-                            <div class="image-error-message">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <p>表示するファイルが指定されていません。資料管理ページから資料を選択してください。</p>
-                            </div>
-                        `;
+                        if (imageLoading) imageLoading.style.display = 'none';
+                        if (imageViewport) {
+                            imageViewport.innerHTML = `
+                                <div class="image-error-message">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <p>表示するファイルが指定されていません。資料管理ページから資料を選択してください。</p>
+                                </div>
+                            `;
+                        }
                         showToast('ファイルIDが指定されていません。', 'error', 'エラー');
                     }
                 } else {
