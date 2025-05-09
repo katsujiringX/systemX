@@ -53,7 +53,6 @@
             --radius-2xl: 1rem;
             
             --header-height: 4rem;
-            --mobile-header-height: 3.5rem;
             --footer-height: 5rem;
             --sidebar-width: 280px;
             --max-content-width: 1440px;
@@ -80,7 +79,6 @@
             font-size: 16px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            overflow-x: hidden; /* モバイルでの横スクロール防止 */
         }
 
         /* スクロールバーのカスタマイズ */
@@ -284,20 +282,6 @@
             background: none;
             border: none;
             cursor: pointer;
-            z-index: 102;
-        }
-
-        .mobile-menu-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 99;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity var(--transition-normal), visibility var(--transition-normal);
         }
 
         /* メイン */
@@ -700,123 +684,31 @@
             .analytics-container {
                 grid-template-columns: 1fr;
             }
-            
-            .grid-container {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
         }
 
         @media (max-width: 768px) {
-            header {
-                padding: 0 1rem;
-                height: var(--mobile-header-height);
-            }
-            
             .header-content {
-                justify-content: space-between;
-            }
-            
-            .mobile-menu-toggle {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 101;
-            }
-            
-            .logo img {
-                height: 2rem;
-            }
-            
-            .logo-text {
-                font-size: 1.25rem;
-            }
-            
-            nav {
-                position: fixed;
-                top: 0;
-                right: -100%;
-                width: 80%;
-                max-width: 320px;
-                height: 100vh;
-                background-color: var(--surface-color);
-                box-shadow: var(--shadow-xl);
-                z-index: 100;
-                padding: 4rem 1.5rem 1.5rem;
-                transition: right var(--transition-normal);
-                overflow-y: auto;
-            }
-            
-            nav.open {
-                right: 0;
-            }
-            
-            .mobile-menu-overlay.open {
-                opacity: 1;
-                visibility: visible;
-            }
-            
-            .close-menu {
-                display: block;
-            }
-            
-            nav ul {
                 flex-direction: column;
-                gap: 1.5rem;
-                align-items: flex-start;
+                gap: 1rem;
+                padding: 1rem 0;
             }
-            
-            nav ul li {
-                width: 100%;
+
+            nav ul {
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
             }
-            
-            nav ul li a {
-                display: block;
-                padding: 0.75rem 0;
-                width: 100%;
-                font-size: 1.125rem;
+
+            .user-menu {
+                margin-top: 0.5rem;
             }
-            
+
             main {
-                padding: 1.5rem 1rem;
+                padding: 1rem;
             }
-            
+
             .container {
                 padding: 1.5rem;
-                border-radius: var(--radius-md);
-            }
-            
-            .btn-group {
-                flex-direction: column;
-                width: 100%;
-            }
-            
-            .btn-group .btn {
-                width: 100%;
-                margin-bottom: 0.75rem;
-                justify-content: center;
-            }
-            
-            .steps {
-                grid-template-columns: 1fr;
-            }
-            
-            .footer-top {
-                flex-direction: column;
-                gap: 2rem;
-            }
-            
-            .footer-section {
-                width: 100%;
-            }
-            
-            .footer-bottom {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            
-            .footer-nav {
-                margin-top: 1rem;
-                flex-wrap: wrap;
             }
         }
 
@@ -828,47 +720,9 @@
             h2 {
                 font-size: 1.5rem;
             }
-            
-            h3 {
-                font-size: 1.125rem;
-            }
 
             .btn {
                 padding: 0.5rem 1rem;
-                font-size: 0.875rem;
-            }
-            
-            .btn-large {
-                padding: 0.625rem 1.25rem;
-                font-size: 0.9375rem;
-            }
-            
-            .container {
-                padding: 1.25rem;
-            }
-            
-            .hero-section .container {
-                padding: 1.5rem;
-            }
-            
-            .hero-description {
-                font-size: 1rem;
-            }
-            
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .card {
-                padding: 1.25rem;
-            }
-            
-            .feature-card {
-                margin-bottom: 1.5rem;
-            }
-            
-            footer {
-                padding: 2rem 1rem;
             }
         }
 
@@ -900,19 +754,12 @@
                 <img src="katsujiRingX.png" alt="KatsujiRingX Logo">
                 <span class="logo-text">KatsujiRingX</span>
             </a>
-            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
-                <i class="fas fa-bars"></i>
-            </button>
-            <nav id="nav">
-                <button class="close-menu" id="close-menu">
-                    <i class="fas fa-times"></i>
-                </button>
+            <nav>
                 <ul id="nav-menu">
                     <li><a href="#" data-page="home" class="active">ホーム</a></li>
                     <li><a href="login.html" id="login" id="login-nav">ログイン</a></li>
                 </ul>
             </nav>
-            <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
         </div>
     </header>
 
@@ -1231,41 +1078,6 @@
         color: var(--text-tertiary);
     }
     
-    .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin-bottom: 3rem;
-    }
-    
-    .feature-card {
-        background-color: var(--surface-color);
-        border-radius: var(--radius-lg);
-        padding: 1.5rem;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-        transition: all var(--transition-normal);
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
-        border-color: var(--primary-light);
-    }
-    
-    .feature-icon {
-        width: 3rem;
-        height: 3rem;
-        background-color: var(--primary-light);
-        color: var(--primary-color);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        margin-bottom: 1.25rem;
-    }
-    
     @keyframes rainbow {
             0% { color: red; }
             14% { color: orange; }
@@ -1287,28 +1099,9 @@
                        blink 0s infinite;
             text-align: left;
         }
+
     
-    .cta-section {
-        margin: 4rem 0 2rem;
-    }
-    
-    .cta-content {
-        text-align: center;
-        padding: 2rem;
-    }
-    
-    .cta-content h2 {
-        margin-bottom: 1rem;
-    }
-    
-    .cta-content p {
-        margin-bottom: 1.5rem;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    /* レスポンシブ対応強化 */
+    /* レスポンシブ対応 */
     @media (max-width: 768px) {
         .hero-section .container {
             grid-template-columns: 1fr;
@@ -1316,65 +1109,11 @@
         
         .hero-image {
             order: -1;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
         
         .testimonial-slider {
             grid-template-columns: 1fr;
-        }
-        
-        .features {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-        
-        .feature-card {
-            padding: 1.25rem;
-        }
-        
-        .step-card {
-            padding: 1.5rem;
-        }
-        
-        .testimonials {
-            padding: 2rem 0;
-            margin: 2rem 0;
-        }
-        
-        .testimonial {
-            padding: 1.5rem;
-        }
-        
-        .section-description {
-            margin-bottom: 2rem;
-        }
-    }
-    
-    @media (max-width: 480px) {
-        .feature-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            font-size: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .step-number {
-            width: 2.5rem;
-            height: 2.5rem;
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-        }
-        
-        .cta-content {
-            padding: 1.5rem;
-        }
-        
-        .cta-content h2 {
-            font-size: 1.5rem;
         }
     }
 </style>
@@ -1431,41 +1170,12 @@
     <script>
         // ここに共通のJavaScriptコードが入ります
         document.addEventListener('DOMContentLoaded', function() {
-            // モバイルメニュートグル機能
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const closeMenu = document.getElementById('close-menu');
-            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-            const nav = document.getElementById('nav');
-            
-            // モバイルメニューを開く
-            mobileMenuToggle.addEventListener('click', function() {
-                nav.classList.add('open');
-                mobileMenuOverlay.classList.add('open');
-                document.body.style.overflow = 'hidden'; // スクロールを無効化
-            });
-            
-            // モバイルメニューを閉じる
-            function closeNavMenu() {
-                nav.classList.remove('open');
-                mobileMenuOverlay.classList.remove('open');
-                document.body.style.overflow = ''; // スクロールを有効化
-            }
-            
-            closeMenu.addEventListener('click', closeNavMenu);
-            mobileMenuOverlay.addEventListener('click', closeNavMenu);
-            
-            // モバイルでメニュー項目クリック時にメニューを閉じる
-            const navLinks = document.querySelectorAll('nav a');
-            navLinks.forEach(link => {
-                link.addEventListener('click', closeNavMenu);
-            });
-            
             // ページ切り替え機能
-            const pageLinks = document.querySelectorAll('[data-page]');
+            const pageLinks = document.querySelectorAll('[page-data]');
             pageLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const targetPage = this.getAttribute('data-page');
+                    const targetPage = this.getAttribute('page-data');
                     showPage(targetPage);
                 });
             });
@@ -1473,74 +1183,63 @@
             // Firebase初期化（実際のキーは別途設定が必要）
             const firebaseConfig = {
                 apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
-                authDomain: "katsujiringx.firebaseapp.com",
-                projectId: "katsujiringx",
-                storageBucket: "katsujiringx.appspot.com", 
-                messagingSenderId: "831784731743",
-                appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
-                measurementId: "G-LPCRE3WYZR"
+          authDomain: "katsujiringx.firebaseapp.com",
+          projectId: "katsujiringx",
+          storageBucket: "katsujiringx.appspot.com", 
+          messagingSenderId: "831784731743",
+          appId: "1:831784731743:web:bfe3f8ec2344dedf2f07ea",
+          measurementId: "G-LPCRE3WYZR"
             };
             
-            // Firebaseの初期化処理
-            if (typeof firebase !== 'undefined') {
-                firebase.initializeApp(firebaseConfig);
-                
-                // 認証状態の監視
-                firebase.auth().onAuthStateChanged(function(user) {
-                    if (user) {
-                        // ユーザーがログインしている場合
-                        document.querySelectorAll('.auth-required').forEach(el => el.classList.remove('hidden'));
-                        document.getElementById('login-nav').classList.add('hidden');
-                        
-                        // ユーザー名表示
-                        const userName = user.displayName || user.email.split('@')[0];
-                        const headerUserName = document.getElementById('header-user-name');
-                        const userNameElem = document.getElementById('user-name');
-                        const userInitial = document.getElementById('user-initial');
-                        
-                        if (headerUserName) headerUserName.textContent = userName;
-                        if (userNameElem) userNameElem.textContent = userName;
-                        if (userInitial) userInitial.textContent = userName.charAt(0).toUpperCase();
-                        
-                        // 管理者権限チェック（例えばカスタムクレームを使用）
-                        user.getIdTokenResult().then((idTokenResult) => {
-                            if (idTokenResult.claims.admin) {
-                                document.querySelectorAll('.admin-required').forEach(el => el.classList.remove('hidden'));
-                            }
-                        });
-                        
-                        // ログイン後のページを表示
-                        if (currentPage === 'login') {
-                            showPage('main');
+            firebase.initializeApp(firebaseConfig);
+            
+            // 認証状態の監視
+            firebase.auth().onAuthStateChanged(function(user) {
+                if (user) {
+                    // ユーザーがログインしている場合
+                    document.querySelectorAll('.auth-required').forEach(el => el.classList.remove('hidden'));
+                    document.getElementById('login-nav').classList.add('hidden');
+                    
+                    // ユーザー名表示
+                    const userName = user.displayName || user.email.split('@')[0];
+                    document.getElementById('header-user-name').textContent = userName;
+                    document.getElementById('user-name').textContent = userName;
+                    document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                    
+                    // 管理者権限チェック（例えばカスタムクレームを使用）
+                    user.getIdTokenResult().then((idTokenResult) => {
+                        if (idTokenResult.claims.admin) {
+                            document.querySelectorAll('.admin-required').forEach(el => el.classList.remove('hidden'));
                         }
-                    } else {
-                        // ログインしていない場合
-                        document.querySelectorAll('.auth-required').forEach(el => el.classList.add('hidden'));
-                        document.querySelectorAll('.admin-required').forEach(el => el.classList.add('hidden'));
-                        const loginNav = document.getElementById('login-nav');
-                        if (loginNav) loginNav.classList.remove('hidden');
-                        
-                        // 認証が必要なページにいる場合はログインページへリダイレクト
-                        const authPages = ['main', 'katsujika', 'upload', 'games', 'admin'];
-                        if (authPages.includes(currentPage)) {
-                            showPage('login');
-                        }
-                    }
-                });
-                
-                // ログアウト処理
-                const logoutBtn = document.getElementById('logout-btn');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        firebase.auth().signOut().then(() => {
-                            showPage('home');
-                        }).catch((error) => {
-                            console.error('ログアウトエラー:', error);
-                        });
                     });
+                    
+                    // ログイン後のページを表示
+                    if (currentPage === 'login') {
+                        showPage('main');
+                    }
+                } else {
+                    // ログインしていない場合
+                    document.querySelectorAll('.auth-required').forEach(el => el.classList.add('hidden'));
+                    document.querySelectorAll('.admin-required').forEach(el => el.classList.add('hidden'));
+                    document.getElementById('login-nav').classList.remove('hidden');
+                    
+                    // 認証が必要なページにいる場合はログインページへリダイレクト
+                    const authPages = ['main', 'katsujika', 'upload', 'games', 'admin'];
+                    if (authPages.includes(currentPage)) {
+                        showPage('login');
+                    }
                 }
-            }
+            });
+            
+            // ログアウト処理
+            document.getElementById('logout-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                firebase.auth().signOut().then(() => {
+                    showPage('home');
+                }).catch((error) => {
+                    console.error('ログアウトエラー:', error);
+                });
+            });
 
             // ページ表示関数
             let currentPage = 'home';
@@ -1582,95 +1281,57 @@
                 }
             }
 
-            // 登録/ログインフォーム関連の処理
-            const showRegister = document.getElementById('show-register');
-            const showLogin = document.getElementById('show-login');
-            const loginContainer = document.getElementById('login-container');
-            const registerContainer = document.getElementById('register-container');
-            const loginButton = document.getElementById('login-button');
-            const registerButton = document.getElementById('register-button');
-            
             // 登録フォーム表示/非表示切り替え
-            if (showRegister && showLogin && loginContainer && registerContainer) {
-                showRegister.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    loginContainer.classList.add('hidden');
-                    registerContainer.classList.remove('hidden');
-                });
+            document.getElementById('show-register').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('login-container').classList.add('hidden');
+                document.getElementById('register-container').classList.remove('hidden');
+            });
 
-                showLogin.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    registerContainer.classList.add('hidden');
-                    loginContainer.classList.remove('hidden');
-                });
-            }
+            document.getElementById('show-login').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('register-container').classList.add('hidden');
+                document.getElementById('login-container').classList.remove('hidden');
+            });
 
             // ログイン処理
-            if (loginButton && typeof firebase !== 'undefined') {
-                loginButton.addEventListener('click', function() {
-                    const loginEmail = document.getElementById('login-email');
-                    const loginPassword = document.getElementById('login-password');
-                    
-                    if (loginEmail && loginPassword) {
-                        const email = loginEmail.value;
-                        const password = loginPassword.value;
-                        
-                        firebase.auth().signInWithEmailAndPassword(email, password)
-                            .then((userCredential) => {
-                                showPage('main');
-                            })
-                            .catch((error) => {
-                                alert('ログインに失敗しました：' + error.message);
-                            });
-                    }
-                });
-            }
+            document.getElementById('login-button').addEventListener('click', function() {
+                const email = document.getElementById('login-email').value;
+                const password = document.getElementById('login-password').value;
+                
+                firebase.auth().signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        showPage('main');
+                    })
+                    .catch((error) => {
+                        alert('ログインに失敗しました：' + error.message);
+                    });
+            });
 
             // 新規登録処理
-            if (registerButton && typeof firebase !== 'undefined') {
-                registerButton.addEventListener('click', function() {
-                    const registerUsername = document.getElementById('register-username');
-                    const registerEmail = document.getElementById('register-email');
-                    const registerPassword = document.getElementById('register-password');
-                    const registerPasswordConfirm = document.getElementById('register-password-confirm');
-                    
-                    if (registerUsername && registerEmail && registerPassword && registerPasswordConfirm) {
-                        const username = registerUsername.value;
-                        const email = registerEmail.value;
-                        const password = registerPassword.value;
-                        const passwordConfirm = registerPasswordConfirm.value;
-                        
-                        if (password !== passwordConfirm) {
-                            alert('パスワードが一致しません');
-                            return;
-                        }
-                        
-                        firebase.auth().createUserWithEmailAndPassword(email, password)
-                            .then((userCredential) => {
-                                return userCredential.user.updateProfile({
-                                    displayName: username
-                                });
-                            })
-                            .then(() => {
-                                showPage('main');
-                            })
-                            .catch((error) => {
-                                alert('登録に失敗しました：' + error.message);
-                            });
-                    }
-                });
-            }
-            
-            // タッチデバイス向け改善
-            const allButtons = document.querySelectorAll('.btn, a');
-            allButtons.forEach(button => {
-                button.addEventListener('touchstart', function() {
-                    this.style.opacity = '0.8';
-                });
+            document.getElementById('register-button').addEventListener('click', function() {
+                const username = document.getElementById('register-username').value;
+                const email = document.getElementById('register-email').value;
+                const password = document.getElementById('register-password').value;
+                const passwordConfirm = document.getElementById('register-password-confirm').value;
                 
-                button.addEventListener('touchend', function() {
-                    this.style.opacity = '1';
-                });
+                if (password !== passwordConfirm) {
+                    alert('パスワードが一致しません');
+                    return;
+                }
+                
+                firebase.auth().createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        return userCredential.user.updateProfile({
+                            displayName: username
+                        });
+                    })
+                    .then(() => {
+                        showPage('main');
+                    })
+                    .catch((error) => {
+                        alert('登録に失敗しました：' + error.message);
+                    });
             });
         });
     </script>
