@@ -68,7 +68,7 @@
             display: flex;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            overflow: hidden;
+            overflow-x: hidden; /* 横スクロール防止 */
         }
 
         /* スクロールバーのカスタマイズ */
@@ -93,7 +93,8 @@
         .login-container {
             display: flex;
             width: 100%;
-            height: 100vh;
+            min-height: 100vh;
+            flex-direction: row;
         }
 
         .login-sidebar {
@@ -386,6 +387,10 @@
             background-color: var(--background-color);
         }
 
+        .social-login-btn:active {
+            transform: scale(0.98);
+        }
+
         .social-login-btn i {
             margin-right: 0.5rem;
             font-size: 1.25rem;
@@ -428,6 +433,7 @@
             color: var(--text-tertiary);
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
         }
 
         .form-group input {
@@ -475,6 +481,8 @@
         .checkbox-container input[type="checkbox"] {
             margin-right: 0.5rem;
             width: auto;
+            min-width: 1rem;
+            min-height: 1rem;
         }
 
         .checkbox-container label {
@@ -506,6 +514,11 @@
         .btn-primary:hover {
             box-shadow: 0 6px 8px rgba(58, 95, 193, 0.35);
             transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(58, 95, 193, 0.2);
         }
 
         .btn-link {
@@ -556,6 +569,36 @@
             color: var(--primary-color);
         }
 
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .back-to-home {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            transition: opacity var(--transition-fast);
+            z-index: 5;
+        }
+
+        .back-to-home:hover {
+            opacity: 1;
+        }
+
+        .back-to-home i {
+            margin-right: 0.5rem;
+        }
+
+        /* レスポンシブデザイン強化 */
         @media (max-width: 1024px) {
             .login-container {
                 flex-direction: column;
@@ -563,8 +606,8 @@
 
             .login-sidebar {
                 width: 100%;
-                height: auto;
-                padding: 2rem;
+                min-height: auto;
+                padding: 3rem 2rem;
             }
 
             .sidebar-content {
@@ -573,33 +616,224 @@
 
             .login-main {
                 width: 100%;
-                height: auto;
+                min-height: auto;
+                padding-top: 1rem;
+                padding-bottom: 3rem;
             }
 
             .auth-container {
                 max-width: 500px;
-                padding: 2rem 1rem;
-            }
-        }
-
-        @media (max-width: 640px) {
-            .social-login-buttons {
-                grid-template-columns: 1fr;
+                padding: 1.5rem 1rem;
             }
 
             .sidebar-title {
                 font-size: 2rem;
             }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+
+            .login-container {
+                overflow-x: hidden;
+                width: 100%;
+            }
+
+            .login-sidebar {
+                padding: 2rem 1.5rem;
+            }
+
+            .sidebar-title {
+                font-size: 1.75rem;
+                margin-bottom: 1rem;
+            }
+
+            .sidebar-description {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .feature-list {
+                margin-bottom: 2rem;
+            }
+
+            .feature-item {
+                margin-bottom: 1rem;
+            }
+
+            .feature-icon {
+                width: 2.25rem;
+                height: 2.25rem;
+            }
+
+            .login-main {
+                padding: 1.5rem 1rem 3rem;
+            }
+
+            .auth-container {
+                padding: 0;
+            }
+
+            .auth-header {
+                margin-bottom: 1.5rem;
+            }
+
+            .auth-title {
+                font-size: 1.5rem;
+            }
+
+            .auth-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .auth-tabs {
+                margin-bottom: 1.5rem;
+            }
+
+            .btn {
+                padding: 0.75rem 1.25rem;
+            }
+
+            .social-login-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .social-login-btn {
+                padding: 0.8rem 1rem;
+            }
+
+            .form-hint {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
 
             .auth-links {
                 flex-direction: column;
-                gap: 0.5rem;
+                gap: 1rem;
+            }
+
+            .testimonial {
+                padding: 1rem;
+            }
+
+            .auth-bottom {
+                margin-top: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-sidebar {
+                padding: 1.5rem 1rem;
+            }
+
+            .sidebar-title {
+                font-size: 1.5rem;
+            }
+
+            .feature-icon {
+                width: 2rem;
+                height: 2rem;
+            }
+
+            .feature-text {
+                font-size: 0.9rem;
+            }
+
+            .auth-tab {
+                padding: 0.75rem 0;
+                font-size: 0.95rem;
+            }
+
+            .input-with-icon input {
+                padding-top: 0.9rem;
+                padding-bottom: 0.9rem;
+                font-size: 1rem;
+            }
+
+            .checkbox-container input[type="checkbox"] {
+                width: 1.2rem;
+                height: 1.2rem;
+                margin-right: 0.5rem;
+            }
+
+            .checkbox-container label {
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 0.875rem 1.25rem;
+                font-size: 1rem;
+            }
+
+            .social-login-title {
+                font-size: 0.85rem;
+            }
+
+            /* タッチデバイスでのボタン反応改善 */
+            .btn-primary:active,
+            .social-login-btn:active {
+                transform: scale(0.98);
+            }
+        }
+
+        /* ダークモード対応 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #f3f4f6;
+            }
+
+            .login-main {
+                background-color: #121212;
+            }
+
+            .auth-title, .auth-tab {
+                color: #f3f4f6;
+            }
+
+            .auth-subtitle {
+                color: #9ca3af;
+            }
+
+            .social-login-btn {
+                background-color: #1f2937;
+                border-color: #374151;
+                color: #f3f4f6;
+            }
+
+            .form-group label {
+                color: #f3f4f6;
+            }
+
+            .form-group input {
+                background-color: #1f2937;
+                border-color: #374151;
+                color: #f3f4f6;
+            }
+
+            .form-group input::placeholder {
+                color: #6b7280;
+            }
+
+            .checkbox-container label {
+                color: #d1d5db;
+            }
+
+            .auth-links a {
+                color: #9ca3af;
             }
         }
     </style>
 </head>
 <body>
     <div class="login-container">
+        <a href="index.html" class="back-to-home">
+            <i class="fas fa-arrow-left"></i> ホームに戻る
+        </a>
         <div class="login-sidebar">
             <div class="sidebar-header">
                 <a href="index.html" class="logo" data-page="home">
@@ -633,7 +867,7 @@
                         <div class="feature-icon">
                             <i class="fas fa-gamepad"></i>
                         </div>
-                        <div class="feature-text">ゲーミフィケーションで楽しく学習</div>
+                        <div class="feature-text">ゲーミフィケーションで楽しく学習（調整中）</div>
                     </li>
                 </ul>
             </div>
@@ -774,6 +1008,19 @@
         loginForm.classList.remove('active');
     });
 
+    // タッチデバイス向け最適化 - タップとホバーの動作改善
+    const allButtons = document.querySelectorAll('.btn, .social-login-btn, .auth-tab, .btn-link');
+    
+    allButtons.forEach(button => {
+        button.addEventListener('touchstart', function() {
+            this.style.opacity = '0.8';
+        });
+        
+        button.addEventListener('touchend', function() {
+            this.style.opacity = '1';
+        });
+    });
+
     // Firebase初期化
     const firebaseConfig = {
         apiKey: "AIzaSyD_K9J5W_AgEAHTHtjSXEwjbby9H0H8ak4",
@@ -786,241 +1033,239 @@
     };
     
     // Firebaseの初期化
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
 
-    // バリデーション関数
-    function validateEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(String(email).toLowerCase());
-    }
-
-    function validatePassword(password) {
-        // パスワード要件: 最低8文字、大文字、小文字、数字を含む
-        const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-        return strongPasswordRegex.test(password);
-    }
-
-    // ログインボタンイベントリスナー
-    document.getElementById('login-button').addEventListener('click', function() {
-        const emailInput = document.getElementById('login-email');
-        const passwordInput = document.getElementById('login-password');
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        // バリデーションチェック
-        if (!email) {
-            showError(emailInput, 'メールアドレスを入力してください');
-            return;
+        // バリデーション関数
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
         }
 
-        if (!validateEmail(email)) {
-            showError(emailInput, '有効なメールアドレスを入力してください');
-            return;
+        function validatePassword(password) {
+            // パスワード要件: 最低8文字、大文字、小文字、数字を含む
+            const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+            return strongPasswordRegex.test(password);
         }
 
-        if (!password) {
-            showError(passwordInput, 'パスワードを入力してください');
-            return;
-        }
+        // ログインボタンイベントリスナー
+        const loginButton = document.getElementById('login-button');
+        if (loginButton) {
+            loginButton.addEventListener('click', function() {
+                const emailInput = document.getElementById('login-email');
+                const passwordInput = document.getElementById('login-password');
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
 
-        // ログイン処理
-        auth.signInWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                // メインページにリダイレクト
-                window.location.href = 'mainpage.html';
-            })
-            .catch((error) => {
-                // エラーハンドリング
-                switch(error.code) {
-                    case 'auth/wrong-password':
-                        showError(passwordInput, 'パスワードが間違っています');
-                        break;
-                    case 'auth/user-not-found':
-                        showError(emailInput, 'このメールアドレスは登録されていません');
-                        break;
-                    case 'auth/too-many-requests':
-                        showError(null, 'ログイン試行回数が多すぎます。しばらく待ってから再試行してください');
-                        break;
-                    default:
-                        showError(null, 'ログインに失敗しました: ' + error.message);
+                // バリデーションチェック
+                if (!email) {
+                    showError(emailInput, 'メールアドレスを入力してください');
+                    return;
                 }
-            });
-    });
 
-    // 新規登録ボタンイベントリスナー
-    document.getElementById('register-button').addEventListener('click', function() {
-        const nameInput = document.getElementById('register-name');
-        const emailInput = document.getElementById('register-email');
-        const passwordInput = document.getElementById('register-password');
-        const termsCheckbox = document.getElementById('terms-agree');
-
-        const name = nameInput.value.trim();
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-
-        // バリデーションチェック
-        if (!name) {
-            showError(nameInput, 'お名前を入力してください');
-            return;
-        }
-
-        if (!email) {
-            showError(emailInput, 'メールアドレスを入力してください');
-            return;
-        }
-
-        if (!validateEmail(email)) {
-            showError(emailInput, '有効なメールアドレスを入力してください');
-            return;
-        }
-
-        if (!password) {
-            showError(passwordInput, 'パスワードを入力してください');
-            return;
-        }
-
-        if (!validatePassword(password)) {
-            showError(passwordInput, 'パスワードは最低8文字で、大文字、小文字、数字を含む必要があります');
-            return;
-        }
-
-        if (!termsCheckbox.checked) {
-            alert('利用規約とプライバシーポリシーに同意してください');
-            return;
-        }
-
-        // ユーザー作成処理
-        auth.createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                // ユーザープロファイル更新
-                return userCredential.user.updateProfile({
-                    displayName: name
-                });
-            })
-            .then(() => {
-                // メール確認の送信
-                auth.currentUser.sendEmailVerification();
-                
-                // メインページにリダイレクト
-                window.location.href = 'mainpage.html';
-            })
-            .catch((error) => {
-                // エラーハンドリング
-                switch(error.code) {
-                    case 'auth/email-already-in-use':
-                        showError(emailInput, 'このメールアドレスは既に使用されています');
-                        break;
-                    case 'auth/invalid-email':
-                        showError(emailInput, '無効なメールアドレス形式です');
-                        break;
-                    case 'auth/weak-password':
-                        showError(passwordInput, 'パスワードが弱すぎます');
-                        break;
-                    default:
-                        showError(null, '登録エラー: ' + error.message);
+                if (!validateEmail(email)) {
+                    showError(emailInput, '有効なメールアドレスを入力してください');
+                    return;
                 }
-            });
-    });
 
-    // Google認証の共通処理
-    function handleGoogleAuth() {
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-        
-        // スコープ追加（より多くのプロフィール情報を取得）
-        googleProvider.addScope('profile');
-        googleProvider.addScope('email');
-
-        auth.signInWithPopup(googleProvider)
-            .then((result) => {
-                window.location.href = 'mainpage.html';
-            })
-            .catch((error) => {
-                // エラーハンドリング
-                if (error.code === 'auth/account-exists-with-different-credential') {
-                    showError(null, '既に別の方法で登録されているメールアドレスです');
-                } else {
-                    showError(null, 'Googleログインエラー: ' + error.message);
+                if (!password) {
+                    showError(passwordInput, 'パスワードを入力してください');
+                    return;
                 }
+
+                // ログイン処理
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // メインページにリダイレクト
+                        window.location.href = 'mainpage.html';
+                    })
+                    .catch((error) => {
+                        // エラーハンドリング
+                        switch(error.code) {
+                            case 'auth/wrong-password':
+                                showError(passwordInput, 'パスワードが間違っています');
+                                break;
+                            case 'auth/user-not-found':
+                                showError(emailInput, 'このメールアドレスは登録されていません');
+                                break;
+                            case 'auth/too-many-requests':
+                                showError(null, 'ログイン試行回数が多すぎます。しばらく待ってから再試行してください');
+                                break;
+                            default:
+                                showError(null, 'ログインに失敗しました: ' + error.message);
+                        }
+                    });
             });
-    }
-
-    // 両方のフォームのGoogleボタンにイベントリスナーを追加
-    const googleLoginButtons = document.querySelectorAll('.social-login-btn');
-    googleLoginButtons.forEach(button => {
-        button.addEventListener('click', handleGoogleAuth);
-    });
-
-    // パスワードリセット
-    document.querySelector('.btn-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-
-        if (!email) {
-            alert('パスワードをリセットするには、メールアドレスを入力してください');
-            return;
         }
 
-        auth.sendPasswordResetEmail(email)
-            .then(() => {
-                alert('パスワードリセット用のメールを送信しました。メールボックスをご確認ください。※受信BOXにメッセージが来ない場合は「迷惑メール」をご確認ください。');
-            })
-            .catch((error) => {
-                if (error.code === 'auth/user-not-found') {
-                    alert('このメールアドレスは登録されていません');
-                } else {
-                    alert('パスワードリセットエラー: ' + error.message);
+        // 新規登録ボタンイベントリスナー
+        const registerButton = document.getElementById('register-button');
+        if (registerButton) {
+            registerButton.addEventListener('click', function() {
+                const nameInput = document.getElementById('register-name');
+                const emailInput = document.getElementById('register-email');
+                const passwordInput = document.getElementById('register-password');
+                const termsCheckbox = document.getElementById('terms-agree');
+
+                const name = nameInput.value.trim();
+                const email = emailInput.value.trim();
+                const password = passwordInput.value;
+
+                // バリデーションチェック
+                if (!name) {
+                    showError(nameInput, 'お名前を入力してください');
+                    return;
                 }
+
+                if (!email) {
+                    showError(emailInput, 'メールアドレスを入力してください');
+                    return;
+                }
+
+                if (!validateEmail(email)) {
+                    showError(emailInput, '有効なメールアドレスを入力してください');
+                    return;
+                }
+
+                if (!password) {
+                    showError(passwordInput, 'パスワードを入力してください');
+                    return;
+                }
+
+                if (!validatePassword(password)) {
+                    showError(passwordInput, 'パスワードは最低8文字で、大文字、小文字、数字を含む必要があります');
+                    return;
+                }
+
+                if (!termsCheckbox.checked) {
+                    alert('利用規約とプライバシーポリシーに同意してください');
+                    return;
+                }
+
+                // ユーザー作成処理
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // ユーザープロファイル更新
+                        return userCredential.user.updateProfile({
+                            displayName: name
+                        });
+                    })
+                    .then(() => {
+                        // メール確認の送信
+                        auth.currentUser.sendEmailVerification();
+                        
+                        // メインページにリダイレクト
+                        window.location.href = 'mainpage.html';
+                    })
+                    .catch((error) => {
+                        // エラーハンドリング
+                        switch(error.code) {
+                            case 'auth/email-already-in-use':
+                                showError(emailInput, 'このメールアドレスは既に使用されています');
+                                break;
+                            case 'auth/invalid-email':
+                                showError(emailInput, '無効なメールアドレス形式です');
+                                break;
+                            case 'auth/weak-password':
+                                showError(passwordInput, 'パスワードが弱すぎます');
+                                break;
+                            default:
+                                showError(null, '登録エラー: ' + error.message);
+                        }
+                    });
             });
-    });
+        }
 
-    // エラー表示ヘルパー関数
-    function showError(inputElement, message) {
-        // すべての既存のエラーメッセージを削除
-        const existingErrors = document.querySelectorAll('.error-message');
-        existingErrors.forEach(el => el.remove());
-
-        if (inputElement) {
-            // 入力フィールドの横にエラーメッセージを追加
-            const errorSpan = document.createElement('span');
-            errorSpan.classList.add('error-message');
-            errorSpan.style.color = 'var(--error-color)';
-            errorSpan.style.fontSize = '0.875rem';
-            errorSpan.style.marginTop = '0.5rem';
-            errorSpan.textContent = message;
+        // Google認証の共通処理
+        function handleGoogleAuth() {
+            const googleProvider = new firebase.auth.GoogleAuthProvider();
             
-            inputElement.parentNode.insertBefore(errorSpan, inputElement.nextSibling);
-        } else {
-            // 全体的なエラーメッセージ
-            alert(message);
+            // スコープ追加（より多くのプロフィール情報を取得）
+            googleProvider.addScope('profile');
+            googleProvider.addScope('email');
+
+            auth.signInWithPopup(googleProvider)
+                .then((result) => {
+                    window.location.href = 'mainpage.html';
+                })
+                .catch((error) => {
+                    // エラーハンドリング
+                    if (error.code === 'auth/account-exists-with-different-credential') {
+                        showError(null, '既に別の方法で登録されているメールアドレスです');
+                    } else {
+                        showError(null, 'Googleログインエラー: ' + error.message);
+                    }
+                });
         }
+
+        // 両方のフォームのGoogleボタンにイベントリスナーを追加
+        const googleLoginButtons = document.querySelectorAll('.social-login-btn');
+        googleLoginButtons.forEach(button => {
+            button.addEventListener('click', handleGoogleAuth);
+        });
+
+        // パスワードリセット
+        const resetPasswordLink = document.querySelector('.form-hint .btn-link');
+        if (resetPasswordLink) {
+            resetPasswordLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('login-email').value;
+
+                if (!email) {
+                    alert('パスワードをリセットするには、メールアドレスを入力してください');
+                    return;
+                }
+
+                auth.sendPasswordResetEmail(email)
+                    .then(() => {
+                        alert('パスワードリセット用のメールを送信しました。メールボックスをご確認ください。※受信BOXにメッセージが来ない場合は「迷惑メール」をご確認ください。');
+                    })
+                    .catch((error) => {
+                        if (error.code === 'auth/user-not-found') {
+                            alert('このメールアドレスは登録されていません');
+                        } else {
+                            alert('パスワードリセットエラー: ' + error.message);
+                        }
+                    });
+            });
+        }
+
+        // エラー表示ヘルパー関数
+        function showError(inputElement, message) {
+            // すべての既存のエラーメッセージを削除
+            const existingErrors = document.querySelectorAll('.error-message');
+            existingErrors.forEach(el => el.remove());
+
+            if (inputElement) {
+                // 入力フィールドの横にエラーメッセージを追加
+                const errorSpan = document.createElement('span');
+                errorSpan.classList.add('error-message');
+                errorSpan.textContent = message;
+                
+                inputElement.parentNode.insertBefore(errorSpan, inputElement.nextSibling);
+                
+                // エラーメッセージがある場合は入力欄をフォーカス
+                inputElement.focus();
+            } else {
+                // 全体的なエラーメッセージ
+                alert(message);
+            }
+        }
+
+        // ログイン状態の監視
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                // ユーザーがログインしている場合
+                console.log('ログイン中のユーザー:', user.email);
+                // オプション: プロフィール情報の更新やその他の初期化処理
+            } else {
+                // ログアウト状態
+                console.log('ユーザーはログアウトしています');
+            }
+        });
     }
-
-    // ログイン状態の監視
-    auth.onAuthStateChanged(function(user) {
-        if (user) {
-            // ユーザーがログインしている場合
-            console.log('ログイン中のユーザー:', user.email);
-            // オプション: プロフィール情報の更新やその他の初期化処理
-        } else {
-            // ログアウト状態
-            console.log('ユーザーはログアウトしています');
-        }
-    });
 });
-
-// スタイルの追加 (CSSに追加)
-const styles = `
-.error-message {
-    color: var(--error-color);
-    font-size: 0.875rem;
-    margin-top: 0.5rem;
-    display: block;
-}
-`;
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
     </script>
 </body>
 </html>
