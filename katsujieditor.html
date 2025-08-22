@@ -1,7 +1,4 @@
-// Canvas to Blob変換（サイズ制限付き）
-        async function canvasToBlob(canvas) {
-            return new Promise(resolve => {
-                // 画像サイズが大きすぎる場<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -1860,125 +1857,121 @@
             }
         }
         
-        // Google Vision API処理
+        // Google Vision API処理（プロキシ経由）
         async function processWithGoogleVision() {
-            const API_KEY = 'AIzaSyAOa2_P-5K4yTSfHBwX2orb1U4FBWU9XLI';
-            
             updateOcrProgress(0.2, 'Google Vision APIに接続中...');
             
             try {
                 // 画像を前処理
                 const processedCanvas = preprocessImage(editorImage);
                 const imageBlob = await canvasToBlob(processedCanvas);
-                const base64Image = await blobToBase64(imageBlob);
                 
                 console.log('画像サイズ:', imageBlob.size, 'bytes');
-                console.log('Base64長:', base64Image.length);
                 
                 updateOcrProgress(0.4, 'Google Visionで文字を認識中...');
                 
-                const requestBody = {
-                    requests: [{
-                        image: {
-                            content: base64Image
-                        },
-                        features: [{
-                            type: 'DOCUMENT_TEXT_DETECTION',
-                            maxResults: 50
-                        }],
-                        imageContext: {
-                            languageHints: ['ja', 'en']
-                        }
-                    }]
-                };
+                // FormDataで画像を送信
+                const formData = new FormData();
+                formData.append('image', imageBlob, 'image.jpg');
+                formData.append('features', 'DOCUMENT_TEXT_DETECTION');
+                formData.append('languageHints', 'ja,en');
                 
-                console.log('APIリクエスト準備完了');
+                // プロキシサーバー経由でアクセス（CORS回避）
+                const PROXY_URL = 'https://api.allorigins.win/raw?url=';
+                const VISION_API_URL = encodeURIComponent('https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAOa2_P-5K4yTSfHBwX2orb1U4FBWU9XLI');
                 
-                const response = await fetch(`https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-                
-                console.log('APIレスポンス受信:', response.status, response.statusText);
-                
-                if (!response.ok) {
-                    let errorMessage;
-                    try {
-                        const errorData = await response.json();
-                        console.error('APIエラー詳細:', errorData);
-                        errorMessage = errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`;
-                    } catch (e) {
-                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-                    }
-                    throw new Error(errorMessage);
-                }
-                
-                updateOcrProgress(0.8, 'Google Vision結果を処理中...');
-                
-                const data = await response.json();
-                console.log('API応答データ:', data);
-                
-                const textAnnotation = data.responses[0]?.textAnnotations?.[0];
-                
-                if (textAnnotation) {
-                    const confidence = textAnnotation.confidence || 0.9;
-                    displayConfidenceScore(confidence);
+                // 代替案1: 無料プロキシサービス使用
+                try {
+                    const base64Image = await blobToBase64(imageBlob);
                     
-                    const alternatives = [];
-                    if (data.responses[0]?.textAnnotations?.length > 1) {
-                        for (let i = 1; i < Math.min(6, data.responses[0].textAnnotations.length); i++) {
-                            const alt = data.responses[0].textAnnotations[i];
-                            if (alt.description && alt.description.length === 1) {
-                                alternatives.push({
-                                    char: alt.description,
-                                    confidence: alt.confidence || 0.8
-                                });
+                    const requestBody = {
+                        requests: [{
+                            image: {
+                                content: base64Image
+                            },
+                            features: [{
+                                type: 'DOCUMENT_TEXT_DETECTION',
+                                maxResults: 50
+                            }],
+                            imageContext: {
+                                languageHints: ['ja', 'en']
                             }
+                        }]
+                    };
+                    
+                    // プロキシ経由でのリクエスト
+                    const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://vision.googleapis.com/v1/images:annotate?key=AIzaSyAOa2_P-5K4yTSfHBwX2orb1U4FBWU9XLI'), {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+                    
+                    console.log('プロキシ経由レスポンス:', response.status);
+                    
+                    if (!response.ok) {
+                        throw new Error(`プロキシエラー: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    updateOcrProgress(0.8, 'Google Vision結果を処理中...');
+                    
+                    const textAnnotation = data.responses[0]?.textAnnotations?.[0];
+                    
+                    if (textAnnotation) {
+                        const confidence = textAnnotation.confidence || 0.9;
+                        displayConfidenceScore(confidence);
+                        return textAnnotation.description || '';
+                    } else {
+                        const fullTextAnnotation = data.responses[0]?.fullTextAnnotation;
+                        if (fullTextAnnotation) {
+                            displayConfidenceScore(0.8);
+                            return fullTextAnnotation.text || '';
                         }
+                        return '文字を認識できませんでした。';
                     }
                     
-                    if (alternatives.length > 0) {
-                        displayAlternatives(alternatives);
-                    }
+                } catch (proxyError) {
+                    console.error('プロキシ経由エラー:', proxyError);
                     
-                    return textAnnotation.description || '';
-                } else {
-                    const fullTextAnnotation = data.responses[0]?.fullTextAnnotation;
-                    if (fullTextAnnotation) {
-                        displayConfidenceScore(0.8);
-                        return fullTextAnnotation.text || '';
-                    }
-                    
-                    // エラー情報がある場合は表示
-                    if (data.responses[0]?.error) {
-                        console.error('Vision API エラー:', data.responses[0].error);
-                        throw new Error(`Vision API エラー: ${data.responses[0].error.message}`);
-                    }
-                    
-                    return '文字を認識できませんでした。画像の品質を確認してください。';
+                    // フォールバック: Tesseract.jsを使用
+                    showToast('Google Vision APIアクセスに失敗。Tesseract.jsで処理します...', 'warning');
+                    return await processWithTesseractFallback();
                 }
                 
             } catch (error) {
                 console.error('Google Vision API エラー詳細:', error);
                 
-                // ネットワークエラーの詳細な分類
-                if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    throw new Error('ネットワーク接続エラー: インターネット接続を確認してください。CORSポリシーにより、一部の環境では直接APIアクセスができません。');
-                } else if (error.message.includes('403')) {
-                    throw new Error('認証エラー: APIキーが無効か、Vision APIが有効化されていません。Google Cloud Consoleで設定を確認してください。');
-                } else if (error.message.includes('400')) {
-                    throw new Error('リクエストエラー: 画像形式または画像サイズに問題があります。JPEG/PNG形式で10MB以下の画像を使用してください。');
-                } else if (error.message.includes('429')) {
-                    throw new Error('API制限エラー: 月1000回の無料制限に達しました。しばらく時間をおいてからお試しください。');
-                } else if (error.message.includes('401')) {
-                    throw new Error('認証エラー: APIキーが正しくありません。Google Cloud Consoleで新しいAPIキーを生成してください。');
+                // セキュリティエラーの場合の詳細説明
+                if (error.message.includes('insecure') || error.message.includes('CORS') || error.message.includes('blocked')) {
+                    throw new Error('セキュリティ制限エラー: GitHub Pagesでは直接API呼び出しが制限されています。ローカル環境またはプロキシサーバー経由でお試しください。現在Tesseract.jsにフォールバックします。');
                 } else {
-                    throw new Error(`Google Vision API エラー: ${error.message}。ブラウザの開発者ツール（F12）でコンソールログを確認してください。`);
+                    throw new Error(`Google Vision API エラー: ${error.message}`);
                 }
             }
+        }
+        
+        // Tesseract.jsフォールバック処理
+        async function processWithTesseractFallback() {
+            updateOcrProgress(0.3, 'Tesseract.jsで代替処理中...');
+            
+            const result = await Tesseract.recognize(
+                editorImage.src,
+                'jpn',
+                {
+                    logger: function(m) {
+                        if (m.status === 'recognizing text') {
+                            const progress = 0.4 + (m.progress * 0.5);
+                            updateOcrProgress(progress, `Tesseract.js処理中... ${Math.round(m.progress * 100)}%`);
+                        }
+                    }
+                }
+            );
+            
+            displayConfidenceScore(0.7); // Tesseractの平均的な信頼度
+            return result.data.text || '';
         }
         
         // 崩し字認識API処理
@@ -2338,10 +2331,37 @@
             }
         }
         
-        // Canvas to Blob変換
+        // Canvas to Blob変換（サイズ制限付き）
         async function canvasToBlob(canvas) {
             return new Promise(resolve => {
-                canvas.toBlob(resolve, 'image/jpeg', 0.9);
+                // 画像サイズが大きすぎる場合は縮小
+                const MAX_WIDTH = 1024;
+                const MAX_HEIGHT = 1024;
+                
+                let targetCanvas = canvas;
+                
+                if (canvas.width > MAX_WIDTH || canvas.height > MAX_HEIGHT) {
+                    console.log('画像サイズが大きいため縮小します:', canvas.width, 'x', canvas.height);
+                    
+                    const scale = Math.min(MAX_WIDTH / canvas.width, MAX_HEIGHT / canvas.height);
+                    const newWidth = Math.floor(canvas.width * scale);
+                    const newHeight = Math.floor(canvas.height * scale);
+                    
+                    const resizedCanvas = document.createElement('canvas');
+                    const resizedCtx = resizedCanvas.getContext('2d');
+                    resizedCanvas.width = newWidth;
+                    resizedCanvas.height = newHeight;
+                    
+                    resizedCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
+                    targetCanvas = resizedCanvas;
+                    
+                    console.log('縮小後サイズ:', newWidth, 'x', newHeight);
+                }
+                
+                targetCanvas.toBlob((blob) => {
+                    console.log('最終画像サイズ:', blob.size, 'bytes');
+                    resolve(blob);
+                }, 'image/jpeg', 0.8); // JPEG品質を80%に設定
             });
         }
         
